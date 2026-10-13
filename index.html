@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E141C">
+<meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>FitApp</title>
+<style>
+:root {
+  --bg: #0E141C; --surface: #16202B; --surface2: #1D2A38; --line: #2A3B4E;
+  --ink: #E8EEF5; --muted: #93A4B8; --accent: #4C7DFF; --accent-soft: #1B2B4F;
+  --ok: #2FBF71; --ok-soft: #12321F; --warn: #F2A541; --warn-soft: #3A2A12; --danger: #FF6B6B;
+  --r: 14px; --tab-h: 64px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); }
+body { font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; min-height: 100vh;
+  padding-bottom: calc(var(--tab-h) + var(--safe-b) + 16px); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: #8FB0FF; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: .85rem; }
+
+header.top { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 8px;
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 10px; background: rgba(14,20,28,.94);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+header.top h1 { flex: 1; margin: 0; font-size: 1.25rem; letter-spacing: .01em; }
+.iconbtn { min-width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface);
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 12px; position: relative; }
+.badge { min-width: 20px; height: 20px; border-radius: 10px; background: var(--accent); color: #fff; font-size: .75rem;
+  display: inline-flex; align-items: center; justify-content: center; padding: 0 6px; }
+.badge:empty { display: none; }
+
+main { padding: 12px 16px; max-width: 720px; margin: 0 auto; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; margin-bottom: 12px; }
+.card h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.spread { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.btn { min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface2); padding: 0 16px; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn.ok { background: var(--ok); border-color: var(--ok); color: #06210F; font-weight: 700; }
+.btn.danger { border-color: var(--danger); color: var(--danger); background: transparent; }
+.btn.wide { width: 100%; }
+.btn.sm { min-height: 40px; padding: 0 12px; font-size: .9rem; }
+.chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: 0 0 auto; min-height: 40px; border-radius: 20px; border: 1px solid var(--line); background: var(--surface);
+  padding: 0 14px; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.always { border-color: var(--ok); }
+.chip .x { opacity: .7; padding-left: 4px; }
+.seg { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 4px; gap: 4px; margin-bottom: 12px; }
+.seg button { flex: 1; min-height: 44px; border: 0; border-radius: 9px; background: transparent; font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+input[type=text], input[type=search], input[type=password], input:not([type]), select, input[inputmode] {
+  min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); padding: 0 12px; width: 100%; }
+label.field { display: block; margin-bottom: 10px; }
+label.field span { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 4px; }
+.toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; }
+.switch { width: 52px; height: 32px; border-radius: 16px; background: var(--line); border: 0; position: relative; flex: 0 0 auto; }
+.switch::after { content: ""; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; border-radius: 12px; background: #fff; transition: left .15s; }
+.switch[aria-checked="true"] { background: var(--ok); }
+.switch[aria-checked="true"]::after { left: 24px; }
+.note { background: var(--warn-soft); border: 1px solid #5A4220; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+.empty { text-align: center; padding: 28px 12px; color: var(--muted); }
+
+/* Training */
+.progress { height: 10px; background: var(--surface2); border-radius: 5px; overflow: hidden; margin: 6px 0 2px; }
+.progress > i { display: block; height: 100%; background: var(--ok); width: 0; transition: width .2s; }
+.ex .meta { color: var(--muted); font-size: .9rem; margin-bottom: 10px; }
+.set { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 8px; align-items: center; margin-top: 8px; }
+.chk { height: 56px; border-radius: 14px; border: 2px solid var(--line); background: var(--bg); font-weight: 700; font-size: 1.1rem; }
+.chk[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: #06210F; }
+.chk[aria-pressed="true"]::before { content: "✓ "; }
+.fld { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding-right: 10px; }
+.fld input { border: 0; background: transparent; min-height: 54px; font-size: 1.15rem; text-align: center; }
+.fld span { color: var(--muted); font-size: .85rem; }
+.set.done .fld { border-color: #1E5A38; }
+details.how { margin-top: 10px; }
+details.how summary { color: #8FB0FF; min-height: 36px; display: flex; align-items: center; }
+.edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+#timerbar { position: fixed; left: 0; right: 0; bottom: calc(var(--tab-h) + var(--safe-b)); z-index: 25;
+  background: #101A25; border-top: 1px solid var(--line); padding: 8px 12px; }
+#timerbar .wrap { max-width: 720px; margin: 0 auto; display: grid; grid-template-columns: 56px 1fr 56px; gap: 8px; align-items: center; }
+#timerbar .clock { text-align: center; font-size: 2.4rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+#timerbar .lbl { text-align: center; font-size: .8rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#timerbar .ctrl { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; max-width: 720px; margin-left: auto; margin-right: auto; }
+#timerbar .adj { height: 56px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface2); font-weight: 700; }
+#timerbar.alarm { animation: flash .5s 6; }
+@keyframes flash { 50% { background: var(--ok); } }
+body.with-timer { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 170px); }
+
+/* Lists of products and recipes */
+.item { display: grid; grid-template-columns: 76px 1fr; gap: 12px; }
+.thumb { width: 76px; height: 76px; border-radius: 10px; background: #fff; object-fit: contain; }
+.thumb.rec { object-fit: cover; background: var(--surface2); }
+.nobg { background: var(--surface2); }
+.kv { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .9rem; }
+.tag { display: inline-block; font-size: .75rem; padding: 2px 8px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--line); }
+.tag.good { background: var(--ok-soft); border-color: #1E5A38; color: #7BE3A6; }
+.tag.both { background: var(--accent-soft); border-color: #2C447A; color: #A9C1FF; }
+.tag.sale { background: var(--warn-soft); border-color: #5A4220; color: var(--warn); }
+.miss { color: var(--warn); font-size: .9rem; }
+.meal table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.meal td { padding: 6px 4px; border-top: 1px solid var(--line); vertical-align: top; }
+.meal td.r { text-align: right; white-space: nowrap; }
+.meal tr.sum td { font-weight: 700; }
+
+/* Tab bar */
+nav.tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(4, 1fr);
+  height: calc(var(--tab-h) + var(--safe-b)); padding-bottom: var(--safe-b); background: #0B1118; border-top: 1px solid var(--line); }
+nav.tabs button { border: 0; background: transparent; color: var(--muted); display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 3px; font-size: .75rem; font-weight: 600; }
+nav.tabs button svg { width: 24px; height: 24px; }
+nav.tabs button[aria-selected="true"] { color: var(--ink); }
+nav.tabs button[aria-selected="true"] svg { color: var(--accent); }
+
+/* Sheet */
+.sheet { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.55); display: flex; align-items: flex-end; justify-content: center; }
+.sheet[hidden] { display: none; }
+.sheet .panel { width: 100%; max-width: 720px; max-height: 88vh; background: var(--surface); border-radius: 18px 18px 0 0;
+  border: 1px solid var(--line); display: flex; flex-direction: column; padding-bottom: var(--safe-b); }
+.sheet-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.sheet-head h2 { flex: 1; margin: 0; font-size: 1.1rem; }
+.sheet-body { overflow-y: auto; padding: 14px 16px 24px; }
+.li { display: flex; align-items: center; gap: 12px; min-height: 56px; border-bottom: 1px solid var(--line); }
+.li .chk { width: 48px; height: 48px; flex: 0 0 auto; }
+.li .chk[aria-pressed="true"]::before { content: "✓"; }
+.li.done .t { text-decoration: line-through; color: var(--muted); }
+.li .t { flex: 1; }
+.bars { display: flex; align-items: flex-end; gap: 4px; height: 90px; margin: 8px 0; }
+.bars i { flex: 1; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tab-h) + var(--safe-b) + 16px); z-index: 60;
+  background: #E8EEF5; color: #0E141C; padding: 12px 16px; border-radius: 12px; font-weight: 600; max-width: 90vw;
+  opacity: 0; pointer-events: none; transition: opacity .2s; }
+#toast.show { opacity: 1; }
+body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + 180px); }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1 id="title">Training</h1>
+  <button class="iconbtn" id="btnListe" aria-label="Einkaufslisten">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"/><path d="M6 6 5 3H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
+    <span class="badge" id="listBadge"></span>
+  </button>
+  <button class="iconbtn" id="btnSet" aria-label="Einstellungen">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+  </button>
+</header>
+
+<main id="main"></main>
+
+<div id="timerbar" hidden>
+  <div class="wrap">
+    <button class="adj" data-t="minus" aria-label="15 Sekunden weniger">−15</button>
+    <div><div class="clock" id="clock">0:00</div><div class="lbl" id="clockLbl">Pause</div></div>
+    <button class="adj" data-t="plus" aria-label="15 Sekunden mehr">+15</button>
+  </div>
+  <div class="ctrl">
+    <button class="btn primary" data-t="toggle" id="tToggle">Start</button>
+    <button class="btn" data-t="reset">Reset</button>
+  </div>
+</div>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-tab="training" aria-selected="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6M6 6v12M18 6v12M21 9v6M6 12h12"/></svg>Training</button>
+  <button role="tab" data-tab="coop" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h16M5 11a7 7 0 0 0 14 0M9 4v4M12 3v5M15 4v4"/></svg>Coop Essen</button>
+  <button role="tab" data-tab="vorrat" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16"/></svg>Vorrat</button>
+  <button role="tab" data-tab="snacks" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3h10l2 18H5z"/><path d="M9 8h6"/></svg>Snacks</button>
+</nav>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-head"><h2 id="sheetTitle"></h2><button class="iconbtn" id="sheetClose" aria-label="Schliessen">✕</button></div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
+
+<script id="appdata" type="application/json">null</script>
+<script>
+'use strict';
+
+/* ======================================================= Hilfen */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const KA = 'keine Angabe';
+const n1 = v => (v == null || isNaN(v)) ? KA : String(Math.round(v * 10) / 10);
+const n0 = v => (v == null || isNaN(v)) ? KA : String(Math.round(v));
+const chf = v => (v == null || isNaN(v)) ? KA : 'CHF ' + Number(v).toFixed(2);
+const clone = o => JSON.parse(JSON.stringify(o));
+const datum = iso => { try { const d = new Date(iso); return d.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' }); } catch (e) { return iso; } };
+const datumZeit = iso => { try { const d = new Date(iso); return d.toLocaleString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch (e) { return iso; } };
+
+const LS = {
+  get(k, d) { try { const v = localStorage.getItem('fit.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('fit.' + k, JSON.stringify(v)); return true; } catch (e) { toast('Speichern fehlgeschlagen. Speicher voll oder gesperrt.'); return false; } },
+  del(k) { try { localStorage.removeItem('fit.' + k); } catch (e) {} },
+  keys() { try { return Object.keys(localStorage).filter(k => k.indexOf('fit.') === 0); } catch (e) { return []; } }
+};
+
+const IDB = {
+  db: null,
+  open() {
+    return new Promise(res => {
+      try {
+        const r = indexedDB.open('fitapp', 1);
+        r.onupgradeneeded = () => r.result.createObjectStore('kv');
+        r.onsuccess = () => { this.db = r.result; res(this.db); };
+        r.onerror = () => res(null);
+      } catch (e) { res(null); }
+    });
+  },
+  async get(k) {
+    const db = this.db || await this.open(); if (!db) return null;
+    return new Promise(res => { try { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result == null ? null : q.result); q.onerror = () => res(null); } catch (e) { res(null); } });
+  },
+  async set(k, v) {
+    const db = this.db || await this.open(); if (!db) return false;
+    return new Promise(res => { try { const tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(true); tx.onerror = () => res(false); } catch (e) { res(false); } });
+  }
+};
+
+let toastTimer = null;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ======================================================= Daten */
+let DATA = null;
+let EMBEDDED = false;
+
+const DEFAULT_COOP_HAND = {
+  stand: '2026-10-13',
+  quelle: 'Preise und Nährwerte von coop.ch, von Hand geprüft. Im Laden kann es abweichen.',
+  produkte: {
+    thon: { n: 'Prix Garantie Thon rosé MSC nature', pack: '200 g, 150 g abgetropft', p: 1.30, u: 'https://www.coop.ch/de/lebensmittel/vorraete/konserven/fisch/thon-ohne-oel/prix-garantie-msc-pink-thon-in-salzlake/p/7210452', k: 85, pr: 19, z: 0, f: 1 },
+    poulet: { n: 'Pouletbrust Curry hauchdünn', pack: '120 g', p: 3.95, u: 'https://www.coop.ch/en/food/meat-fish/cold-cuts-sausage-products/ham-cold-cuts/cold-cuts/very-thinly-sliced-chicken-breast-with-curry/p/3869334', k: 107, pr: 23, z: 0, f: 0.9 },
+    eier: { n: 'Prix Garantie Pic Nic Eier', pack: '6 Stück à 48 g', p: 3.60, u: 'https://www.coop.ch/en/food/dairy-products-eggs/eggs/hard-boiled-eggs/prix-garantie-free-range-eggs-ch-picnic-6-pack/p/6741657', k: 151, pr: 13, z: 0, f: 11 },
+    popcorn: { n: 'Coop Salted Popcorn', pack: '100 g', p: 0.95, u: 'https://www.coop.ch/en/food/sweets-snacks/crisps-snacks/crisps-popcorn/popcorn/salted-popcorn/p/4070561', k: 471, pr: 8, z: 0, f: 21 },
+    vaya: { n: 'Zweifel Vaya Protein Paprika', pack: '2 × 80 g', p: 5.90, statt: 7.90, u: 'https://www.coop.ch/en/food/sweets-snacks/crisps-snacks/crisps-popcorn/special-crisps/zweifel-vaya-protein-paprika/p/6160698', k: 428, pr: 22, z: 4.7, f: 12 },
+    zweifel90: { n: 'Zweifel Paprika Chips', pack: '90 g', p: 2.50, u: 'https://www.coop.ch/en/food/sweets-snacks/crisps-snacks/crisps-popcorn/paprika-chili-crisps/zweifel-paprika-chips/p/3153257', k: 515, pr: 5.8, z: 5.6, f: 30 },
+    zweifel175: { n: 'Zweifel Chips Paprika', pack: '175 g', p: 4.20, u: 'https://www.coop.ch/en/food/sweets-snacks/crisps-snacks/crisps-popcorn/paprika-chili-crisps/zweifel-chips-paprika/p/3153258', k: 515, pr: 5.8, z: 5.6, f: 30 }
+  }
+};
+
+/* Coop Optionen: Mittag unter CHF 6 mit viel Protein, Snack im Büro, Schüssel zum Gaming */
+const COOP_MEALS = [
+  { zeit: '11:30', titel: 'Mittag 1: Thon Brot', items: [
+    { p: 'thon', g: 150, menge: '1 Dose, 150 g abgetropft', preis: 1.30 },
+    { home: 'Vollkornbrot, 2 Scheiben' }, { home: 'Gurke, roh' }] },
+  { zeit: '11:30', titel: 'Mittag 2: Poulet Brot', items: [
+    { p: 'poulet', g: 120, menge: '1 Packung, 120 g', preis: 3.95 },
+    { home: 'Vollkornbrot, 2 Scheiben' }] },
+  { zeit: '11:30', titel: 'Mittag 3: Thon und Eier, am meisten Protein', items: [
+    { p: 'thon', g: 150, menge: '1 Dose, 150 g abgetropft', preis: 1.30 },
+    { p: 'eier', g: 144, menge: '3 Eier aus dem 6er Pack', preis: 1.80 }] },
+  { zeit: '15:30', titel: 'Snack im Büro', items: [
+    { p: 'eier', g: 96, menge: '2 Eier', preis: 1.20 }] },
+  { zeit: 'Gaming', titel: 'Snack Schüssel, eine pro Abend', wahl: true, items: [
+    { p: 'popcorn', g: 30, menge: '30 g, eine volle Schüssel', preis: 0.29 },
+    { p: 'vaya', g: 40, menge: 'halbe Tüte, 40 g', preis: 1.48 },
+    { p: 'zweifel90', g: 45, menge: 'halbe kleine Tüte, 45 g', preis: 1.25 }],
+    note: 'Wähle eine davon. Daneben rohe Paprika, Rüebli oder Gurke von zuhause. Ist die Schüssel leer, knabberst du Gemüse.' }
+];
+
+const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
+
+/* ======================================================= Trainingsplan */
+const DEFAULT_PLAN = { days: [
+  { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wd: 1, ex: [
+    { id: 'a1', name: 'Liegestütze', sets: 4, ziel: 'max, Ziel 8 bis 15', pause: 75, einheit: 'Wdh', how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden.', easy: 'Hände auf die Bettkante.' },
+    { id: 'a2', name: 'Liegestütze, Füsse auf dem Bett', sets: 3, ziel: '6 bis 12', pause: 75, einheit: 'Wdh', how: 'Füsse aufs Bett, Hände am Boden, Körper zeigt schräg nach unten. Kein Handstand.', easy: 'Normale Liegestütze.' },
+    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '6 bis 10', pause: 75, einheit: 'Wdh', how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken.', easy: 'Nur halb so tief runter.' },
+    { id: 'a4', name: 'Enge Liegestütze', sets: 3, ziel: 'max', pause: 60, einheit: 'Wdh', how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper.', easy: 'Auf den Knien.' },
+    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.' }
+  ] },
+  { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wd: 3, ex: [
+    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 60, einheit: 'Wdh', how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken.', easy: 'Normaler Ausfallschritt ohne Erhöhung.' },
+    { id: 'b2', name: 'Rucksack Rudern', sets: 4, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen.', easy: 'Weniger Gewicht im Rucksack.' },
+    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '12', pause: 75, einheit: 'Wdh', how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten.', easy: '' },
+    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '' }
+  ] },
+  { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wd: 5, ex: [
+    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 4, ziel: '15', pause: 60, einheit: 'Wdh', how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind.', easy: 'Ohne Rucksack.' },
+    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: 'max', pause: 75, einheit: 'Wdh', how: 'Gleich wie Tag A. Jede Woche eine Wiederholung mehr.', easy: 'Hände auf die Bettkante.' },
+    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 3, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand.', easy: '' },
+    { id: 'c4', name: 'Rucksack Rudern', sets: 3, ziel: '12', pause: 60, einheit: 'Wdh', how: 'Gleich wie Tag B.', easy: '' },
+    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 3, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.' }
+  ] },
+  { id: 'M', name: 'Minimum', title: '15 Minuten, wenn gar nichts geht', wd: null, ex: [
+    { id: 'm1', name: 'Liegestütze', sets: 3, ziel: '10', pause: 30, einheit: 'Wdh', how: '', easy: 'Hände auf die Bettkante.' },
+    { id: 'm2', name: 'Kniebeugen', sets: 3, ziel: '15', pause: 30, einheit: 'Wdh', how: '', easy: '' },
+    { id: 'm3', name: 'Unterarmstütz', sets: 3, ziel: '30 s', pause: 30, einheit: 'Sek', how: '', easy: '' }
+  ] }
+] };
+
+let plan = LS.get('plan', null) || clone(DEFAULT_PLAN);
+let sessions = LS.get('sess', {});
+let history = LS.get('history', []);
+let editMode = false;
+
+function savePlan() { LS.set('plan', plan); }
+function saveSessions() { LS.set('sess', sessions); }
+
+function dayById(id) { return plan.days.find(d => d.id === id) || plan.days[0]; }
+function todayDayId() {
+  const wd = new Date().getDay();
+  const d = plan.days.find(x => x.wd === wd);
+  return d ? d.id : (LS.get('lastDay', null) || plan.days[0].id);
+}
+let curDay = todayDayId();
+
+function lastValues(exId, i) {
+  for (let h = history.length - 1; h >= 0; h--) {
+    const e = (history[h].ex || []).find(x => x.id === exId);
+    if (e && e.sets && e.sets.length) {
+      const s = e.sets[i] || e.sets[e.sets.length - 1];
+      return { w: s.w || '', r: s.r || '' };
+    }
+  }
+  return { w: '', r: '' };
+}
+
+function sessionFor(day) {
+  let s = sessions[day.id];
+  if (!s) s = sessions[day.id] = { start: new Date().toISOString(), sets: {} };
+  day.ex.forEach(ex => {
+    const arr = s.sets[ex.id] || [];
+    while (arr.length < ex.sets) { const lv = lastValues(ex.id, arr.length); arr.push({ w: lv.w, r: lv.r, d: false }); }
+    if (arr.length > ex.sets) arr.length = ex.sets;
+    s.sets[ex.id] = arr;
+  });
+  return s;
+}
+
+function hasActiveSession() {
+  return Object.values(sessions).some(s => Object.values(s.sets || {}).some(a => a.some(x => x.d)));
+}
+
+/* ======================================================= Timer, Ton, Wachhalten */
+let audioCtx = null;
+function unlockAudio() {
+  try {
+    if (!audioCtx) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) audioCtx = new AC(); }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  } catch (e) {}
+}
+function beep() {
+  try {
+    if (!audioCtx) return;
+    const t0 = audioCtx.currentTime;
+    for (let i = 0; i < 3; i++) {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = 'square'; o.frequency.value = 880;
+      g.gain.setValueAtTime(0.0001, t0 + i * 0.35);
+      g.gain.exponentialRampToValueAtTime(0.25, t0 + i * 0.35 + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + i * 0.35 + 0.22);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t0 + i * 0.35); o.stop(t0 + i * 0.35 + 0.25);
+    }
+  } catch (e) {}
+}
+/* Wenn die App als APK läuft, gibt es diese Brücke zu Android */
+const NATIVE = (window.FitNative && typeof window.FitNative.isNative === 'function') ? window.FitNative : null;
+function nativeTimer(st) {
+  try { if (NATIVE) NATIVE.setTimer(st.running ? st.endAt : 0, st.label || 'Pause'); } catch (e) {}
+}
+let wakeLock = null;
+async function requestWake() {
+  try { if (NATIVE && hasActiveSession()) NATIVE.keepScreenOn(true); } catch (e) {}
+  try {
+    if (!('wakeLock' in navigator) || document.visibilityState !== 'visible' || !hasActiveSession()) return;
+    if (wakeLock && !wakeLock.released) return;
+    wakeLock = await navigator.wakeLock.request('screen');
+  } catch (e) {}
+}
+function releaseWake() { try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null; try { if (NATIVE) NATIVE.keepScreenOn(false); } catch (e) {} }
+
+const Timer = {
+  st: LS.get('timer', { running: false, endAt: 0, rem: 0, total: 0, label: 'Pause', fired: true }),
+  save() { LS.set('timer', this.st); nativeTimer(this.st); },
+  remaining() { return this.st.running ? Math.max(0, this.st.endAt - Date.now()) : Math.max(0, this.st.rem); },
+  start(sec, label) {
+    this.st = { running: true, endAt: Date.now() + sec * 1000, rem: sec * 1000, total: sec * 1000, label: label || 'Pause', fired: false, paused: false };
+    this.save(); this.render();
+  },
+  toggle() {
+    const s = this.st;
+    if (s.running) { s.rem = Math.max(0, s.endAt - Date.now()); s.running = false; s.paused = true; }
+    else if (s.rem > 0) { s.endAt = Date.now() + s.rem; s.running = true; s.fired = false; s.paused = false; }
+    else if (s.total > 0) { this.start(s.total / 1000, s.label); return; }
+    else { this.start(60, 'Pause'); return; }
+    this.save(); this.render();
+  },
+  reset() { const s = this.st; s.running = false; s.rem = s.total; s.fired = true; s.paused = false; this.save(); this.render(); },
+  add(sec) {
+    const s = this.st;
+    if (s.running) s.endAt = Math.max(Date.now(), s.endAt + sec * 1000);
+    else { s.rem = Math.max(0, s.rem + sec * 1000); if (sec > 0 && s.total < s.rem) s.total = s.rem; }
+    this.save(); this.render();
+  },
+  tick() {
+    const s = this.st;
+    if (s.running && Date.now() >= s.endAt) {
+      const late = Date.now() - s.endAt > 3000;
+      s.running = false; s.rem = 0;
+      if (!s.fired) { s.fired = true; if (late) toast('Pause ist vorbei.'); else this.alarm(); }
+      this.save();
+    }
+    this.render();
+  },
+  alarm() {
+    beep();
+    try { if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 400]); } catch (e) {}
+    const bar = $('#timerbar'); bar.classList.remove('alarm'); void bar.offsetWidth; bar.classList.add('alarm');
+    toast('Pause vorbei. Nächster Satz.');
+  },
+  render() {
+    const ms = this.remaining();
+    const sec = Math.ceil(ms / 1000);
+    $('#clock').textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+    $('#clockLbl').textContent = this.st.label || 'Pause';
+    $('#tToggle').textContent = this.st.running ? 'Pause' : (this.st.paused && this.st.rem > 0 ? 'Weiter' : 'Start');
+  }
+};
+setInterval(() => Timer.tick(), 250);
+document.addEventListener('visibilitychange', () => { Timer.tick(); requestWake(); });
+document.addEventListener('pointerdown', unlockAudio, { capture: true });
+
+$('#timerbar').addEventListener('click', e => {
+  const b = e.target.closest('[data-t]'); if (!b) return;
+  unlockAudio();
+  const t = b.dataset.t;
+  if (t === 'toggle') Timer.toggle();
+  else if (t === 'reset') Timer.reset();
+  else if (t === 'plus') Timer.add(15);
+  else if (t === 'minus') Timer.add(-15);
+});
+
+/* ======================================================= Tabs */
+const TITLES = { training: 'Training', coop: 'Coop Essen', vorrat: 'Vorrat', snacks: 'Snacks' };
+let tab = LS.get('tab', 'training');
+if (!TITLES[tab]) tab = 'training';
+
+function setTab(t) {
+  tab = t; LS.set('tab', t);
+  $$('nav.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+  $('#title').textContent = TITLES[t];
+  const showTimer = t === 'training';
+  $('#timerbar').hidden = !showTimer;
+  document.body.classList.toggle('with-timer', showTimer);
+  render();
+  window.scrollTo(0, 0);
+}
+$('nav.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
+
+function render() {
+  if (tab === 'training') renderTraining();
+  else if (tab === 'coop') renderCoop();
+  else if (tab === 'vorrat') renderVorrat();
+  else renderSnacks();
+  updateBadge();
+}
+
+/* ======================================================= Modul 1: Training */
+function renderTraining() {
+  const day = dayById(curDay);
+  const s = sessionFor(day);
+  const total = day.ex.reduce((a, ex) => a + ex.sets, 0);
+  const done = day.ex.reduce((a, ex) => a + s.sets[ex.id].filter(x => x.d).length, 0);
+  let h = '<div class="chips" role="tablist">' + plan.days.map(d =>
+    `<button class="chip" data-day="${esc(d.id)}" aria-pressed="${d.id === day.id}">${esc(d.name)}</button>`).join('') + '</div>';
+  h += `<div class="card"><div class="spread"><div><h3>${esc(day.name)}: ${esc(day.title)}</h3>
+    <div class="muted small num">${done} von ${total} Sätzen</div></div>
+    <button class="btn sm" data-act="history">Verlauf</button></div>
+    <div class="progress"><i style="width:${total ? Math.round(done / total * 100) : 0}%"></i></div></div>`;
+  day.ex.forEach((ex, xi) => {
+    const sets = s.sets[ex.id];
+    h += `<div class="card ex" data-ex="${esc(ex.id)}">`;
+    if (editMode) {
+      h += `<label class="field"><span>Name</span><input type="text" data-edit="name" value="${esc(ex.name)}"></label>
+        <div class="edit-grid">
+          <label class="field"><span>Sätze</span><input inputmode="numeric" data-edit="sets" value="${ex.sets}"></label>
+          <label class="field"><span>Pause in Sekunden</span><input inputmode="numeric" data-edit="pause" value="${ex.pause}"></label>
+          <label class="field"><span>Ziel</span><input type="text" data-edit="ziel" value="${esc(ex.ziel)}"></label>
+          <label class="field"><span>Einheit</span><select data-edit="einheit">
+            <option ${ex.einheit === 'Wdh' ? 'selected' : ''}>Wdh</option><option ${ex.einheit === 'Sek' ? 'selected' : ''}>Sek</option></select></label>
+        </div>
+        <button class="btn danger sm" data-act="delex">Übung löschen</button>`;
+    } else {
+      h += `<h3>${xi + 1}. ${esc(ex.name)}</h3><div class="meta">${ex.sets} Sätze · Ziel ${esc(ex.ziel || KA)} · Pause ${ex.pause} s</div>`;
+      sets.forEach((st, i) => {
+        h += `<div class="set ${st.d ? 'done' : ''}">
+          <button class="chk" data-act="toggle" data-i="${i}" aria-pressed="${st.d}" aria-label="Satz ${i + 1} abhaken">${i + 1}</button>
+          <label class="fld"><input inputmode="decimal" data-f="w" data-i="${i}" value="${esc(st.w)}" placeholder="0" aria-label="Gewicht Satz ${i + 1}"><span>kg</span></label>
+          <label class="fld"><input inputmode="numeric" data-f="r" data-i="${i}" value="${esc(st.r)}" placeholder="0" aria-label="${esc(ex.einheit)} Satz ${i + 1}"><span>${esc(ex.einheit)}</span></label>
+        </div>`;
+      });
+      if (ex.how || ex.easy) h += `<details class="how"><summary>So geht's</summary><p>${esc(ex.how)}</p>${ex.easy ? `<p class="muted"><b>Zu schwer:</b> ${esc(ex.easy)}</p>` : ''}</details>`;
+    }
+    h += '</div>';
+  });
+  if (editMode) {
+    h += `<button class="btn wide" data-act="addex">Übung hinzufügen</button><div style="height:10px"></div>
+      <button class="btn primary wide" data-act="editdone">Fertig mit Bearbeiten</button>`;
+  } else {
+    h += `<button class="btn ok wide" data-act="finish">Training abschliessen</button><div style="height:10px"></div>
+      <button class="btn wide" data-act="edit">Plan bearbeiten</button>`;
+  }
+  $('#main').innerHTML = h;
+}
+
+$('#main').addEventListener('click', e => {
+  if (tab !== 'training') return;
+  const dayBtn = e.target.closest('[data-day]');
+  if (dayBtn) { curDay = dayBtn.dataset.day; LS.set('lastDay', curDay); renderTraining(); return; }
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const day = dayById(curDay);
+  const exEl = b.closest('[data-ex]');
+  const ex = exEl ? day.ex.find(x => x.id === exEl.dataset.ex) : null;
+  const act = b.dataset.act;
+  if (act === 'toggle' && ex) {
+    unlockAudio();
+    const s = sessionFor(day); const st = s.sets[ex.id][+b.dataset.i];
+    st.d = !st.d; saveSessions();
+    if (st.d && ex.pause > 0) Timer.start(ex.pause, ex.name + ', Satz ' + (+b.dataset.i + 1));
+    if (st.d) requestWake();
+    renderTraining();
+  } else if (act === 'finish') finishTraining();
+  else if (act === 'history') openHistory();
+  else if (act === 'edit') { editMode = true; renderTraining(); }
+  else if (act === 'editdone') { editMode = false; savePlan(); renderTraining(); toast('Plan gespeichert'); }
+  else if (act === 'addex') {
+    day.ex.push({ id: 'x' + Date.now().toString(36), name: 'Neue Übung', sets: 3, ziel: '', pause: 60, einheit: 'Wdh', how: '', easy: '' });
+    savePlan(); renderTraining();
+  } else if (act === 'delex' && ex) {
+    if (b.dataset.sure) { day.ex = day.ex.filter(x => x !== ex); savePlan(); renderTraining(); toast('Übung gelöscht'); }
+    else { b.dataset.sure = '1'; b.textContent = 'Wirklich löschen? Nochmals tippen'; }
+  }
+});
+
+$('#main').addEventListener('input', e => {
+  if (tab !== 'training') return;
+  const day = dayById(curDay);
+  const exEl = e.target.closest('[data-ex]'); if (!exEl) return;
+  const ex = day.ex.find(x => x.id === exEl.dataset.ex); if (!ex) return;
+  if (e.target.dataset.f) {
+    const s = sessionFor(day);
+    s.sets[ex.id][+e.target.dataset.i][e.target.dataset.f] = e.target.value.replace(',', '.').trim();
+    saveSessions();
+  } else if (e.target.dataset.edit) {
+    const k = e.target.dataset.edit; let v = e.target.value;
+    if (k === 'sets') v = Math.max(1, Math.min(12, parseInt(v, 10) || 1));
+    if (k === 'pause') v = Math.max(0, Math.min(900, parseInt(v, 10) || 0));
+    ex[k] = v; savePlan();
+  }
+});
+$('#main').addEventListener('change', e => {
+  if (tab === 'training' && e.target.dataset.edit === 'einheit') {
+    const day = dayById(curDay); const ex = day.ex.find(x => x.id === e.target.closest('[data-ex]').dataset.ex);
+    if (ex) { ex.einheit = e.target.value; savePlan(); }
+  }
+});
+
+function finishTraining() {
+  const day = dayById(curDay); const s = sessionFor(day);
+  const ex = day.ex.map(x => ({ id: x.id, name: x.name, einheit: x.einheit,
+    sets: s.sets[x.id].filter(st => st.d).map(st => ({ w: st.w, r: st.r })) })).filter(x => x.sets.length);
+  if (!ex.length) { toast('Noch kein Satz abgehakt'); return; }
+  history.push({ id: Date.now().toString(36), date: new Date().toISOString(), start: s.start, dayId: day.id, dayName: day.name + ': ' + day.title, ex });
+  if (!LS.set('history', history)) { history.pop(); return; }
+  delete sessions[day.id]; saveSessions();
+  Timer.reset(); releaseWake();
+  renderTraining();
+  toast('Training gespeichert. Gut gemacht.');
+}
+
+function openHistory() {
+  const names = Array.from(new Set(history.flatMap(h => h.ex.map(e => e.name)).concat(plan.days.flatMap(d => d.ex.map(e => e.name)))));
+  let sel = LS.get('histEx', names[0] || '');
+  if (names.indexOf(sel) < 0) sel = names[0] || '';
+  const draw = () => {
+    const rows = history.filter(h => h.ex.some(e => e.name === sel)).map(h => ({ h, e: h.ex.find(e => e.name === sel) }));
+    const totals = rows.map(r => r.e.sets.reduce((a, s) => a + (parseFloat(r.e.einheit === 'Sek' ? s.r : s.r) || 0), 0));
+    const max = Math.max(1, ...totals);
+    let b = `<label class="field"><span>Übung</span><select id="histSel">${names.map(n => `<option ${n === sel ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>`;
+    if (!rows.length) b += '<div class="empty">Noch kein Training mit dieser Übung gespeichert.</div>';
+    else {
+      b += `<div class="muted small">Summe pro Training, letzte ${Math.min(16, rows.length)}</div><div class="bars">` +
+        totals.slice(-16).map(t => `<i style="height:${Math.round(t / max * 100)}%" title="${t}"></i>`).join('') + '</div>';
+      b += rows.slice().reverse().map(r => `<div class="li"><div class="t"><b>${datum(r.h.date)}</b> <span class="muted small">${esc(r.h.dayName)}</span><br>
+        <span class="num">${r.e.sets.map(s => `${s.w ? esc(s.w) + ' kg × ' : ''}${esc(s.r || '?')} ${esc(r.e.einheit)}`).join(' · ')}</span></div></div>`).join('');
+    }
+    b += `<p class="muted small">${history.length} Trainings gespeichert.</p>`;
+    $('#sheetBody').innerHTML = b;
+    $('#histSel').addEventListener('change', ev => { sel = ev.target.value; LS.set('histEx', sel); draw(); });
+  };
+  openSheet('Verlauf', ''); draw();
+}
+
+/* ======================================================= Modul 2: Coop Essen */
+function coopHand() { return (DATA && DATA.coopHand) || DEFAULT_COOP_HAND; }
+function renderCoop() {
+  const hand = coopHand(); const P = hand.produkte;
+  let h = `<div class="note"><b>Falle:</b> Prix Garantie Poulet Aufschnitt sieht aus wie Pouletbrust, ist aber Fleischkäse mit 22 g Fett und nur 12 g Protein pro 100 g. Liegen lassen.</div>`;
+  COOP_MEALS.forEach((m, mi) => {
+    let sumP = 0, sumK = 0, sumPr = 0, rows = '';
+    m.items.forEach(it => {
+      if (it.home) { rows += `<tr><td colspan="4">${esc(it.home)} <span class="muted small">von zuhause, nicht eingerechnet</span></td></tr>`; return; }
+      const p = P[it.p]; if (!p) return;
+      const k = p.k * it.g / 100, pr = p.pr * it.g / 100;
+      sumP += it.preis; sumK += k; sumPr += pr;
+      rows += `<tr><td><a href="${esc(p.u)}" target="_blank" rel="noopener">${esc(p.n)}</a><br><span class="muted small">${esc(it.menge)}${p.statt ? ` · Aktion, sonst ${chf(p.statt)} pro Packung` : ''}</span></td>
+        <td class="r num">${chf(it.preis)}</td><td class="r num">${n0(k)} kcal</td><td class="r num">${n1(pr)} g</td></tr>`;
+    });
+    if (!m.wahl) rows += `<tr class="sum"><td>Total</td><td class="r num">${chf(sumP)}</td><td class="r num">${n0(sumK)} kcal</td><td class="r num">${n1(sumPr)} g</td></tr>`;
+    h += `<div class="card meal"><div class="muted small">${esc(m.zeit)}</div><h3>${esc(m.titel)}</h3>
+      <table><tr class="muted small"><td></td><td class="r">Preis</td><td class="r">Energie</td><td class="r">Protein</td></tr>${rows}</table>
+      ${m.note ? `<p class="small">${esc(m.note)}</p>` : ''}
+      <button class="btn sm" data-meal="${mi}" style="margin-top:8px">Auf die Coop Liste</button></div>`;
+  });
+  h += `<p class="muted small">${esc(hand.quelle)} Stand ${datum(hand.stand)}. Protein und Energie sind aus den Werten pro 100 g berechnet.</p>`;
+  $('#main').innerHTML = h;
+}
+$('#main').addEventListener('click', e => {
+  if (tab !== 'coop') return;
+  const b = e.target.closest('[data-meal]'); if (!b) return;
+  const m = COOP_MEALS[+b.dataset.meal]; const P = coopHand().produkte;
+  let added = 0;
+  m.items.forEach(it => { if (it.p && P[it.p] && addToList('coop', P[it.p].n + ' (' + P[it.p].pack + ')', P[it.p].u)) added++; });
+  toast(added ? `${added} Produkt${added > 1 ? 'e' : ''} auf der Coop Liste` : 'Schon auf der Liste');
+});
+
+/* ======================================================= Modul 3: Vorrat */
+const NOGO_DEFAULT = ['brokkoli', 'broccoli', 'blumenkohl', 'rotkohl', 'rotkraut', 'schwein', 'speck', 'schinken', 'salami', 'bacon', 'pancetta', 'coppa', 'chorizo', 'salsiz', 'cervelat', 'lachs', 'forelle', 'kabeljau', 'dorsch', 'zander', 'egli', 'crevetten', 'garnelen', 'muscheln', 'tintenfisch', 'calamari', 'sushi'];
+const BASICS = ['salz', 'pfeffer', 'öl', 'olivenöl', 'mehl', 'zucker', 'butter', 'wasser'];
+let vorrat = LS.get('vorrat', []);
+let nogo = LS.get('nogo', NOGO_DEFAULT);
+let rf = LS.get('rfilter', { zeit: 0, prot: 0, quelle: '', nogo: true });
+let recLimit = 40;
+
+function normTerm(s) {
+  return String(s).toLowerCase().replace(/\(.*?\)/g, ' ').replace(/[^a-zäöüéèàç\s]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function head(t) { const w = t.split(' ').filter(Boolean); return w[w.length - 1] || ''; }
+function wordMatch(w, h) {
+  if (!w || !h) return false;
+  if (w === h) return true;
+  if (h.length <= 3) {
+    if (h === 'öl') return w.endsWith('öl');
+    if (h === 'ei') return /^ei(er|gelb|weiss|weiß)?$/.test(w);
+    return w === h + 'n' || w === h + 'en' || w === h + 'er' || w === h + 's';
+  }
+  return w.startsWith(h) || w.endsWith(h) || (w.length >= 5 && h.startsWith(w));
+}
+function ingAvailable(zn, heads) { const words = zn.split(' '); return heads.some(h => words.some(w => wordMatch(w, h))); }
+function recipeNoGo(r) { return r.zn.some(z => nogo.some(n => n && z.indexOf(n) >= 0)) || nogo.some(n => n && normTerm(r.n).indexOf(n) >= 0); }
+
+function renderVorrat() {
+  const recs = (DATA && DATA.rezepte) || [];
+  const always = vorrat.filter(v => v.immer), normal = vorrat.filter(v => !v.immer);
+  let h = `<div class="card"><h3>Was hast du zuhause?</h3>
+    <div class="row" style="flex-wrap:nowrap"><input type="text" id="vIn" list="vList" placeholder="z.B. Poulet, Reis, Zwiebel" autocomplete="off">
+    <button class="btn primary" id="vAdd" style="flex:0 0 auto">Dazu</button></div>
+    <datalist id="vList"></datalist>
+    <div class="muted small" style="margin:8px 0 4px">Antippen markiert als immer vorhanden. ✕ entfernt.</div>
+    <div class="chips" style="flex-wrap:wrap">${normal.map(v => `<span class="chip" data-v="${esc(v.n)}"><span data-vt>${esc(v.n)}</span><span class="x" data-vx aria-label="entfernen">✕</span></span>`).join('') || '<span class="muted small">Noch nichts eingetragen.</span>'}</div>
+    <div class="muted small" style="margin:8px 0 4px">Immer vorhanden</div>
+    <div class="chips" style="flex-wrap:wrap">${always.map(v => `<span class="chip always" data-v="${esc(v.n)}"><span data-vt>★ ${esc(v.n)}</span><span class="x" data-vx aria-label="entfernen">✕</span></span>`).join('')}
+    ${BASICS.filter(b => !vorrat.some(v => v.n === b)).map(b => `<button class="chip" data-basic="${b}">+ ${b}</button>`).join('')}</div></div>`;
+
+  h += `<div class="card"><div class="edit-grid">
+    <label class="field"><span>Zeit</span><select data-rf="zeit">${[[0, 'egal'], [20, 'bis 20 Min'], [30, 'bis 30 Min'], [45, 'bis 45 Min'], [60, 'bis 60 Min']].map(([v, l]) => `<option value="${v}" ${rf.zeit == v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label class="field"><span>Protein pro Portion</span><select data-rf="prot">${[[0, 'egal'], [20, 'ab 20 g'], [30, 'ab 30 g'], [40, 'ab 40 g']].map(([v, l]) => `<option value="${v}" ${rf.prot == v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label class="field"><span>Quelle</span><select data-rf="quelle">${[['', 'alle'], ['fooby', 'fooby'], ['migusto', 'migusto'], ['bettybossi', 'Betty Bossi']].map(([v, l]) => `<option value="${v}" ${rf.quelle === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <div class="toggle"><span>No Gos ausblenden</span><button class="switch" role="switch" data-rf="nogo" aria-checked="${rf.nogo}" aria-label="No Gos ausblenden"></button></div>
+    </div><details class="how"><summary>No Go Liste bearbeiten</summary>
+    <label class="field"><span>Mit Komma trennen</span><input type="text" id="nogoIn" value="${esc(nogo.join(', '))}"></label></details></div>`;
+
+  if (!recs.length) {
+    h += noDataHint('Rezepte');
+  } else if (!vorrat.filter(v => !v.immer).length) {
+    h += `<div class="empty">Trag oben ein, was du zuhause hast. Dann zeige ich dir passende Rezepte aus ${recs.length} Rezepten.</div>`;
+  } else {
+    const heads = vorrat.map(v => head(normTerm(v.n))).concat(['wasser']);
+    const res = [];
+    recs.forEach(r => {
+      if (rf.quelle && r.q !== rf.quelle) return;
+      if (rf.zeit && !(r.t && r.t <= rf.zeit)) return;
+      if (rf.prot && !(r.pr && r.pr >= rf.prot)) return;
+      if (rf.nogo && recipeNoGo(r)) return;
+      let have = 0; const miss = [];
+      r.zn.forEach((z, i) => { if (!z || ingAvailable(z, heads)) have++; else miss.push(r.z[i]); });
+      if (!have) return;
+      res.push({ r, have, total: r.zn.length, miss, score: have / r.zn.length });
+    });
+    res.sort((a, b) => b.score - a.score || a.miss.length - b.miss.length || (b.r.pr || 0) - (a.r.pr || 0));
+    h += `<div class="muted small" style="margin-bottom:8px">${res.length} passende Rezepte, beste zuerst</div>`;
+    h += res.slice(0, recLimit).map(x => recipeCard(x)).join('');
+    if (res.length > recLimit) h += `<button class="btn wide" id="recMore">Mehr anzeigen</button>`;
+  }
+  $('#main').innerHTML = h;
+  fillVocab();
+}
+function recipeCard(x) {
+  const r = x.r; const qn = { fooby: 'fooby', migusto: 'migusto', bettybossi: 'Betty Bossi' }[r.q] || r.q;
+  return `<div class="card"><div class="item">
+    ${r.img ? `<img class="thumb rec" loading="lazy" referrerpolicy="no-referrer" src="${esc(r.img)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb nobg'}))">` : '<div class="thumb nobg"></div>'}
+    <div><h3>${esc(r.n)}</h3>
+      <div class="kv muted"><span>${esc(qn)}</span><span>${r.t ? r.t + ' Min' : 'Zeit ' + KA}</span><span>${r.kc ? n0(r.kc) + ' kcal' : 'kcal ' + KA}</span><span>${r.pr ? n0(r.pr) + ' g Protein' : 'Protein ' + KA}</span></div>
+      <div class="small" style="margin-top:4px"><span class="tag ${x.miss.length ? '' : 'good'}">${x.have} von ${x.total} Zutaten da</span></div>
+      ${x.miss.length ? `<div class="miss" style="margin-top:4px">Fehlt: ${esc(x.miss.slice(0, 6).join(', '))}${x.miss.length > 6 ? ' und ' + (x.miss.length - 6) + ' mehr' : ''}</div>` : ''}
+      <a href="${esc(r.u)}" target="_blank" rel="noopener" class="small">Original öffnen</a>
+    </div></div></div>`;
+}
+let vocabDone = false;
+function fillVocab() {
+  const dl = $('#vList'); if (!dl || !DATA || !DATA.rezepte) return;
+  if (!fillVocab.cache) {
+    const freq = {};
+    DATA.rezepte.forEach(r => r.zn.forEach(z => { if (z && z.length > 2) freq[z] = (freq[z] || 0) + 1; }));
+    fillVocab.cache = Object.keys(freq).sort((a, b) => freq[b] - freq[a]).slice(0, 1500).map(z => `<option value="${esc(z)}">`).join('');
+  }
+  dl.innerHTML = fillVocab.cache;
+}
+function addVorrat(raw, immer) {
+  const n = normTerm(raw); if (!n) return;
+  if (vorrat.some(v => v.n === n)) { toast('Schon drin'); return; }
+  vorrat.push({ n, immer: !!immer }); LS.set('vorrat', vorrat); recLimit = 40; renderVorrat();
+}
+$('#main').addEventListener('click', e => {
+  if (tab !== 'vorrat') return;
+  if (e.target.closest('#vAdd')) { const i = $('#vIn'); addVorrat(i.value, false); return; }
+  const basic = e.target.closest('[data-basic]'); if (basic) { addVorrat(basic.dataset.basic, true); return; }
+  const chip = e.target.closest('[data-v]');
+  if (chip) {
+    const v = vorrat.find(x => x.n === chip.dataset.v); if (!v) return;
+    if (e.target.closest('[data-vx]')) vorrat = vorrat.filter(x => x !== v); else v.immer = !v.immer;
+    LS.set('vorrat', vorrat); renderVorrat(); return;
+  }
+  const sw = e.target.closest('[data-rf="nogo"]'); if (sw) { rf.nogo = !rf.nogo; LS.set('rfilter', rf); renderVorrat(); return; }
+  if (e.target.closest('#recMore')) { recLimit += 40; renderVorrat(); }
+});
+$('#main').addEventListener('keydown', e => { if (tab === 'vorrat' && e.target.id === 'vIn' && e.key === 'Enter') { addVorrat(e.target.value, false); } });
+$('#main').addEventListener('change', e => {
+  if (tab !== 'vorrat') return;
+  const k = e.target.dataset.rf;
+  if (k) { rf[k] = k === 'quelle' ? e.target.value : +e.target.value; LS.set('rfilter', rf); recLimit = 40; renderVorrat(); }
+  if (e.target.id === 'nogoIn') { nogo = e.target.value.split(',').map(normTerm).filter(Boolean); LS.set('nogo', nogo); renderVorrat(); }
+});
+
+/* ======================================================= Modul 4: Snacks */
+let sf = LS.get('snack', { laden: 'migros', gut: true, cat: '', sort: 'protein', fav: false, q: '' });
+let favs = LS.get('fav', {});
+let snackLimit = 50;
+
+function proteinPerKcal(p) { return (p.pr != null && p.k) ? p.pr / p.k * 100 : null; }
+function isGood(p) {
+  if (p.cat === 'nuesse') return false;
+  if (p.k == null) return false;
+  if (p.cat === 'fruechte' && p.k <= 100) return true;
+  if (p.z == null) return false;
+  const ppk = proteinPerKcal(p);
+  return p.z <= 5 && ((ppk != null && ppk >= 5) || p.k <= 100);
+}
+function priceOf(p) { return p.a != null ? p.a : p.p; }
+function proteinPerChf(p) { const pr = priceOf(p); return (p.pr != null && p.g && pr) ? p.pr * p.g / 100 / pr : null; }
+
+function renderSnacks() {
+  const list = DATA ? (sf.laden === 'coop' ? DATA.coop : DATA.migros) || [] : [];
+  const q = (DATA && DATA.quellen && DATA.quellen[sf.laden]) || null;
+  let h = `<div class="seg" role="tablist"><button data-laden="migros" aria-pressed="${sf.laden === 'migros'}">Migros</button><button data-laden="coop" aria-pressed="${sf.laden === 'coop'}">Coop</button></div>`;
+  if (!DATA) { $('#main').innerHTML = h + noDataHint('Snacks'); return; }
+  h += `<div class="muted small" style="margin:-4px 0 10px">Stand ${q && q.stand ? datumZeit(q.stand) : KA}${q && q.ok === false ? ' · <span style="color:var(--warn)">letzter Abruf fehlgeschlagen, Daten sind älter</span>' : ''}${sf.laden === 'coop' ? ' · Coop Daten aus Open Food Facts, ohne Preise' : ''}</div>`;
+  h += `<div class="card" style="padding:10px 14px">
+    <div class="toggle"><span>Nur gute Snacks</span><button class="switch" role="switch" data-sf="gut" aria-checked="${sf.gut}" aria-label="Nur gute Snacks"></button></div>
+    <div class="toggle"><span>Nur Favoriten</span><button class="switch" role="switch" data-sf="fav" aria-checked="${sf.fav}" aria-label="Nur Favoriten"></button></div>
+    <div class="edit-grid" style="margin-top:6px">
+    <label class="field"><span>Sortieren</span><select data-sf="sort">${[['protein', 'Protein'], ['kcal', 'Kalorien'], ['preis', 'Preis'], ['ppf', 'Protein pro CHF']].map(([v, l]) => `<option value="${v}" ${sf.sort === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label class="field"><span>Suchen</span><input type="search" data-sf="q" value="${esc(sf.q)}" placeholder="Name, Marke"></label></div>
+    <details class="how"><summary>Was heisst gut?</summary><p class="small">Höchstens 5 g Zucker pro 100 g, und dazu mindestens 5 g Protein pro 100 kcal oder höchstens 100 kcal pro 100 g. Früchte bis 100 kcal zählen immer. Nüsse nie, die magst du nicht. Fehlen Nährwerte, gilt der Snack nicht als gut.</p></details></div>`;
+  h += '<div class="chips"><button class="chip" data-cat="" aria-pressed="' + (!sf.cat) + '">Alle</button>' +
+    Object.keys(KATS).map(k => `<button class="chip" data-cat="${k}" aria-pressed="${sf.cat === k}">${esc(KATS[k])}</button>`).join('') + '</div>';
+  const qq = normTerm(sf.q || '');
+  let items = list.filter(p => (!sf.cat || p.cat === sf.cat) && (!sf.gut || isGood(p)) && (!sf.fav || favs[sf.laden + ':' + p.id])
+    && (!qq || normTerm((p.n || '') + ' ' + (p.b || '')).indexOf(qq) >= 0));
+  const key = { protein: p => p.pr, kcal: p => p.k, preis: p => priceOf(p), ppf: p => proteinPerChf(p) }[sf.sort];
+  const asc = sf.sort === 'kcal' || sf.sort === 'preis';
+  items.sort((a, b) => { const x = key(a), y = key(b); if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1; return asc ? x - y : y - x; });
+  h += `<div class="muted small" style="margin-bottom:8px">${items.length} von ${list.length} Produkten</div>`;
+  if (!items.length) h += '<div class="empty">Nichts gefunden. Filter lockern.</div>';
+  h += items.slice(0, snackLimit).map(p => snackCard(p)).join('');
+  if (items.length > snackLimit) h += '<button class="btn wide" id="snackMore">Mehr anzeigen</button>';
+  $('#main').innerHTML = h;
+}
+function snackCard(p) {
+  const other = sf.laden === 'coop' ? 'auch im Migros' : 'auch im Coop';
+  const fk = sf.laden + ':' + p.id; const fav = !!favs[fk];
+  const ppf = proteinPerChf(p);
+  const price = p.p == null ? 'Preis ' + KA : (p.a != null ? `<b>${chf(p.a)}</b> <span class="tag sale">Aktion statt ${chf(p.p)}</span>` : chf(p.p));
+  return `<div class="card" data-pid="${esc(p.id)}"><div class="item">
+    ${p.img ? `<img class="thumb" loading="lazy" referrerpolicy="no-referrer" src="${esc(p.img)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb nobg'}))">` : '<div class="thumb nobg"></div>'}
+    <div><h3>${esc(p.n)}</h3>
+    <div class="muted small">${esc(p.b || KA)} · ${esc(p.s || 'Grösse ' + KA)}</div>
+    <div style="margin:4px 0">${price}</div>
+    <div class="kv num"><span>${n0(p.k)} kcal</span><span>Protein ${n1(p.pr)} g</span><span>Zucker ${n1(p.z)} g</span><span class="muted">pro 100 g</span></div>
+    ${ppf != null ? `<div class="small muted num">${n1(ppf)} g Protein pro Franken</div>` : ''}
+    <div class="row" style="margin-top:6px">${isGood(p) ? '<span class="tag good">gut</span>' : ''}${p.x ? `<span class="tag both">${other}</span>` : ''}<span class="tag">${esc(KATS[p.cat] || p.cat || '')}</span></div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn sm" data-fav aria-pressed="${fav}">${fav ? '★ Favorit' : '☆ Favorit'}</button>
+      <button class="btn sm" data-addlist>+ Liste</button>
+      <a class="btn sm" style="display:inline-flex;align-items:center;text-decoration:none;color:inherit" href="${esc(p.u)}" target="_blank" rel="noopener">${sf.laden === 'coop' ? 'Bei Coop suchen' : 'Öffnen'}</a>
+    </div></div></div></div>`;
+}
+$('#main').addEventListener('click', e => {
+  if (tab !== 'snacks') return;
+  const l = e.target.closest('[data-laden]'); if (l) { sf.laden = l.dataset.laden; sf.cat = sf.cat; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
+  const c = e.target.closest('[data-cat]'); if (c) { sf.cat = c.dataset.cat; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
+  const sw = e.target.closest('.switch[data-sf]'); if (sw) { sf[sw.dataset.sf] = !sf[sw.dataset.sf]; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
+  if (e.target.closest('#snackMore')) { snackLimit += 50; renderSnacks(); return; }
+  const card = e.target.closest('[data-pid]'); if (!card) return;
+  const list = sf.laden === 'coop' ? DATA.coop : DATA.migros; const p = list.find(x => String(x.id) === card.dataset.pid); if (!p) return;
+  if (e.target.closest('[data-fav]')) { const k = sf.laden + ':' + p.id; if (favs[k]) delete favs[k]; else favs[k] = 1; LS.set('fav', favs); renderSnacks(); }
+  else if (e.target.closest('[data-addlist]')) { toast(addToList(sf.laden, p.n + (p.s ? ' (' + p.s + ')' : ''), p.u) ? 'Auf der ' + (sf.laden === 'coop' ? 'Coop' : 'Migros') + ' Liste' : 'Schon auf der Liste'); }
+});
+let searchTimer = null;
+$('#main').addEventListener('input', e => {
+  if (tab !== 'snacks' || e.target.dataset.sf !== 'q') return;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => { sf.q = e.target.value; LS.set('snack', sf); snackLimit = 50; const pos = e.target.selectionStart; renderSnacks(); const i = $('[data-sf="q"]'); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch (er) {} } }, 300);
+});
+$('#main').addEventListener('change', e => {
+  if (tab !== 'snacks' || e.target.dataset.sf !== 'sort') return;
+  sf.sort = e.target.value; LS.set('snack', sf); renderSnacks();
+});
+
+function noDataHint(what) {
+  return `<div class="card empty"><p><b>Noch keine Daten für ${esc(what)}.</b></p>
+    <p>Öffne die Einstellungen und trag deinen GitHub Zugang ein. Danach lädt die App die Daten selbst.</p>
+    <button class="btn primary" onclick="openSettings()">Einstellungen öffnen</button></div>`;
+}
+
+/* ======================================================= Einkaufslisten */
+let listen = LS.get('listen', { coop: [], migros: [] });
+let listTab = 'coop';
+function addToList(laden, n, u) {
+  const l = listen[laden] || (listen[laden] = []);
+  if (l.some(x => x.n === n && !x.d)) return false;
+  l.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), n, u: u || '', d: false });
+  LS.set('listen', listen); updateBadge(); return true;
+}
+function updateBadge() {
+  const c = (listen.coop || []).filter(x => !x.d).length + (listen.migros || []).filter(x => !x.d).length;
+  $('#listBadge').textContent = c ? String(c) : '';
+}
+function openLists() {
+  const draw = () => {
+    const l = listen[listTab] || [];
+    let b = `<div class="seg"><button data-lt="coop" aria-pressed="${listTab === 'coop'}">Coop (${(listen.coop || []).filter(x => !x.d).length})</button><button data-lt="migros" aria-pressed="${listTab === 'migros'}">Migros (${(listen.migros || []).filter(x => !x.d).length})</button></div>
+      <div class="row" style="flex-wrap:nowrap;margin-bottom:8px"><input type="text" id="lIn" placeholder="Eigenen Eintrag hinzufügen"><button class="btn primary" id="lAdd" style="flex:0 0 auto">Dazu</button></div>`;
+    if (!l.length) b += '<div class="empty">Die Liste ist leer.</div>';
+    b += l.map(x => `<div class="li ${x.d ? 'done' : ''}" data-lid="${x.id}"><button class="chk" data-lchk aria-pressed="${x.d}" aria-label="abhaken"></button>
+      <div class="t">${esc(x.n)}${x.u ? `<br><a class="small" href="${esc(x.u)}" target="_blank" rel="noopener">Produkt öffnen</a>` : ''}</div>
+      <button class="iconbtn" data-ldel aria-label="löschen">✕</button></div>`).join('');
+    if (l.some(x => x.d)) b += '<div style="height:12px"></div><button class="btn wide" id="lClear">Erledigte entfernen</button>';
+    $('#sheetBody').innerHTML = b;
+  };
+  openSheet('Einkaufslisten', ''); draw();
+  $('#sheetBody').onclick = e => {
+    const lt = e.target.closest('[data-lt]'); if (lt) { listTab = lt.dataset.lt; draw(); return; }
+    if (e.target.closest('#lAdd')) { const v = $('#lIn').value.trim(); if (v) { addToList(listTab, v, ''); draw(); } return; }
+    if (e.target.closest('#lClear')) { listen[listTab] = (listen[listTab] || []).filter(x => !x.d); LS.set('listen', listen); updateBadge(); draw(); return; }
+    const row = e.target.closest('[data-lid]'); if (!row) return;
+    const l = listen[listTab]; const it = l.find(x => x.id === row.dataset.lid); if (!it) return;
+    if (e.target.closest('[data-lchk]')) it.d = !it.d;
+    else if (e.target.closest('[data-ldel]')) listen[listTab] = l.filter(x => x !== it);
+    else return;
+    LS.set('listen', listen); updateBadge(); draw();
+  };
+  $('#sheetBody').onkeydown = e => { if (e.target.id === 'lIn' && e.key === 'Enter') { const v = e.target.value.trim(); if (v) { addToList(listTab, v, ''); draw(); } } };
+}
+$('#btnListe').addEventListener('click', openLists);
+
+/* ======================================================= Sheet */
+function openSheet(title, body) {
+  $('#sheetTitle').textContent = title; $('#sheetBody').innerHTML = body;
+  $('#sheetBody').onclick = null; $('#sheetBody').onkeydown = null; $('#sheetBody').onchange = null;
+  $('#sheet').hidden = false;
+}
+function closeSheet() { $('#sheet').hidden = true; render(); }
+$('#sheetClose').addEventListener('click', closeSheet);
+$('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
+
+/* ======================================================= Einstellungen, Sync, Export */
+function openSettings() {
+  const s = LS.get('sync', { owner: '', repo: 'fitapp-daten', token: '' });
+  const q = (DATA && DATA.quellen) || {};
+  const line = (name, k) => { const x = q[k]; if (!x) return `<div class="li"><div class="t">${name}<br><span class="muted small">${KA}</span></div></div>`;
+    return `<div class="li"><div class="t">${name}: ${x.ok === false ? '<span style="color:var(--warn)">letzter Abruf fehlgeschlagen</span>' : 'OK'}<br><span class="muted small">Stand ${x.stand ? datumZeit(x.stand) : KA}${x.anzahl != null ? ' · ' + x.anzahl + ' Einträge' : ''}${x.fehler ? ' · ' + esc(x.fehler) : ''}</span></div></div>`; };
+  let b = `<h3 style="margin-top:0">Datenstand</h3>
+    <p class="muted small">Gebaut: ${DATA && DATA.stand ? datumZeit(DATA.stand) : 'noch keine Daten'}${EMBEDDED ? ' · Daten sind in dieser Datei eingebettet' : ''}</p>
+    ${line('Migros', 'migros')}${line('Coop über Open Food Facts', 'coop')}${line('Rezepte', 'rezepte')}
+    <h3>GitHub Zugang</h3>
+    <p class="muted small">Damit lädt die App die Daten aus deinem privaten Repository. Der Token bleibt nur auf diesem Handy.</p>
+    <label class="field"><span>GitHub Benutzername</span><input type="text" id="sOwner" value="${esc(s.owner)}" autocapitalize="off" autocomplete="off"></label>
+    <label class="field"><span>Repository mit den Daten</span><input type="text" id="sRepo" value="${esc(s.repo || 'fitapp-daten')}" autocapitalize="off" autocomplete="off"></label>
+    <label class="field"><span>Token (nur Lesen)</span><input type="password" id="sToken" value="${esc(s.token)}" autocomplete="off"></label>
+    <button class="btn primary wide" id="sSave">Speichern und Daten laden</button>
+    <p class="muted small" id="sMsg">${LS.get('syncAt', 0) ? 'Zuletzt geladen: ' + datumZeit(new Date(LS.get('syncAt', 0)).toISOString()) : ''}</p>
+    <h3>Deine Daten sichern</h3>
+    <p class="muted small">Training, Plan, Vorrat, Favoriten und Listen. Mach das ab und zu, und vor einem Handywechsel.</p>
+    <div class="edit-grid"><button class="btn" id="sExport">Export</button><button class="btn" id="sImport">Import</button></div>
+    <h3>Trainingsplan</h3>
+    <button class="btn danger wide" id="sResetPlan">Plan auf Standard zurücksetzen</button>
+    <p class="muted small">Dein Verlauf bleibt dabei erhalten.</p>`;
+  openSheet('Einstellungen', b);
+  $('#sheetBody').onclick = async e => {
+    if (e.target.closest('#sSave')) {
+      const cfg = { owner: $('#sOwner').value.trim(), repo: $('#sRepo').value.trim() || 'fitapp-daten', token: $('#sToken').value.trim() };
+      LS.set('sync', cfg);
+      $('#sMsg').textContent = 'Lade Daten…';
+      const r = await syncData(true);
+      $('#sMsg').textContent = r.msg;
+    } else if (e.target.closest('#sExport')) exportData();
+    else if (e.target.closest('#sImport')) $('#importFile').click();
+    else if (e.target.closest('#sResetPlan')) {
+      const b2 = e.target.closest('#sResetPlan');
+      if (b2.dataset.sure) { plan = clone(DEFAULT_PLAN); savePlan(); sessions = {}; saveSessions(); toast('Plan zurückgesetzt'); closeSheet(); }
+      else { b2.dataset.sure = '1'; b2.textContent = 'Wirklich? Nochmals tippen'; }
+    }
+  };
+}
+$('#btnSet').addEventListener('click', openSettings);
+
+async function syncData(manual) {
+  const s = LS.get('sync', null);
+  if (!s || !s.owner || !s.token) return { ok: false, msg: 'Benutzername und Token fehlen.' };
+  if (!navigator.onLine) return { ok: false, msg: 'Kein Internet. Die gespeicherten Daten bleiben.' };
+  const url = `https://api.github.com/repos/${encodeURIComponent(s.owner)}/${encodeURIComponent(s.repo || 'fitapp-daten')}/contents/data.json`;
+  try {
+    const r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + s.token, 'Accept': 'application/vnd.github.raw+json', 'X-GitHub-Api-Version': '2022-11-28' }, cache: 'no-store' });
+    if (r.status === 401) return { ok: false, msg: 'Token ungültig oder abgelaufen (401).' };
+    if (r.status === 403) return { ok: false, msg: 'Kein Zugriff (403). Hat der Token Lesezugriff auf das Repository?' };
+    if (r.status === 404) return { ok: false, msg: 'Nicht gefunden (404). Benutzername, Repository oder data.json stimmt nicht.' };
+    if (!r.ok) return { ok: false, msg: 'GitHub antwortet mit ' + r.status + '.' };
+    const d = await r.json();
+    if (!d || !d.stand) return { ok: false, msg: 'Die Datei sieht nicht wie FitApp Daten aus.' };
+    const neuer = !DATA || !DATA.stand || d.stand !== DATA.stand;
+    DATA = d; fillVocab.cache = null;
+    await IDB.set('data', d);
+    LS.set('syncAt', Date.now());
+    if (!manual) { if (neuer) toast('Neue Daten geladen, Stand ' + datum(d.stand)); }
+    render();
+    return { ok: true, msg: 'Geladen. Stand ' + datumZeit(d.stand) + (neuer ? '' : ', war schon aktuell') + '.' };
+  } catch (e) {
+    return { ok: false, msg: 'Laden fehlgeschlagen: ' + e.message };
+  }
+}
+
+function exportData() {
+  const out = { app: 'FitApp', v: 1, exportiert: new Date().toISOString(), daten: {} };
+  LS.keys().forEach(k => { if (k !== 'fit.sync') { try { out.daten[k] = localStorage.getItem(k); } catch (e) {} } });
+  const name = 'fitapp_sicherung_' + new Date().toISOString().slice(0, 10) + '.json';
+  if (NATIVE && typeof NATIVE.saveFile === 'function') {
+    let wo = '';
+    try { wo = NATIVE.saveFile(name, JSON.stringify(out, null, 1)); } catch (e) {}
+    toast(wo ? 'Gespeichert: ' + wo : 'Speichern fehlgeschlagen');
+    return;
+  }
+  const blob = new Blob([JSON.stringify(out, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast('Sicherung heruntergeladen');
+}
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!d || d.app !== 'FitApp' || typeof d.daten !== 'object') throw new Error('keine FitApp Sicherung');
+    let n = 0;
+    Object.entries(d.daten).forEach(([k, v]) => { if (k.indexOf('fit.') === 0 && typeof v === 'string') { try { localStorage.setItem(k, v); n++; } catch (er) {} } });
+    plan = LS.get('plan', null) || clone(DEFAULT_PLAN); sessions = LS.get('sess', {}); history = LS.get('history', []);
+    vorrat = LS.get('vorrat', []); nogo = LS.get('nogo', NOGO_DEFAULT); favs = LS.get('fav', {}); listen = LS.get('listen', { coop: [], migros: [] });
+    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf);
+    toast(n + ' Einträge importiert'); closeSheet();
+  } catch (er) { toast('Import fehlgeschlagen: ' + er.message); }
+});
+
+/* ======================================================= Start */
+async function start() {
+  try {
+    const raw = $('#appdata').textContent.trim();
+    if (raw && raw !== 'null' && raw.indexOf('__FITAPP') < 0) { DATA = JSON.parse(raw); EMBEDDED = true; }
+  } catch (e) { DATA = null; }
+  if (!DATA) DATA = await IDB.get('data');
+  setTab(tab);
+  Timer.render();
+  const s = LS.get('sync', null);
+  const last = LS.get('syncAt', 0);
+  if (s && s.token && navigator.onLine && (!DATA || Date.now() - last > 3 * 3600 * 1000)) {
+    const r = await syncData(false);
+    if (!r.ok && !DATA) toast(r.msg);
+  }
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    try { navigator.serviceWorker.register('sw.js'); } catch (e) {}
+  }
+}
+start();
+</script>
+</body>
+</html>
