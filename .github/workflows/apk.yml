@@ -1,0 +1,64 @@
+name: APK bauen
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "android/**"
+      - ".github/workflows/apk.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code holen
+        uses: actions/checkout@v4
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Schlüssel vorbereiten
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KS_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PW" ]; then
+            echo "::error::Secret ANDROID_KEYSTORE_B64 oder ANDROID_KEYSTORE_PASSWORD fehlt. Siehe Anleitung, Teil Schlüssel."
+            exit 1
+          fi
+          echo "$KS_B64" | tr -d '\r\n ' | base64 -d > "$RUNNER_TEMP/fitapp.p12"
+
+      - name: APK bauen
+        working-directory: android
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/fitapp.p12
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+        run: |
+          export APP_URL="https://${OWNER,,}.github.io/${REPO}/"
+          echo "App Adresse: $APP_URL"
+          gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Als Release veröffentlichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk FitApp.apk
+          gh release create "apk-${{ github.run_number }}" FitApp.apk \
+            --repo "${{ github.repository }}" \
+            --title "FitApp Version ${{ github.run_number }}" \
+            --notes "APK für Android. Auf dem Handy herunterladen und installieren." \
+            --latest
