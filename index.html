@@ -77,6 +77,11 @@ label.field span { display: block; font-size: .85rem; color: var(--muted); margi
 .progress > i { display: block; height: 100%; background: var(--ok); width: 0; transition: width .2s; }
 .ex .meta { color: var(--muted); font-size: .9rem; margin-bottom: 10px; }
 .set { display: grid; grid-template-columns: 64px 1fr 1fr; gap: 8px; align-items: center; margin-top: 8px; }
+.set.nokg { grid-template-columns: 64px 1fr; }
+.heute { display: inline-block; margin-top: 4px; font-size: .72rem; font-weight: 600; color: var(--accent); }
+label.field.check { display: flex; align-items: center; gap: 10px; grid-column: 1 / -1; }
+label.field.check input { width: 22px; height: 22px; min-height: 0; margin: 0; flex: 0 0 auto; }
+label.field.check span { margin: 0; }
 .chk { height: 56px; border-radius: 14px; border: 2px solid var(--line); background: var(--bg); font-weight: 700; font-size: 1.1rem; }
 .chk[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: #06210F; }
 .chk[aria-pressed="true"]::before { content: "✓ "; }
@@ -155,16 +160,15 @@ nav.tabs button[aria-selected="true"] svg { color: var(--accent); }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; color: var(--muted); margin-top: 8px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { width: 8px; height: 8px; border-radius: 4px; display: inline-block; }
-.wk { overflow-x: auto; margin: 0 -4px; }
+.wk { overflow-x: auto; }
 .wk table { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: .76rem; table-layout: fixed; }
 .wk thead th { font-weight: 600; color: var(--muted); padding: 2px 1px 6px; text-align: center; font-size: .68rem; }
-.wk thead th:first-child { width: 30px; } .wk thead th:nth-child(2) { width: 22%; }
-.wk th.row { text-align: center; font-weight: 700; padding: 8px 0; border-radius: 8px; background: var(--surface2); }
+.wk thead th:first-child { width: 28%; }
+.wk th.tg { text-align: center; padding: 6px 2px; border-radius: 8px; background: var(--surface2); overflow: hidden; }
+.wk th.tg b { display: block; font-size: .85rem; line-height: 1.2; }
+.wk th.tg span { display: block; font-size: .68rem; font-weight: 500; line-height: 1.2; opacity: .75; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .wk td { text-align: center; padding: 8px 1px; border-radius: 8px; background: var(--surface2); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.wk td.art { font-weight: 600; }
 .wk td.today, .wk th.today { background: var(--accent); color: #fff; }
-.wk td.empty { background: transparent; color: var(--line); }
-.wk td.tr { box-shadow: inset 0 0 0 1px #2C447A; }
 .cheat { background: linear-gradient(135deg, #3A2A12, #16202B); border-color: #5A4220; }
 .cheat h3 { color: var(--warn); }
 .cheat ol { margin: 6px 0 0; padding-left: 20px; }
@@ -316,35 +320,62 @@ const COOP_MEALS = [
 const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
 
 /* ======================================================= Trainingsplan */
-const DEFAULT_PLAN = { days: [
-  { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wd: 1, ex: [
-    { id: 'a1', name: 'Liegestütze', sets: 4, ziel: 'max, Ziel 8 bis 15', pause: 75, einheit: 'Wdh', how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden.', easy: 'Hände auf die Bettkante.' },
-    { id: 'a2', name: 'Liegestütze, Füsse auf dem Bett', sets: 3, ziel: '6 bis 12', pause: 75, einheit: 'Wdh', how: 'Füsse aufs Bett, Hände am Boden, Körper zeigt schräg nach unten. Kein Handstand.', easy: 'Normale Liegestütze.' },
-    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '6 bis 10', pause: 75, einheit: 'Wdh', how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken.', easy: 'Nur halb so tief runter.' },
-    { id: 'a4', name: 'Enge Liegestütze', sets: 3, ziel: 'max', pause: 60, einheit: 'Wdh', how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper.', easy: 'Auf den Knien.' },
-    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.' }
+const PLAN_V = 2;
+const DEFAULT_PLAN = { v: PLAN_V, days: [
+  { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wds: [1], ex: [
+    { id: 'a1', name: 'Liegestütze', sets: 4, ziel: 'max, Ziel 8 bis 15', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden.', easy: 'Hände auf die Bettkante.' },
+    { id: 'a2', name: 'Liegestütze, Füsse auf dem Bett', sets: 3, ziel: '6 bis 12', pause: 75, einheit: 'Wdh', soll: 6, kg: false, how: 'Füsse aufs Bett, Hände am Boden, Körper zeigt schräg nach unten. Kein Handstand.', easy: 'Normale Liegestütze.' },
+    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '6 bis 10', pause: 75, einheit: 'Wdh', soll: 6, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken.', easy: 'Nur halb so tief runter.' },
+    { id: 'a4', name: 'Enge Liegestütze', sets: 3, ziel: 'max', pause: 60, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper.', easy: 'Auf den Knien.' },
+    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.' }
   ] },
-  { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wd: 3, ex: [
-    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 60, einheit: 'Wdh', how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken.', easy: 'Normaler Ausfallschritt ohne Erhöhung.' },
-    { id: 'b2', name: 'Rucksack Rudern', sets: 4, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen.', easy: 'Weniger Gewicht im Rucksack.' },
-    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '12', pause: 75, einheit: 'Wdh', how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten.', easy: '' },
-    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '' }
+  { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wds: [3], ex: [
+    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 60, einheit: 'Wdh', soll: 8, kg: false, how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken.', easy: 'Normaler Ausfallschritt ohne Erhöhung.' },
+    { id: 'b2', name: 'Rucksack Rudern', sets: 4, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen.', easy: 'Weniger Gewicht im Rucksack.' },
+    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '12', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten.', easy: '' },
+    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', soll: 15, kg: false, how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '' }
   ] },
-  { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wd: 5, ex: [
-    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 4, ziel: '15', pause: 60, einheit: 'Wdh', how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind.', easy: 'Ohne Rucksack.' },
-    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: 'max', pause: 75, einheit: 'Wdh', how: 'Gleich wie Tag A. Jede Woche eine Wiederholung mehr.', easy: 'Hände auf die Bettkante.' },
-    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 3, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand.', easy: '' },
-    { id: 'c4', name: 'Rucksack Rudern', sets: 3, ziel: '12', pause: 60, einheit: 'Wdh', how: 'Gleich wie Tag B.', easy: '' },
-    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 3, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.' }
+  { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wds: [5], ex: [
+    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 4, ziel: '15', pause: 60, einheit: 'Wdh', soll: 15, kg: true, kgSoll: 8, how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind.', easy: 'Ohne Rucksack.' },
+    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: 'max', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. Jede Woche eine Wiederholung mehr.', easy: 'Hände auf die Bettkante.' },
+    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 3, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand.', easy: '' },
+    { id: 'c4', name: 'Rucksack Rudern', sets: 3, ziel: '12', pause: 60, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: '' },
+    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 3, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.' }
   ] },
-  { id: 'M', name: 'Minimum', title: '15 Minuten, wenn gar nichts geht', wd: null, ex: [
-    { id: 'm1', name: 'Liegestütze', sets: 3, ziel: '10', pause: 30, einheit: 'Wdh', how: '', easy: 'Hände auf die Bettkante.' },
-    { id: 'm2', name: 'Kniebeugen', sets: 3, ziel: '15', pause: 30, einheit: 'Wdh', how: '', easy: '' },
-    { id: 'm3', name: 'Unterarmstütz', sets: 3, ziel: '30 s', pause: 30, einheit: 'Sek', how: '', easy: '' }
+  { id: 'J', name: 'Joggen', title: '30 Minuten locker', wds: [2, 4], ex: [
+    { id: 'j1', name: 'Joggen', sets: 1, ziel: '30 Min, so locker dass du noch reden kannst', pause: 0, einheit: 'Min', soll: 30, kg: false, how: 'Lieber langsam und durchgehend als schnell und mit Pausen. Wenn du keuchst, bist du zu schnell.', easy: '1 Min joggen, 1 Min gehen, 15 Mal.' }
+  ] },
+  { id: 'L', name: 'Spaziergang', title: '7000 Schritte', wds: [6, 0], ex: [
+    { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '' }
+  ] },
+  { id: 'M', name: 'Minimum', title: '15 Minuten, wenn gar nichts geht', wds: [], ex: [
+    { id: 'm1', name: 'Liegestütze', sets: 3, ziel: '10', pause: 30, einheit: 'Wdh', soll: 10, kg: false, how: '', easy: 'Hände auf die Bettkante.' },
+    { id: 'm2', name: 'Kniebeugen', sets: 3, ziel: '15', pause: 30, einheit: 'Wdh', soll: 15, kg: false, how: '', easy: '' },
+    { id: 'm3', name: 'Unterarmstütz', sets: 3, ziel: '30 s', pause: 30, einheit: 'Sek', soll: 30, kg: false, how: '', easy: '' }
   ] }
 ] };
 
-let plan = LS.get('plan', null) || clone(DEFAULT_PLAN);
+/* Alte gespeicherte Pläne (ohne Version) auf den neuen Stand bringen, eigene Änderungen bleiben */
+function migratePlan(p) {
+  if (!p || !Array.isArray(p.days) || !p.days.length) return clone(DEFAULT_PLAN);
+  if ((p.v || 1) >= PLAN_V) return p;
+  DEFAULT_PLAN.days.forEach((dd, di) => {
+    const d = p.days.find(x => x.id === dd.id);
+    if (!d) { p.days.splice(Math.min(di, p.days.length), 0, clone(dd)); return; }
+    d.wds = dd.wds.slice(); delete d.wd;
+    d.ex.forEach(ex => {
+      const de = dd.ex.find(x => x.id === ex.id);
+      if (ex.kg == null) ex.kg = de ? !!de.kg : false;
+      if (ex.soll == null && de) ex.soll = de.soll;
+      if (ex.kgSoll == null && de && de.kgSoll) ex.kgSoll = de.kgSoll;
+    });
+  });
+  p.days.forEach(d => { if (!d.wds) { d.wds = d.wd != null ? [d.wd] : []; delete d.wd; } d.ex.forEach(ex => { if (ex.kg == null) ex.kg = false; }); });
+  p.v = PLAN_V;
+  return p;
+}
+function loadPlan() { const p = migratePlan(LS.get('plan', null)); LS.set('plan', p); return p; }
+let plan = loadPlan();
 let sessions = LS.get('sess', {});
 let history = LS.get('history', []);
 let editMode = false;
@@ -353,12 +384,33 @@ function savePlan() { LS.set('plan', plan); }
 function saveSessions() { LS.set('sess', sessions); }
 
 function dayById(id) { return plan.days.find(d => d.id === id) || plan.days[0]; }
-function todayDayId() {
+const PFLICHT = ['A', 'B', 'C'];
+function wochenStart() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d; }
+/* Pflichttage, die diese Woche noch nicht gespeichert sind */
+function offenePflicht() {
+  const ab = wochenStart().getTime();
+  const fertig = new Set(history.filter(h => new Date(h.date).getTime() >= ab).map(h => h.dayId));
+  return PFLICHT.filter(id => !fertig.has(id) && plan.days.some(d => d.id === id));
+}
+/* Welcher Tag laut Stundenplan heute dran ist */
+function planDayId() {
   const wd = new Date().getDay();
-  const d = plan.days.find(x => x.wd === wd);
-  return d ? d.id : (LS.get('lastDay', null) || plan.days[0].id);
+  if (wd === 0) { const o = offenePflicht(); if (o.length) return o[0]; }
+  const d = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0);
+  return d ? d.id : plan.days[0].id;
+}
+function todayDayId() {
+  /* angefangenes Training geht vor */
+  const aktiv = Object.keys(sessions).find(id => plan.days.some(d => d.id === id) && Object.values(sessions[id].sets || {}).some(a => a.some(x => x.d)));
+  return aktiv || planDayId();
 }
 let curDay = todayDayId();
+let curDayDate = new Date().toDateString();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible' || curDayDate === new Date().toDateString()) return;
+  curDayDate = new Date().toDateString(); curDay = todayDayId();
+  if (tab === 'training' && !editMode) renderTraining();
+});
 
 function lastValues(exId, i) {
   for (let h = history.length - 1; h >= 0; h--) {
@@ -370,16 +422,23 @@ function lastValues(exId, i) {
   }
   return { w: '', r: '' };
 }
+/* Vorschlag für einen Satz: letzter Wert aus dem Verlauf, sonst das Soll aus dem Plan */
+function vorschlag(ex, i) {
+  const lv = lastValues(ex.id, i);
+  return { w: ex.kg ? String(lv.w || ex.kgSoll || '') : '', r: String(lv.r || (ex.soll != null ? ex.soll : '')) };
+}
 
 function sessionFor(day) {
   let s = sessions[day.id];
-  if (!s) s = sessions[day.id] = { start: new Date().toISOString(), sets: {} };
+  if (!s) s = sessions[day.id] = { start: new Date().toISOString(), sets: {}, v: 2 };
   day.ex.forEach(ex => {
     const arr = s.sets[ex.id] || [];
-    while (arr.length < ex.sets) { const lv = lastValues(ex.id, arr.length); arr.push({ w: lv.w, r: lv.r, d: false }); }
+    while (arr.length < ex.sets) { const v = vorschlag(ex, arr.length); arr.push({ w: v.w, r: v.r, d: false }); }
     if (arr.length > ex.sets) arr.length = ex.sets;
+    if (s.v !== 2) arr.forEach((st, i) => { if (!st.d) { const v = vorschlag(ex, i); if (st.r === '' || st.r == null) st.r = v.r; if (ex.kg && !st.w) st.w = v.w; } });
     s.sets[ex.id] = arr;
   });
+  s.v = 2;
   return s;
 }
 
@@ -531,46 +590,46 @@ const ABEND = (lichtAus, pc, notiz) => [
   [pc, 'PC aus. Gesicht waschen, Gel auftragen, Nacken 5 Min', 'pflege'],
   [lichtAus, 'Licht aus' + (notiz ? '. ' + notiz : ''), 'schlaf']
 ];
+const MITTAG_ARBEIT = [
+  ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'], ['15:30', 'Snack: 2 Pic Nic Eier', 'essen'], ['16:30', 'Feierabend', 'arbeit']];
 const WOCHE = [
-  { k: 'Mo', name: 'Montag', art: 'Tag A', items: MORGEN_ARBEIT('Training Tag A: Brust und Schultern').concat([
-      ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'], ['15:30', 'Snack: 2 Pic Nic Eier', 'essen'], ['16:30', 'Feierabend', 'arbeit']],
+  { k: 'Mo', name: 'Montag', art: 'Tag A', items: MORGEN_ARBEIT('Training Tag A: Brust und Schultern').concat(MITTAG_ARBEIT,
       ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
-  { k: 'Di', name: 'Dienstag', art: 'Joggen', items: MORGEN_ARBEIT('Joggen 30 Min, Bonus').concat([
-      ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'], ['15:30', 'Snack: 2 Pic Nic Eier', 'essen'], ['16:30', 'Feierabend', 'arbeit']],
+  { k: 'Di', name: 'Dienstag', art: 'Joggen', items: MORGEN_ARBEIT('Joggen 30 Min').concat(MITTAG_ARBEIT,
       ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
-  { k: 'Mi', name: 'Mittwoch', art: 'Tag B', items: MORGEN_ARBEIT('Training Tag B: Beine und Rücken').concat([
-      ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'], ['15:30', 'Snack: 2 Pic Nic Eier', 'essen'], ['16:30', 'Feierabend', 'arbeit']],
-      ABEND('21:30', '21:10', 'Morgen erst um 05:30')) },
+  { k: 'Mi', name: 'Mittwoch', art: 'Tag B', items: MORGEN_ARBEIT('Training Tag B: Beine und Rücken').concat(MITTAG_ARBEIT,
+      ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
   { k: 'Do', name: 'Donnerstag', art: 'Joggen', items: [
-      ['05:30', 'Aufstehen, ein Glas Wasser', 'schlaf'],
-      ['05:35', 'Joggen 30 Min, Bonus', 'training'],
-      ['06:05', 'Duschen und Rasur', 'pflege'],
-      ['06:20', 'Anziehen, Shake einpacken', 'essen'],
+      ['05:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
+      ['05:05', 'Joggen 30 Min', 'training'],
+      ['05:40', 'Duschen und Rasur mit Speick Lotion', 'pflege'],
+      ['05:52', 'Anziehen, Shake trinken, Mittag einpacken', 'essen'],
+      ['06:00', 'Zeit für dich. Heute fährst du später', 'frei'],
       ['06:30', 'Raus zur Berufsschule', 'arbeit'],
       ['07:30', 'Schule', 'arbeit'],
-      ['12:00', 'Mittag in der Pause', 'essen'],
-      ['17:30', 'Zuhause. Freizeit', 'frei'],
-      ['18:00', 'Gaming', 'frei'],
-      ['19:00', 'Abendessen', 'essen'],
-      ['20:40', 'PC aus. Gesicht waschen, Gel', 'pflege'],
-      ['21:00', 'Licht aus. Morgen Tag C', 'schlaf']] },
+      ['12:00', 'Mittag in der Pause', 'essen']].concat(ABEND('21:00', '20:40', 'Morgen Tag C')) },
   { k: 'Fr', name: 'Freitag', art: 'Tag C', items: MORGEN_ARBEIT('Training Tag C: Ganzkörper und Bauch').concat([
       ['09:30', 'Snack: 2 Pic Nic Eier', 'essen'],
       ['12:00', 'Feierabend', 'arbeit'],
       ['13:00', 'Zuhause, Mittag', 'essen'],
       ['14:00', 'Freizeit, Wochenende fängt an', 'frei'],
-      ['19:00', 'Abendessen', 'essen'],
-      ['offen', 'Gaming open end. Vor dem Schlafen Gesicht waschen, Gel', 'frei']]) },
+      ['18:00', 'Gaming mit den Jungs', 'frei'],
+      ['19:00', 'Abendessen, Game pausieren', 'essen'],
+      ['00:40', 'PC aus. Gesicht waschen, Gel', 'pflege'],
+      ['01:00', 'Licht aus. Morgen ausschlafen bis 10:00', 'schlaf']]) },
   { k: 'Sa', name: 'Samstag', art: 'Cheat Day', items: [
-      ['10:00', 'Spätestens jetzt aufstehen', 'schlaf'],
+      ['10:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
       ['10:05', 'Rasur', 'pflege'],
       ['10:30', 'Cheat Day: iss, worauf du Lust hast', 'essen'],
-      ['14:00', 'Raus, 7000 Schritte. Danach duschen', 'frei'],
-      ['offen', 'Freizeit und Gaming open end', 'frei']] },
+      ['14:00', 'Raus, 7000 Schritte. Danach duschen', 'training'],
+      ['16:00', 'Freizeit und Gaming', 'frei'],
+      ['19:00', 'Abendessen', 'essen'],
+      ['23:40', 'PC aus. Gesicht waschen, Gel', 'pflege'],
+      ['00:00', 'Licht aus. Morgen 09:00', 'schlaf']] },
   { k: 'So', name: 'Sonntag', art: 'Nachholen', items: [
-      ['09:00', 'Spätestens jetzt aufstehen, Rasur', 'schlaf'],
+      ['09:00', 'Aufstehen, Rasur', 'schlaf'],
       ['09:30', 'Erste Mahlzeit mit Protein. Ab heute wieder normal essen', 'essen'],
-      ['10:00', 'Pflichttag verpasst? Jetzt nachholen. Sonst 45 Min spazieren', 'training'],
+      ['10:00', 'Pflichttag verpasst? Jetzt nachholen. Sonst 7000 Schritte', 'training'],
       ['11:00', 'Duschen, Shake', 'pflege'],
       ['14:00', 'Freizeit', 'frei'],
       ['18:00', 'Foto von der Stirn. Einkaufsliste an die Eltern', 'pflege'],
@@ -578,12 +637,18 @@ const WOCHE = [
       ['20:40', 'PC aus. Gesicht waschen, Gel', 'pflege'],
       ['21:00', 'Licht aus. Morgen 05:00', 'schlaf']] }
 ];
+const zeitVon = (d, f) => { const t = d.items.find(f); return t ? t[0] : null; };
+const lichtAus = d => zeitVon(d, x => /^Licht aus/.test(x[1]));
 const WOCHE_SPALTEN = [
   ['Wecker', d => d.items[0][0]],
-  ['Training', d => { const t = d.items.find(x => x[2] === 'training'); return t ? t[0] : null; }, true],
-  ['Raus', d => { const t = d.items.find(x => x[2] === 'arbeit' && /^Raus/.test(x[1])); return t ? t[0] : null; }],
-  ['Frei ab', d => { const t = d.items.find(x => /Feierabend|^Zuhause\. Freizeit/.test(x[1])); return t ? t[0] : null; }],
-  ['Licht aus', d => { const t = d.items.find(x => /^Licht aus/.test(x[1])); return t ? t[0] : 'offen'; }]
+  ['Training', d => zeitVon(d, x => x[2] === 'training')],
+  ['Bett', lichtAus],
+  ['Schlaf', (d, i) => {
+    const a = toMin(lichtAus(d)), w = toMin(WOCHE[(i + 1) % 7].items[0][0]);
+    if (a == null || w == null) return null;
+    let m = w - a; if (m <= 0) m += 1440;
+    return Math.floor(m / 60) + (m % 60 ? ':' + String(m % 60).padStart(2, '0') : '') + ' h';
+  }]
 ];
 const KIND_NAMES = { training: 'Training', essen: 'Essen', arbeit: 'Arbeit, Schule', frei: 'Freizeit', schlaf: 'Schlaf', pflege: 'Pflege' };
 let planDay = null;
@@ -596,8 +661,9 @@ function renderPlan() {
   const isToday = planDay === todayIdx;
   const now = new Date(); const nowMin = now.getHours() * 60 + now.getMinutes();
   let cur = -1;
-  if (isToday) d.items.forEach((it, i) => { const m = toMin(it[0]); if (m != null && m <= nowMin) cur = i; });
-  if (isToday && cur >= 0 && d.items[cur + 1] && d.items[cur + 1][0] === 'offen') { /* bleibt */ }
+  const start = toMin(d.items[0][0]);
+  /* Zeiten nach Mitternacht gehören zum Abend davor */
+  if (isToday) d.items.forEach((it, i) => { let m = toMin(it[0]); if (m != null && m < start) m += 1440; if (m != null && m <= nowMin) cur = i; });
   const next = isToday ? d.items[cur + 1] : null;
   let h = '<div class="chips" role="tablist">' + WOCHE.map((x, i) =>
     `<button class="chip" data-pday="${i}" aria-pressed="${i === planDay}">${x.k}${i === todayIdx ? ' · heute' : ''}</button>`).join('') + '</div>';
@@ -613,12 +679,12 @@ function renderPlan() {
     `<li class="${isToday && i < cur ? 'past' : ''} ${isToday && i === cur ? 'now' : ''}"><span class="t">${esc(it[0])}</span><span class="dot k-${it[2]}"></span><span>${esc(it[1])}</span></li>`).join('') + '</ul>';
   h += '<div class="legend">' + Object.keys(KIND_NAMES).map(k => `<span><i class="k-${k}"></i>${KIND_NAMES[k]}</span>`).join('') + '</div></div>';
 
-  h += '<div class="card"><h3>Die Woche</h3><div class="wk"><table><thead><tr><th></th><th>Was</th>' +
+  h += '<div class="card"><h3>Die Woche</h3><div class="wk"><table><thead><tr><th>Tag</th>' +
     WOCHE_SPALTEN.map(c => `<th>${c[0]}</th>`).join('') + '</tr></thead><tbody>';
   WOCHE.forEach((x, i) => {
     const t = i === todayIdx ? 'today' : '';
-    h += `<tr><th class="row ${t}">${x.k}</th><td class="${t} art">${esc(x.art)}</td>` + WOCHE_SPALTEN.map(([label, fn, tr]) => { const v = fn(x);
-      return `<td class="${t} ${v ? '' : 'empty'} ${tr && v ? 'tr' : ''}">${v ? esc(v) : '·'}</td>`; }).join('') + '</tr>';
+    h += `<tr><th class="tg ${t}"><b>${x.k}</b><span>${esc(x.art)}</span></th>` + WOCHE_SPALTEN.map(([label, fn]) => { const v = fn(x, i);
+      return `<td class="${t}">${v ? esc(v) : ''}</td>`; }).join('') + '</tr>';
   });
   h += '</tbody></table></div><p class="muted small">Tippe oben auf einen Tag für den ganzen Ablauf.</p></div>';
 
@@ -640,6 +706,12 @@ $('#main').addEventListener('click', e => {
 setInterval(() => { if (tab === 'plan' && document.visibilityState === 'visible' && $('#sheet').hidden) renderPlan(); }, 60000);
 
 /* ======================================================= Modul 1: Training */
+function heuteHinweis(day) {
+  const wd = new Date().getDay();
+  if (day.id !== planDayId()) return '';
+  if (wd === 0 && PFLICHT.indexOf(day.id) >= 0) return `<div class="heute">Heute: diese Woche verpasst, jetzt nachholen</div>`;
+  return `<div class="heute">Heute laut Stundenplan</div>`;
+}
 function renderTraining() {
   const day = dayById(curDay);
   const s = sessionFor(day);
@@ -648,7 +720,7 @@ function renderTraining() {
   let h = '<div class="chips" role="tablist">' + plan.days.map(d =>
     `<button class="chip" data-day="${esc(d.id)}" aria-pressed="${d.id === day.id}">${esc(d.name)}</button>`).join('') + '</div>';
   h += `<div class="card"><div class="spread"><div><h3>${esc(day.name)}: ${esc(day.title)}</h3>
-    <div class="muted small num">${done} von ${total} Sätzen</div></div>
+    <div class="muted small num">${done} von ${total} Sätzen</div>${heuteHinweis(day)}</div>
     <button class="btn sm" data-act="history">Verlauf</button></div>
     <div class="progress"><i style="width:${total ? Math.round(done / total * 100) : 0}%"></i></div></div>`;
   day.ex.forEach((ex, xi) => {
@@ -661,15 +733,17 @@ function renderTraining() {
           <label class="field"><span>Pause in Sekunden</span><input inputmode="numeric" data-edit="pause" value="${ex.pause}"></label>
           <label class="field"><span>Ziel</span><input type="text" data-edit="ziel" value="${esc(ex.ziel)}"></label>
           <label class="field"><span>Einheit</span><select data-edit="einheit">
-            <option ${ex.einheit === 'Wdh' ? 'selected' : ''}>Wdh</option><option ${ex.einheit === 'Sek' ? 'selected' : ''}>Sek</option></select></label>
+            ${['Wdh', 'Sek', 'Min'].map(u => `<option ${ex.einheit === u ? 'selected' : ''}>${u}</option>`).join('')}</select></label>
+          <label class="field"><span>Soll pro Satz</span><input inputmode="numeric" data-edit="soll" value="${esc(ex.soll != null ? ex.soll : '')}"></label>
+          <label class="field check"><input type="checkbox" data-edit="kg" ${ex.kg ? 'checked' : ''}><span>Mit Gewicht (kg Feld)</span></label>
         </div>
         <button class="btn danger sm" data-act="delex">Übung löschen</button>`;
     } else {
       h += `<h3>${xi + 1}. ${esc(ex.name)}</h3><div class="meta">${ex.sets} Sätze · Ziel ${esc(ex.ziel || KA)} · Pause ${ex.pause} s</div>`;
       sets.forEach((st, i) => {
-        h += `<div class="set ${st.d ? 'done' : ''}">
+        h += `<div class="set ${ex.kg ? '' : 'nokg'} ${st.d ? 'done' : ''}">
           <button class="chk" data-act="toggle" data-i="${i}" aria-pressed="${st.d}" aria-label="Satz ${i + 1} abhaken">${i + 1}</button>
-          <label class="fld"><input inputmode="decimal" data-f="w" data-i="${i}" value="${esc(st.w)}" placeholder="0" aria-label="Gewicht Satz ${i + 1}"><span>kg</span></label>
+          ${ex.kg ? `<label class="fld"><input inputmode="decimal" data-f="w" data-i="${i}" value="${esc(st.w)}" placeholder="0" aria-label="Gewicht Satz ${i + 1}"><span>kg</span></label>` : ''}
           <label class="fld"><input inputmode="numeric" data-f="r" data-i="${i}" value="${esc(st.r)}" placeholder="0" aria-label="${esc(ex.einheit)} Satz ${i + 1}"><span>${esc(ex.einheit)}</span></label>
         </div>`;
       });
@@ -690,7 +764,7 @@ function renderTraining() {
 $('#main').addEventListener('click', e => {
   if (tab !== 'training') return;
   const dayBtn = e.target.closest('[data-day]');
-  if (dayBtn) { curDay = dayBtn.dataset.day; LS.set('lastDay', curDay); renderTraining(); return; }
+  if (dayBtn) { curDay = dayBtn.dataset.day; renderTraining(); return; }
   const b = e.target.closest('[data-act]'); if (!b) return;
   const day = dayById(curDay);
   const exEl = b.closest('[data-ex]');
@@ -708,7 +782,7 @@ $('#main').addEventListener('click', e => {
   else if (act === 'edit') { editMode = true; renderTraining(); }
   else if (act === 'editdone') { editMode = false; savePlan(); renderTraining(); toast('Plan gespeichert'); }
   else if (act === 'addex') {
-    day.ex.push({ id: 'x' + Date.now().toString(36), name: 'Neue Übung', sets: 3, ziel: '', pause: 60, einheit: 'Wdh', how: '', easy: '' });
+    day.ex.push({ id: 'x' + Date.now().toString(36), name: 'Neue Übung', sets: 3, ziel: '', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: '', easy: '' });
     savePlan(); renderTraining();
   } else if (act === 'delex' && ex) {
     if (b.dataset.sure) { day.ex = day.ex.filter(x => x !== ex); savePlan(); renderTraining(); toast('Übung gelöscht'); }
@@ -729,10 +803,17 @@ $('#main').addEventListener('input', e => {
     const k = e.target.dataset.edit; let v = e.target.value;
     if (k === 'sets') v = Math.max(1, Math.min(12, parseInt(v, 10) || 1));
     if (k === 'pause') v = Math.max(0, Math.min(900, parseInt(v, 10) || 0));
+    if (k === 'soll') v = v.trim() === '' ? null : Math.max(0, parseInt(v, 10) || 0);
+    if (k === 'kg') { v = e.target.checked; if (v && !ex.kgSoll) ex.kgSoll = 8; }
     ex[k] = v; savePlan();
   }
 });
 $('#main').addEventListener('change', e => {
+  if (tab === 'training' && e.target.dataset.edit === 'kg') {
+    const day = dayById(curDay); const ex = day.ex.find(x => x.id === e.target.closest('[data-ex]').dataset.ex);
+    if (ex && ex.kg) { (sessionFor(day).sets[ex.id] || []).forEach((st, i) => { if (!st.d && !st.w) st.w = vorschlag(ex, i).w; }); saveSessions(); }
+    renderTraining(); return;
+  }
   if (tab === 'training' && e.target.dataset.edit === 'einheit') {
     const day = dayById(curDay); const ex = day.ex.find(x => x.id === e.target.closest('[data-ex]').dataset.ex);
     if (ex) { ex.einheit = e.target.value; savePlan(); }
@@ -742,7 +823,7 @@ $('#main').addEventListener('change', e => {
 function finishTraining() {
   const day = dayById(curDay); const s = sessionFor(day);
   const ex = day.ex.map(x => ({ id: x.id, name: x.name, einheit: x.einheit,
-    sets: s.sets[x.id].filter(st => st.d).map(st => ({ w: st.w, r: st.r })) })).filter(x => x.sets.length);
+    sets: s.sets[x.id].filter(st => st.d).map(st => ({ w: x.kg ? st.w : '', r: st.r })) })).filter(x => x.sets.length);
   if (!ex.length) { toast('Noch kein Satz abgehakt'); return; }
   history.push({ id: Date.now().toString(36), date: new Date().toISOString(), start: s.start, dayId: day.id, dayName: day.name + ': ' + day.title, ex });
   if (!LS.set('history', history)) { history.pop(); return; }
@@ -1161,7 +1242,7 @@ $('#importFile').addEventListener('change', async e => {
     if (!d || d.app !== 'FitApp' || typeof d.daten !== 'object') throw new Error('keine FitApp Sicherung');
     let n = 0;
     Object.entries(d.daten).forEach(([k, v]) => { if (k.indexOf('fit.') === 0 && typeof v === 'string') { try { localStorage.setItem(k, v); n++; } catch (er) {} } });
-    plan = LS.get('plan', null) || clone(DEFAULT_PLAN); sessions = LS.get('sess', {}); history = LS.get('history', []);
+    plan = loadPlan(); sessions = LS.get('sess', {}); history = LS.get('history', []); curDay = todayDayId();
     vorrat = LS.get('vorrat', []); nogo = LS.get('nogo', NOGO_DEFAULT); favs = LS.get('fav', {}); listen = LS.get('listen', { coop: [], migros: [] });
     sf = LS.get('snack', sf); rf = LS.get('rfilter', rf);
     toast(n + ' Einträge importiert'); closeSheet();
