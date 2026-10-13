@@ -116,7 +116,7 @@ body.with-timer { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 170px); }
 .meal tr.sum td { font-weight: 700; }
 
 /* Tab bar */
-nav.tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(4, 1fr);
+nav.tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(5, 1fr);
   height: calc(var(--tab-h) + var(--safe-b)); padding-bottom: var(--safe-b); background: #0B1118; border-top: 1px solid var(--line); }
 nav.tabs button { border: 0; background: transparent; color: var(--muted); display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: 3px; font-size: .75rem; font-weight: 600; }
@@ -139,6 +139,36 @@ nav.tabs button[aria-selected="true"] svg { color: var(--accent); }
 .li .t { flex: 1; }
 .bars { display: flex; align-items: flex-end; gap: 4px; height: 90px; margin: 8px 0; }
 .bars i { flex: 1; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+/* Stundenplan */
+.plan-now { background: linear-gradient(135deg, #1B2B4F, #16202B); border-color: #2C447A; }
+.plan-now .big { font-size: 1.5rem; font-weight: 700; margin: 2px 0; }
+.tl { list-style: none; margin: 0; padding: 0; }
+.tl li { display: grid; grid-template-columns: 58px 10px 1fr; gap: 10px; align-items: start; padding: 9px 0; border-top: 1px solid var(--line); }
+.tl li:first-child { border-top: 0; }
+.tl .t { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; padding-top: 1px; }
+.tl .dot { width: 10px; height: 10px; border-radius: 5px; margin-top: 6px; }
+.tl li.past { opacity: .45; }
+.tl li.now { background: var(--accent-soft); border-radius: 10px; margin: 0 -8px; padding: 9px 8px; border-top-color: transparent; }
+.tl li.now .t { color: var(--ink); font-weight: 700; }
+.k-training { background: #4C7DFF; } .k-essen { background: #F2A541; } .k-arbeit { background: #93A4B8; }
+.k-frei { background: #2FBF71; } .k-schlaf { background: #A78BFA; } .k-pflege { background: #5EC8E5; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .8rem; color: var(--muted); margin-top: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 8px; height: 8px; border-radius: 4px; display: inline-block; }
+.wk { overflow-x: auto; margin: 0 -4px; }
+.wk table { width: 100%; border-collapse: separate; border-spacing: 3px; font-size: .76rem; table-layout: fixed; }
+.wk thead th { font-weight: 600; color: var(--muted); padding: 2px 1px 6px; text-align: center; font-size: .68rem; }
+.wk thead th:first-child { width: 30px; } .wk thead th:nth-child(2) { width: 22%; }
+.wk th.row { text-align: center; font-weight: 700; padding: 8px 0; border-radius: 8px; background: var(--surface2); }
+.wk td { text-align: center; padding: 8px 1px; border-radius: 8px; background: var(--surface2); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wk td.art { font-weight: 600; }
+.wk td.today, .wk th.today { background: var(--accent); color: #fff; }
+.wk td.empty { background: transparent; color: var(--line); }
+.wk td.tr { box-shadow: inset 0 0 0 1px #2C447A; }
+.cheat { background: linear-gradient(135deg, #3A2A12, #16202B); border-color: #5A4220; }
+.cheat h3 { color: var(--warn); }
+.cheat ol { margin: 6px 0 0; padding-left: 20px; }
+.cheat li { margin: 4px 0; }
 #toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tab-h) + var(--safe-b) + 16px); z-index: 60;
   background: #E8EEF5; color: #0E141C; padding: 12px 16px; border-radius: 12px; font-weight: 600; max-width: 90vw;
   opacity: 0; pointer-events: none; transition: opacity .2s; }
@@ -173,10 +203,12 @@ body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + 180px); }
 </div>
 
 <nav class="tabs" role="tablist">
+  <button role="tab" data-tab="plan" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3M8 17h6"/></svg>Plan</button>
   <button role="tab" data-tab="training" aria-selected="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9v6M6 6v12M18 6v12M21 9v6M6 12h12"/></svg>Training</button>
   <button role="tab" data-tab="coop" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h16M5 11a7 7 0 0 0 14 0M9 4v4M12 3v5M15 4v4"/></svg>Coop Essen</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h16M5 11a7 7 0 0 0 14 0M9 4v4M12 3v5M15 4v4"/></svg>Coop</button>
   <button role="tab" data-tab="vorrat" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16"/></svg>Vorrat</button>
   <button role="tab" data-tab="snacks" aria-selected="false">
@@ -456,8 +488,8 @@ $('#timerbar').addEventListener('click', e => {
 });
 
 /* ======================================================= Tabs */
-const TITLES = { training: 'Training', coop: 'Coop Essen', vorrat: 'Vorrat', snacks: 'Snacks' };
-let tab = LS.get('tab', 'training');
+const TITLES = { plan: 'Stundenplan', training: 'Training', coop: 'Coop Essen', vorrat: 'Vorrat', snacks: 'Snacks' };
+let tab = LS.get('tab', 'plan');
 if (!TITLES[tab]) tab = 'training';
 
 function setTab(t) {
@@ -473,12 +505,139 @@ function setTab(t) {
 $('nav.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
 
 function render() {
-  if (tab === 'training') renderTraining();
+  if (tab === 'plan') renderPlan();
+  else if (tab === 'training') renderTraining();
   else if (tab === 'coop') renderCoop();
   else if (tab === 'vorrat') renderVorrat();
   else renderSnacks();
   updateBadge();
 }
+
+/* ======================================================= Stundenplan */
+/* k: training, essen, arbeit, frei, schlaf, pflege */
+const MORGEN_ARBEIT = (training) => [
+  ['05:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
+  ['05:05', training, 'training'],
+  ['05:40', 'Duschen und Rasur mit Speick Lotion', 'pflege'],
+  ['05:52', 'Anziehen, Shake in die Flasche, Mittag einpacken', 'essen'],
+  ['05:58', 'Raus, 8 Min zum Bahnhof', 'arbeit'],
+  ['06:08', 'Zug, Shake trinken', 'essen'],
+  ['07:00', 'Im Büro', 'arbeit']
+];
+const ABEND = (lichtAus, pc, notiz) => [
+  ['17:30', 'Zuhause. Freizeit', 'frei'],
+  ['18:00', 'Gaming mit den Jungs. Snack Schüssel vorher füllen', 'frei'],
+  ['19:00', 'Abendessen mit der Familie, Game pausieren', 'essen'],
+  [pc, 'PC aus. Gesicht waschen, Gel auftragen, Nacken 5 Min', 'pflege'],
+  [lichtAus, 'Licht aus' + (notiz ? '. ' + notiz : ''), 'schlaf']
+];
+const WOCHE = [
+  { k: 'Mo', name: 'Montag', art: 'Tag A', items: MORGEN_ARBEIT('Training Tag A: Brust und Schultern').concat([
+      ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'], ['15:30', 'Snack: 2 Pic Nic Eier', 'essen'], ['16:30', 'Feierabend', 'arbeit']],
+      ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
+  { k: 'Di', name: 'Dienstag', art: 'Joggen', items: MORGEN_ARBEIT('Joggen 30 Min, Bonus').concat([
+      ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'], ['15:30', 'Snack: 2 Pic Nic Eier', 'essen'], ['16:30', 'Feierabend', 'arbeit']],
+      ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
+  { k: 'Mi', name: 'Mittwoch', art: 'Tag B', items: MORGEN_ARBEIT('Training Tag B: Beine und Rücken').concat([
+      ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'], ['15:30', 'Snack: 2 Pic Nic Eier', 'essen'], ['16:30', 'Feierabend', 'arbeit']],
+      ABEND('21:30', '21:10', 'Morgen erst um 05:30')) },
+  { k: 'Do', name: 'Donnerstag', art: 'Joggen', items: [
+      ['05:30', 'Aufstehen, ein Glas Wasser', 'schlaf'],
+      ['05:35', 'Joggen 30 Min, Bonus', 'training'],
+      ['06:05', 'Duschen und Rasur', 'pflege'],
+      ['06:20', 'Anziehen, Shake einpacken', 'essen'],
+      ['06:30', 'Raus zur Berufsschule', 'arbeit'],
+      ['07:30', 'Schule', 'arbeit'],
+      ['12:00', 'Mittag in der Pause', 'essen'],
+      ['17:30', 'Zuhause. Freizeit', 'frei'],
+      ['18:00', 'Gaming', 'frei'],
+      ['19:00', 'Abendessen', 'essen'],
+      ['20:40', 'PC aus. Gesicht waschen, Gel', 'pflege'],
+      ['21:00', 'Licht aus. Morgen Tag C', 'schlaf']] },
+  { k: 'Fr', name: 'Freitag', art: 'Tag C', items: MORGEN_ARBEIT('Training Tag C: Ganzkörper und Bauch').concat([
+      ['09:30', 'Snack: 2 Pic Nic Eier', 'essen'],
+      ['12:00', 'Feierabend', 'arbeit'],
+      ['13:00', 'Zuhause, Mittag', 'essen'],
+      ['14:00', 'Freizeit, Wochenende fängt an', 'frei'],
+      ['19:00', 'Abendessen', 'essen'],
+      ['offen', 'Gaming open end. Vor dem Schlafen Gesicht waschen, Gel', 'frei']]) },
+  { k: 'Sa', name: 'Samstag', art: 'Cheat Day', items: [
+      ['10:00', 'Spätestens jetzt aufstehen', 'schlaf'],
+      ['10:05', 'Rasur', 'pflege'],
+      ['10:30', 'Cheat Day: iss, worauf du Lust hast', 'essen'],
+      ['14:00', 'Raus, 7000 Schritte. Danach duschen', 'frei'],
+      ['offen', 'Freizeit und Gaming open end', 'frei']] },
+  { k: 'So', name: 'Sonntag', art: 'Nachholen', items: [
+      ['09:00', 'Spätestens jetzt aufstehen, Rasur', 'schlaf'],
+      ['09:30', 'Erste Mahlzeit mit Protein. Ab heute wieder normal essen', 'essen'],
+      ['10:00', 'Pflichttag verpasst? Jetzt nachholen. Sonst 45 Min spazieren', 'training'],
+      ['11:00', 'Duschen, Shake', 'pflege'],
+      ['14:00', 'Freizeit', 'frei'],
+      ['18:00', 'Foto von der Stirn. Einkaufsliste an die Eltern', 'pflege'],
+      ['19:00', 'Abendessen', 'essen'],
+      ['20:40', 'PC aus. Gesicht waschen, Gel', 'pflege'],
+      ['21:00', 'Licht aus. Morgen 05:00', 'schlaf']] }
+];
+const WOCHE_SPALTEN = [
+  ['Wecker', d => d.items[0][0]],
+  ['Training', d => { const t = d.items.find(x => x[2] === 'training'); return t ? t[0] : null; }, true],
+  ['Raus', d => { const t = d.items.find(x => x[2] === 'arbeit' && /^Raus/.test(x[1])); return t ? t[0] : null; }],
+  ['Frei ab', d => { const t = d.items.find(x => /Feierabend|^Zuhause\. Freizeit/.test(x[1])); return t ? t[0] : null; }],
+  ['Licht aus', d => { const t = d.items.find(x => /^Licht aus/.test(x[1])); return t ? t[0] : 'offen'; }]
+];
+const KIND_NAMES = { training: 'Training', essen: 'Essen', arbeit: 'Arbeit, Schule', frei: 'Freizeit', schlaf: 'Schlaf', pflege: 'Pflege' };
+let planDay = null;
+const toMin = t => { const m = /^(\d\d):(\d\d)$/.exec(t); return m ? (+m[1]) * 60 + (+m[2]) : null; };
+
+function renderPlan() {
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  if (planDay == null) planDay = todayIdx;
+  const d = WOCHE[planDay];
+  const isToday = planDay === todayIdx;
+  const now = new Date(); const nowMin = now.getHours() * 60 + now.getMinutes();
+  let cur = -1;
+  if (isToday) d.items.forEach((it, i) => { const m = toMin(it[0]); if (m != null && m <= nowMin) cur = i; });
+  if (isToday && cur >= 0 && d.items[cur + 1] && d.items[cur + 1][0] === 'offen') { /* bleibt */ }
+  const next = isToday ? d.items[cur + 1] : null;
+  let h = '<div class="chips" role="tablist">' + WOCHE.map((x, i) =>
+    `<button class="chip" data-pday="${i}" aria-pressed="${i === planDay}">${x.k}${i === todayIdx ? ' · heute' : ''}</button>`).join('') + '</div>';
+  if (isToday) {
+    const c = cur >= 0 ? d.items[cur] : null;
+    h += `<div class="card plan-now"><div class="muted small">${esc(d.name)} · ${esc(d.art)}</div>
+      <div class="big">${c ? esc(c[1]) : 'Noch Nacht. Schlaf weiter'}</div>
+      ${next ? `<div class="small">Als Nächstes um <b>${esc(next[0])}</b>: ${esc(next[1])}</div>` : ''}</div>`;
+  } else {
+    h += `<div class="card"><div class="muted small">${esc(d.art)}</div><h3>${esc(d.name)}</h3></div>`;
+  }
+  h += '<div class="card"><ul class="tl">' + d.items.map((it, i) =>
+    `<li class="${isToday && i < cur ? 'past' : ''} ${isToday && i === cur ? 'now' : ''}"><span class="t">${esc(it[0])}</span><span class="dot k-${it[2]}"></span><span>${esc(it[1])}</span></li>`).join('') + '</ul>';
+  h += '<div class="legend">' + Object.keys(KIND_NAMES).map(k => `<span><i class="k-${k}"></i>${KIND_NAMES[k]}</span>`).join('') + '</div></div>';
+
+  h += '<div class="card"><h3>Die Woche</h3><div class="wk"><table><thead><tr><th></th><th>Was</th>' +
+    WOCHE_SPALTEN.map(c => `<th>${c[0]}</th>`).join('') + '</tr></thead><tbody>';
+  WOCHE.forEach((x, i) => {
+    const t = i === todayIdx ? 'today' : '';
+    h += `<tr><th class="row ${t}">${x.k}</th><td class="${t} art">${esc(x.art)}</td>` + WOCHE_SPALTEN.map(([label, fn, tr]) => { const v = fn(x);
+      return `<td class="${t} ${v ? '' : 'empty'} ${tr && v ? 'tr' : ''}">${v ? esc(v) : '·'}</td>`; }).join('') + '</tr>';
+  });
+  h += '</tbody></table></div><p class="muted small">Tippe oben auf einen Tag für den ganzen Ablauf.</p></div>';
+
+  h += `<div class="card cheat"><h3>Cheat Day: Samstag</h3>
+    <p class="small">Du baust Muskeln auf und Fett ab, aber nicht ohne Freude. Am Samstag isst du, worauf du Lust hast, ohne Zählen und ohne schlechtes Gewissen.</p>
+    <ol class="small">
+      <li><b>Ein Tag, kein Wochenende.</b> Sonntag ab der ersten Mahlzeit wieder normal.</li>
+      <li><b>Geniessen, nicht stopfen.</b> Pizza, Döner, Burger, Dessert: ja. Essen bis es weh tut: nein.</li>
+      <li><b>Ein Shake über den Tag</b> und 7000 Schritte bleiben, beides kostet dich nichts.</li>
+      <li><b>Wiegen am Montag, nie am Sonntag.</b> Nach dem Cheat Day zeigt die Waage Wasser und Salz, nicht Fett.</li>
+      <li><b>Ein schlechter Tag unter der Woche ist kein zweiter Cheat Day.</b> Abhaken und mit der nächsten Mahlzeit weiter.</li>
+    </ol></div>`;
+  $('#main').innerHTML = h;
+}
+$('#main').addEventListener('click', e => {
+  if (tab !== 'plan') return;
+  const b = e.target.closest('[data-pday]'); if (b) { planDay = +b.dataset.pday; renderPlan(); }
+});
+setInterval(() => { if (tab === 'plan' && document.visibilityState === 'visible' && $('#sheet').hidden) renderPlan(); }, 60000);
 
 /* ======================================================= Modul 1: Training */
 function renderTraining() {
