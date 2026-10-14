@@ -181,6 +181,11 @@ body.with-timer { padding-bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill
 .cat[open] summary::after { content: "−"; }
 .cat .chips { flex-wrap: wrap; padding-bottom: 14px; }
 .hint { font-size: .8rem; color: var(--faint); margin-top: 10px; }
+.chips.ideen { margin: 10px -16px 0; padding: 0 16px 2px; }
+details.filt > summary { min-height: 44px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; list-style: none; line-height: 1.35; }
+details.filt > summary::-webkit-details-marker { display: none; }
+details.filt > summary::after { content: "+"; color: var(--faint); font-size: 1.1rem; }
+details.filt[open] > summary::after { content: "−"; }
 
 /* Navigation */
 nav.tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: grid; grid-template-columns: repeat(5, 1fr);
@@ -275,7 +280,7 @@ body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-
   <button role="tab" data-tab="coop" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h16a8 8 0 0 1-16 0zM9 7c0-1.5 1-1.5 1-3M14 7c0-1.5 1-1.5 1-3"/></svg>Coop</button>
   <button role="tab" data-tab="vorrat" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-11A2.5 2.5 0 0 1 6.5 4zM4 12h16M10 8h4M10 16h4"/></svg>Vorrat</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h11a2 2 0 0 1 2 2v14H7.5A2.5 2.5 0 0 1 5 17.5v-12A1.5 1.5 0 0 1 6.5 4zM5 17.5A2.5 2.5 0 0 1 7.5 15H19M9 8h6M9 11h4"/></svg>Rezepte</button>
   <button role="tab" data-tab="snacks" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8V6a3 3 0 0 1 6 0v2"/></svg>Snacks</button>
 </nav>
@@ -615,7 +620,7 @@ $('#timerbar').addEventListener('click', e => {
 });
 
 /* ======================================================= Tabs */
-const TITLES = { plan: 'Stundenplan', training: 'Training', coop: 'Coop Essen', vorrat: 'Vorrat', snacks: 'Snacks' };
+const TITLES = { plan: 'Stundenplan', training: 'Training', coop: 'Coop Essen', vorrat: 'Rezepte', snacks: 'Snacks' };
 let tab = LS.get('tab', 'plan');
 if (!TITLES[tab]) tab = 'training';
 
@@ -985,7 +990,7 @@ $('#main').addEventListener('click', e => {
   toast(added ? `${added} Produkt${added > 1 ? 'e' : ''} auf der Coop Liste` : 'Schon auf der Liste');
 });
 
-/* ======================================================= Modul 3: Vorrat */
+/* ======================================================= Modul 3: Rezepte (Tab heisst intern noch vorrat) */
 const NOGO_DEFAULT = ['brokkoli', 'broccoli', 'blumenkohl', 'rotkohl', 'rotkraut', 'schwein', 'speck', 'schinken', 'salami', 'bacon', 'pancetta', 'coppa', 'chorizo', 'salsiz', 'cervelat', 'lachs', 'forelle', 'kabeljau', 'dorsch', 'zander', 'egli', 'crevetten', 'garnelen', 'muscheln', 'tintenfisch', 'calamari', 'sushi'];
 let nogo = LS.get('nogo', NOGO_DEFAULT);
 let rf = LS.get('rfilter', { zeit: 0, prot: 0, quelle: '', nogo: true });
@@ -1184,68 +1189,192 @@ function vorschlaege(q) {
   return out.slice(0, 8);
 }
 function recipeNoGo(r) { return (r.zn || []).some(z => nogo.some(n => n && z.indexOf(n) >= 0)) || nogo.some(n => n && normTerm(r.n).indexOf(n) >= 0); }
+if (!rf.mode) rf.mode = 'zutaten';
+if (!rf.sort) rf.sort = 'match';
+if (typeof rf.q !== 'string') rf.q = '';
 
+/* ---------- Suche nach Gerichten ---------- */
+/* Für den Vergleich: klein, ohne Umlaute und Akzente, ae oe ue wie ä ö ü */
+function falt(s) {
+  return String(s || '').toLowerCase().replace(/[äàâá]/g, 'a').replace(/[öô]/g, 'o').replace(/[üûù]/g, 'u').replace(/[éèêë]/g, 'e')
+    .replace(/[îï]/g, 'i').replace(/ç/g, 'c').replace(/ß/g, 'ss').replace(/ae/g, 'a').replace(/oe/g, 'o').replace(/ue/g, 'u')
+    .replace(/[^a-z0-9]+/g, ' ').trim();
+}
+const STOPP = new Set(['mit', 'und', 'an', 'in', 'im', 'der', 'die', 'das', 'den', 'dem', 'des', 'vom', 'von', 'auf', 'zu', 'zum', 'zur', 'a', 'la', 'al', 'alla', 'nach', 'art', 'ein', 'eine', 'fur', 'aus', 'oder', 'dazu']);
+function worte(s) { return falt(s).split(' ').filter(w => w.length > 1 && !STOPP.has(w)); }
+const ALIAS_FALT = {}; ZUTATEN.forEach(z => { ALIAS_FALT[z.id] = Array.from(new Set(z.alias.map(falt).filter(a => a.length > 2))); });
+function suchIndex(r) {
+  if (r._s) return r._s;
+  const ids = rezeptZutaten(r);
+  r._s = { name: falt(r.n), nw: worte(r.n), ids: new Set(ids), zw: Array.from(new Set((r.zn || []).flatMap(z => worte(z)))) };
+  return r._s;
+}
+function lev1(a, b, max) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i]; let best = i;
+    for (let j = 1; j <= b.length; j++) { cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); best = Math.min(best, cur[j]); }
+    if (best > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+/* Jedes Suchwort samt Varianten: "hähnchen" findet auch Poulet, "pasta" auch Spaghetti */
+function suchWort(orig) {
+  const w = falt(orig);
+  const id = zutatVon(orig);
+  const z = id && ZUT_BY_ID[id] && !ZUT_BY_ID[id].basic ? id : null;
+  return { w, id: z, alt: z ? Array.from(new Set([w].concat(ALIAS_FALT[z]))) : [w] };
+}
+function treffer(r, q) {
+  const s = suchIndex(r);
+  let score = 0;
+  for (const t of q.teile) {
+    let best = 0;
+    for (const nw of s.nw) {
+      for (const a of t.alt) {
+        if (nw === a) best = Math.max(best, a === t.w ? 12 : 9);
+        else if (a.length >= 3 && nw.indexOf(a) === 0) best = Math.max(best, a === t.w ? 9 : 7);
+        else if (a.length >= 4 && nw.indexOf(a) > 0) best = Math.max(best, a === t.w ? 8 : 6);
+      }
+      if (best < 5 && t.w.length >= 5 && lev1(nw.slice(0, t.w.length + 1), t.w, t.w.length >= 8 ? 2 : 1) <= (t.w.length >= 8 ? 2 : 1)) best = Math.max(best, 5);
+    }
+    if (best < 4) {
+      if (t.id && (s.ids.has(t.id) || Array.from(s.ids).some(i => ZUT_BY_ID[i] && ZUT_BY_ID[i].parent === t.id))) best = 4;
+      else if (s.zw.some(zw => t.alt.some(a => a.length >= 3 && zw.indexOf(a) === 0))) best = 3;
+    }
+    if (!best) return 0;
+    score += best;
+  }
+  if (q.satz.length > 3 && s.name.indexOf(q.satz) >= 0) score += 8;
+  if (q.satz && s.name.indexOf(q.satz) === 0) score += 3;
+  return score;
+}
+
+/* ---------- Sortieren ---------- */
+const SORTEN = [['match', 'Beste Übereinstimmung'], ['bewertung', 'Am besten bewertet'], ['beliebt', 'Am beliebtesten'],
+  ['protein', 'Am meisten Protein'], ['schnell', 'Am schnellsten'], ['kcal', 'Am wenigsten Kalorien']];
+let bewMittel = null;
+function bewertung(r) {
+  if (!r.rt) return -1;
+  if (bewMittel == null) {
+    const alle = ((DATA && DATA.rezepte) || []).filter(x => x.rt);
+    bewMittel = alle.length ? alle.reduce((a, x) => a + x.rt, 0) / alle.length : 4;
+  }
+  const n = r.rc || 1, m = 10;
+  return (n / (n + m)) * r.rt + (m / (n + m)) * bewMittel;
+}
+function sortiere(liste, match) {
+  const nach = {
+    bewertung: x => bewertung(x.r), beliebt: x => (x.r.rc || 0) + (x.r.rt ? 0.001 : 0), protein: x => x.r.pr || 0,
+    schnell: x => (x.r.t ? -x.r.t : -1e9), kcal: x => (x.r.kc ? -x.r.kc : -1e9)
+  }[rf.sort];
+  liste.sort((a, b) => (nach ? nach(b) - nach(a) : 0) || match(a, b) || (bewertung(b.r) - bewertung(a.r)) || ((b.r.pr || 0) - (a.r.pr || 0)));
+}
+function filterOk(r) {
+  if (rf.quelle && r.q !== rf.quelle) return false;
+  if (rf.zeit && !(r.t && r.t <= rf.zeit)) return false;
+  if (rf.prot && !(r.pr && r.pr >= rf.prot)) return false;
+  if (rf.nogo && recipeNoGo(r)) return false;
+  return true;
+}
+function hatBewertungen() { return ((DATA && DATA.rezepte) || []).some(r => r.rt); }
+
+/* ---------- Seite ---------- */
+const IDEEN = ['Curry', 'Pasta', 'Bowl', 'Salat', 'Suppe', 'Risotto', 'Wrap', 'Burger', 'Pizza', 'Geschnetzeltes', 'Ofengemüse', 'Lasagne'];
 const catOffen = {};
+let filtOffen = false;
 function renderVorrat() {
   const recs = (DATA && DATA.rezepte) || [];
-  const hf = haeufigkeit();
   const set = new Set(zutaten);
-  let h = `<div class="card"><h3>Was hast du zuhause?</h3>
-    <div class="vin"><input type="search" id="vIn" placeholder="Zutat suchen, z.B. Poulet" autocomplete="off" enterkeyhint="done" aria-label="Zutat suchen"></div>
-    <div class="sugg" id="vSugg"></div>
-    <div class="picked">${zutaten.map(id => `<button class="chip" data-del="${esc(id)}" aria-label="${esc(zutName(id))} entfernen">${esc(zutName(id))}<span class="x" aria-hidden="true">✕</span></button>`).join('') || '<span class="muted small">Noch nichts ausgewählt.</span>'}</div>
-    <div class="hint">Salz, Pfeffer, Gewürze, Kräuter, Öl, Butter, Mehl, Zucker und Bouillon zählen immer als vorhanden.</div></div>`;
-  h += '<div class="card" style="padding-top:4px;padding-bottom:4px">' + ZUT_KATS.map(([k, label]) => {
-    const items = ZUTATEN.filter(z => z.cat === k).sort((a, b) => (hf[b.id] || 0) - (hf[a.id] || 0));
-    const n = items.filter(z => set.has(z.id)).length;
-    return `<details class="cat"${catOffen[k] ? ' open' : ''} data-cat-k="${k}"><summary><span>${label}${n ? ` <span class="muted small">· ${n} gewählt</span>` : ''}</span></summary>
-      <div class="chips">${items.map(z => `<button class="chip" data-tog="${z.id}" aria-pressed="${set.has(z.id)}">${esc(z.name)}</button>`).join('')}</div></details>`;
-  }).join('') + '</div>';
-
-  h += `<div class="card"><div class="edit-grid">
+  let h = `<div class="seg" role="tablist"><button data-mode="zutaten" aria-pressed="${rf.mode === 'zutaten'}">Meine Zutaten</button><button data-mode="suche" aria-pressed="${rf.mode === 'suche'}">Gericht suchen</button></div>`;
+  if (rf.mode === 'suche') {
+    h += `<div class="card"><h3>Was willst du essen?</h3>
+      <input type="search" id="rIn" value="${esc(rf.q)}" placeholder="z.B. Poulet Curry, Lasagne, Bowl" autocomplete="off" enterkeyhint="search" aria-label="Gericht suchen">
+      <div class="chips ideen">${IDEEN.map(w => `<button class="chip" data-idee="${esc(w)}" aria-pressed="${falt(rf.q) === falt(w)}">${esc(w)}</button>`).join('')}</div></div>`;
+  } else {
+    const hf = haeufigkeit();
+    h += `<div class="card"><h3>Was hast du zuhause?</h3>
+      <div class="vin"><input type="search" id="vIn" placeholder="Zutat suchen, z.B. Poulet" autocomplete="off" enterkeyhint="done" aria-label="Zutat suchen"></div>
+      <div class="sugg" id="vSugg"></div>
+      <div class="picked">${zutaten.map(id => `<button class="chip" data-del="${esc(id)}" aria-label="${esc(zutName(id))} entfernen">${esc(zutName(id))}<span class="x" aria-hidden="true">✕</span></button>`).join('') || '<span class="muted small">Noch nichts ausgewählt.</span>'}</div>
+      <div class="hint">Salz, Pfeffer, Gewürze, Kräuter, Öl, Butter, Mehl, Zucker und Bouillon zählen immer als vorhanden.</div></div>`;
+    h += '<div class="card" style="padding-top:4px;padding-bottom:4px">' + ZUT_KATS.map(([k, label]) => {
+      const items = ZUTATEN.filter(z => z.cat === k).sort((a, b) => (hf[b.id] || 0) - (hf[a.id] || 0));
+      const n = items.filter(z => set.has(z.id)).length;
+      return `<details class="cat"${catOffen[k] ? ' open' : ''} data-cat-k="${k}"><summary><span>${label}${n ? ` <span class="muted small">· ${n} gewählt</span>` : ''}</span></summary>
+        <div class="chips">${items.map(z => `<button class="chip" data-tog="${z.id}" aria-pressed="${set.has(z.id)}">${esc(z.name)}</button>`).join('')}</div></details>`;
+    }).join('') + '</div>';
+  }
+  const bew = hatBewertungen();
+  const aktiv = [rf.zeit ? 'bis ' + rf.zeit + ' Min' : '', rf.prot ? 'ab ' + rf.prot + ' g Protein' : '', rf.quelle ? ({ fooby: 'fooby', migusto: 'migusto', bettybossi: 'Betty Bossi' })[rf.quelle] : ''].filter(Boolean);
+  h += `<details class="card filt"${filtOffen ? ' open' : ''}><summary><span><b>Sortieren und Filter</b><br><span class="muted small">${esc((SORTEN.find(x => x[0] === rf.sort) || SORTEN[0])[1])}${aktiv.length ? ' · ' + esc(aktiv.join(', ')) : ''}</span></span></summary>
+    <label class="field" style="margin-top:12px"><span>Sortieren</span><select data-rf="sort">${SORTEN.map(([v, l]) => `<option value="${v}" ${rf.sort === v ? 'selected' : ''}>${l}${!bew && (v === 'bewertung' || v === 'beliebt') ? ' (noch keine Daten)' : ''}</option>`).join('')}</select></label>
+    <div class="edit-grid">
     <label class="field"><span>Zeit</span><select data-rf="zeit">${[[0, 'egal'], [20, 'bis 20 Min'], [30, 'bis 30 Min'], [45, 'bis 45 Min'], [60, 'bis 60 Min']].map(([v, l]) => `<option value="${v}" ${rf.zeit == v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
     <label class="field"><span>Protein pro Portion</span><select data-rf="prot">${[[0, 'egal'], [20, 'ab 20 g'], [30, 'ab 30 g'], [40, 'ab 40 g']].map(([v, l]) => `<option value="${v}" ${rf.prot == v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
     <label class="field"><span>Quelle</span><select data-rf="quelle">${[['', 'alle'], ['fooby', 'fooby'], ['migusto', 'migusto'], ['bettybossi', 'Betty Bossi']].map(([v, l]) => `<option value="${v}" ${rf.quelle === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
-    <div class="toggle"><span>No Gos ausblenden</span><button class="switch" role="switch" data-rf="nogo" aria-checked="${rf.nogo}" aria-label="No Gos ausblenden"></button></div>
+    <div class="toggle"><span>No Gos weg</span><button class="switch" role="switch" data-rf="nogo" aria-checked="${rf.nogo}" aria-label="No Gos ausblenden"></button></div>
     </div><details class="how"><summary>No Go Liste bearbeiten</summary>
-    <label class="field"><span>Mit Komma trennen</span><input type="text" id="nogoIn" value="${esc(nogo.join(', '))}"></label></details></div>`;
-
-  if (!recs.length) {
-    h += noDataHint('Rezepte');
-  } else if (!zutaten.length) {
-    h += `<div class="empty">Wähl oben aus, was du zuhause hast. Dann suche ich passende Gerichte aus ${recs.length} Rezepten.</div>`;
-  } else {
-    const res = [];
+    <label class="field"><span>Mit Komma trennen</span><input type="text" id="nogoIn" value="${esc(nogo.join(', '))}"></label></details></details>
+    <div id="recList"></div>`;
+  $('#main').innerHTML = h;
+  if (!recs.length) { $('#recList').innerHTML = noDataHint('Rezepte'); return; }
+  renderRezeptListe();
+}
+function renderRezeptListe() {
+  const box = $('#recList'); if (!box) return;
+  const recs = (DATA && DATA.rezepte) || [];
+  const set = new Set(zutaten);
+  let res = [], kopf = '';
+  if (rf.mode === 'suche') {
+    const teile = normTerm(rf.q).split(' ').filter(o => o.length > 1 && !STOPP.has(falt(o))).map(suchWort);
+    const q = { teile, satz: falt(rf.q) };
     recs.forEach(r => {
-      if (rf.quelle && r.q !== rf.quelle) return;
-      if (rf.zeit && !(r.t && r.t <= rf.zeit)) return;
-      if (rf.prot && !(r.pr && r.pr >= rf.prot)) return;
-      if (rf.nogo && recipeNoGo(r)) return;
+      if (!filterOk(r)) return;
+      const score = teile.length ? treffer(r, q) : 1;
+      if (!score) return;
+      const haupt = rezeptZutaten(r).filter(id => !istBasis(id));
+      res.push({ r, score, hat: haupt.filter(id => hatZutat(id, set)), fehlt: haupt.filter(id => !hatZutat(id, set)), haupt });
+    });
+    sortiere(res, (a, b) => b.score - a.score);
+    kopf = teile.length ? `${res.length} Treffer für „${esc(rf.q.trim())}“` : `Alle ${res.length} Rezepte`;
+  } else {
+    if (!zutaten.length) { box.innerHTML = `<div class="empty">Wähl oben aus, was du zuhause hast. Dann suche ich passende Gerichte aus ${recs.length} Rezepten.</div>`; return; }
+    recs.forEach(r => {
+      if (!filterOk(r)) return;
       const haupt = rezeptZutaten(r).filter(id => !istBasis(id));
       const hat = haupt.filter(id => hatZutat(id, set));
       if (!hat.length) return;
-      const fehlt = haupt.filter(id => !hatZutat(id, set));
-      res.push({ r, hat, fehlt });
+      res.push({ r, hat, fehlt: haupt.filter(id => !hatZutat(id, set)), haupt });
     });
-    res.sort((a, b) => a.fehlt.length - b.fehlt.length || b.hat.length - a.hat.length || (b.r.pr || 0) - (a.r.pr || 0));
+    sortiere(res, (a, b) => a.fehlt.length - b.fehlt.length || b.hat.length - a.hat.length);
     const perfekt = res.filter(x => !x.fehlt.length).length;
-    h += `<div class="lab" style="margin:18px 0 10px">${res.length} Gerichte mit deinen Zutaten${perfekt ? ` · ${perfekt} ohne Einkauf` : ''}</div>`;
-    if (!res.length) h += '<div class="empty">Kein Rezept nutzt diese Zutaten. Nimm eine weitere Zutat dazu oder lockere die Filter.</div>';
-    h += res.slice(0, recLimit).map(x => recipeCard(x)).join('');
-    if (res.length > recLimit) h += `<button class="btn wide" id="recMore">Mehr anzeigen</button>`;
+    kopf = `${res.length} Gerichte mit deinen Zutaten${perfekt ? ` · ${perfekt} ohne Einkauf` : ''}`;
   }
-  $('#main').innerHTML = h;
+  let h = `<div class="lab" style="margin:18px 0 10px">${kopf}</div>`;
+  if (!res.length) h += rf.mode === 'suche'
+    ? '<div class="empty">Nichts gefunden. Versuch ein anderes Wort oder lockere die Filter.</div>'
+    : '<div class="empty">Kein Rezept nutzt diese Zutaten. Nimm eine weitere Zutat dazu oder lockere die Filter.</div>';
+  h += res.slice(0, recLimit).map(x => recipeCard(x)).join('');
+  if (res.length > recLimit) h += `<button class="btn wide" id="recMore">Mehr anzeigen</button>`;
+  box.innerHTML = h;
 }
+function sterne(r) { return r.rt ? `<span>★ ${n1(r.rt)}${r.rc ? ` (${r.rc})` : ''}</span>` : ''; }
 function recipeCard(x) {
   const r = x.r; const qn = { fooby: 'fooby', migusto: 'migusto', bettybossi: 'Betty Bossi' }[r.q] || r.q;
   const namen = ids => ids.map(zutName);
+  const suche = rf.mode === 'suche';
+  const tag = suche && !zutaten.length ? '' : (x.fehlt.length ? `<span class="tag">${x.fehlt.length} fehlt</span>` : '<span class="tag good">Alles da</span>');
   return `<div class="card rcard">
     ${r.img ? `<img class="hero" loading="lazy" referrerpolicy="no-referrer" src="${esc(r.img)}" alt="${esc(r.n)}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'hero none',textContent:'Kein Bild'}))">` : '<div class="hero none">Kein Bild</div>'}
-    <div class="body"><div class="spread" style="align-items:flex-start"><h3>${esc(r.n)}</h3>${x.fehlt.length ? `<span class="tag">${x.fehlt.length} fehlt</span>` : '<span class="tag good">Alles da</span>'}</div>
-      <div class="kv muted"><span>${esc(qn)}</span><span>${r.t ? r.t + ' Min' : 'Zeit ' + KA}</span><span>${r.kc ? n0(r.kc) + ' kcal' : 'kcal ' + KA}</span><span>${r.pr ? n0(r.pr) + ' g Protein' : 'Protein ' + KA}</span></div>
-      <div class="lines">
-        <div class="have"><b>Hast du:</b> ${esc(namen(x.hat).join(', '))}</div>
-        ${x.fehlt.length ? `<div class="miss"><b>Fehlt:</b> ${esc(namen(x.fehlt.slice(0, 6)).join(', '))}${x.fehlt.length > 6 ? ' und ' + (x.fehlt.length - 6) + ' mehr' : ''}</div>` : ''}
+    <div class="body"><div class="spread" style="align-items:flex-start"><h3>${esc(r.n)}</h3>${tag}</div>
+      <div class="kv muted">${sterne(r)}<span>${esc(qn)}</span><span>${r.t ? r.t + ' Min' : 'Zeit ' + KA}</span><span>${r.kc ? n0(r.kc) + ' kcal' : 'kcal ' + KA}</span><span>${r.pr ? n0(r.pr) + ' g Protein' : 'Protein ' + KA}</span></div>
+      <div class="lines">${suche && !zutaten.length
+        ? `<div class="have"><b>Zutaten:</b> ${esc(namen(x.haupt.slice(0, 8)).join(', '))}${x.haupt.length > 8 ? ' und ' + (x.haupt.length - 8) + ' mehr' : ''}</div>`
+        : `${x.hat.length ? `<div class="have"><b>Hast du:</b> ${esc(namen(x.hat).join(', '))}</div>` : ''}
+           ${x.fehlt.length ? `<div class="miss"><b>Fehlt:</b> ${esc(namen(x.fehlt.slice(0, 6)).join(', '))}${x.fehlt.length > 6 ? ' und ' + (x.fehlt.length - 6) + ' mehr' : ''}</div>` : ''}`}
       </div>
       <a href="${esc(r.u)}" target="_blank" rel="noopener" class="small" style="display:inline-block;margin-top:12px">Rezept öffnen</a>
     </div></div>`;
@@ -1262,19 +1391,39 @@ function zeigeVorschlaege(q) {
   box.innerHTML = v.map(id => `<button class="chip" data-add="${id}">+ ${esc(zutName(id))}</button>`).join('')
     + (t && !v.length ? `<button class="chip" data-add="x:${esc(t)}">+ „${esc(t)}“ als Suchwort</button>` : '');
 }
+let suchTimer = null;
 $('#main').addEventListener('click', e => {
   if (tab !== 'vorrat') return;
+  const mo = e.target.closest('[data-mode]'); if (mo) { rf.mode = mo.dataset.mode; LS.set('rfilter', rf); recLimit = 30; renderVorrat(); return; }
+  const idee = e.target.closest('[data-idee]');
+  if (idee) { rf.q = falt(rf.q) === falt(idee.dataset.idee) ? '' : idee.dataset.idee; LS.set('rfilter', rf); recLimit = 30; renderVorrat(); return; }
   const add = e.target.closest('[data-add]'); if (add) { zutatDazu(add.dataset.add); return; }
   const tog = e.target.closest('[data-tog]');
   if (tog) { const id = tog.dataset.tog; if (zutaten.indexOf(id) >= 0) zutaten = zutaten.filter(x => x !== id); else zutaten.push(id); saveZutaten(); recLimit = 30; renderVorrat(); return; }
   const del = e.target.closest('[data-del]'); if (del) { zutaten = zutaten.filter(x => x !== del.dataset.del); saveZutaten(); renderVorrat(); return; }
   const sw = e.target.closest('[data-rf="nogo"]'); if (sw) { rf.nogo = !rf.nogo; LS.set('rfilter', rf); renderVorrat(); return; }
-  if (e.target.closest('#recMore')) { recLimit += 30; renderVorrat(); }
+  if (e.target.closest('#recMore')) { recLimit += 30; renderRezeptListe(); }
 });
-$('#main').addEventListener('input', e => { if (tab === 'vorrat' && e.target.id === 'vIn') zeigeVorschlaege(e.target.value); });
-$('#main').addEventListener('toggle', e => { if (tab === 'vorrat' && e.target.dataset && e.target.dataset.catK) catOffen[e.target.dataset.catK] = e.target.open; }, true);
+$('#main').addEventListener('input', e => {
+  if (tab !== 'vorrat') return;
+  if (e.target.id === 'vIn') zeigeVorschlaege(e.target.value);
+  if (e.target.id === 'rIn') {
+    rf.q = e.target.value; LS.set('rfilter', rf); recLimit = 30;
+    clearTimeout(suchTimer); suchTimer = setTimeout(() => {
+      renderRezeptListe();
+      $$('[data-idee]').forEach(b => b.setAttribute('aria-pressed', String(falt(rf.q) === falt(b.dataset.idee))));
+    }, 160);
+  }
+});
+$('#main').addEventListener('toggle', e => {
+  if (tab !== 'vorrat' || !e.target.classList) return;
+  if (e.target.dataset && e.target.dataset.catK) catOffen[e.target.dataset.catK] = e.target.open;
+  if (e.target.classList.contains('filt')) filtOffen = e.target.open;
+}, true);
 $('#main').addEventListener('keydown', e => {
-  if (tab !== 'vorrat' || e.target.id !== 'vIn' || e.key !== 'Enter') return;
+  if (tab !== 'vorrat' || e.key !== 'Enter') return;
+  if (e.target.id === 'rIn') { e.preventDefault(); e.target.blur(); return; }
+  if (e.target.id !== 'vIn') return;
   e.preventDefault();
   const v = vorschlaege(e.target.value); const t = normTerm(e.target.value);
   if (v.length) zutatDazu(v[0]); else if (t) zutatDazu('x:' + t);
@@ -1282,7 +1431,7 @@ $('#main').addEventListener('keydown', e => {
 $('#main').addEventListener('change', e => {
   if (tab !== 'vorrat') return;
   const k = e.target.dataset.rf;
-  if (k) { rf[k] = k === 'quelle' ? e.target.value : +e.target.value; LS.set('rfilter', rf); recLimit = 30; renderVorrat(); }
+  if (k) { rf[k] = (k === 'quelle' || k === 'sort') ? e.target.value : +e.target.value; LS.set('rfilter', rf); recLimit = 30; renderVorrat(); }
   if (e.target.id === 'nogoIn') { nogo = e.target.value.split(',').map(normTerm).filter(Boolean); LS.set('nogo', nogo); renderVorrat(); }
 });
 
@@ -1446,7 +1595,7 @@ function openSettings() {
     <button class="btn primary wide" id="sSave">Speichern und Daten laden</button>
     <p class="muted small" id="sMsg">${LS.get('syncAt', 0) ? 'Zuletzt geladen: ' + datumZeit(new Date(LS.get('syncAt', 0)).toISOString()) : ''}</p>
     <h3>Deine Daten sichern</h3>
-    <p class="muted small">Training, Plan, Vorrat, Favoriten und Listen. Mach das ab und zu, und vor einem Handywechsel.</p>
+    <p class="muted small">Training, Plan, Zutaten, Favoriten und Listen. Mach das ab und zu, und vor einem Handywechsel.</p>
     <div class="edit-grid"><button class="btn" id="sExport">Export</button><button class="btn" id="sImport">Import</button></div>
     <h3>Trainingsplan</h3>
     <button class="btn danger wide" id="sResetPlan">Plan auf Standard zurücksetzen</button>
