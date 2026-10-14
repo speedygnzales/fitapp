@@ -347,6 +347,10 @@ function toast(msg) {
 
 /* ======================================================= Daten */
 let DATA = null;
+/* Nach neuen Daten alle abgeleiteten Zwischenspeicher leeren (Zutaten Häufigkeit, Bewertungsmittel, Coop Fotos) */
+function datenGeaendert() {
+  try { zutHaeufig = null; bewMittel = null; Object.keys(bildCache).forEach(k => { delete bildCache[k]; }); } catch (e) {}
+}
 let EMBEDDED = false;
 
 const DEFAULT_COOP_HAND = {
@@ -1633,7 +1637,7 @@ async function syncData(manual) {
     const d = await r.json();
     if (!d || !d.stand) return { ok: false, msg: 'Die Datei sieht nicht wie FitApp Daten aus.' };
     const neuer = !DATA || !DATA.stand || d.stand !== DATA.stand;
-    DATA = d; fillVocab.cache = null;
+    DATA = d; datenGeaendert();
     await IDB.set('data', d);
     LS.set('syncAt', Date.now());
     if (!manual) { if (neuer) toast('Neue Daten geladen, Stand ' + datum(d.stand)); }
@@ -1693,7 +1697,13 @@ async function start() {
     if (!r.ok && !DATA) toast(r.msg);
   }
   if ('serviceWorker' in navigator && location.protocol === 'https:') {
-    try { navigator.serviceWorker.register('sw.js'); } catch (e) {}
+    try {
+      /* Neue Version sofort holen: sw.js nie aus dem Cache, und nach einem Wechsel einmal neu laden (nicht mitten im Training) */
+      const hatteSW = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(r => r.update()).catch(() => {});
+      let neu = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => { if (hatteSW && !neu && !hasActiveSession()) { neu = true; location.reload(); } });
+    } catch (e) {}
   }
 }
 start();
