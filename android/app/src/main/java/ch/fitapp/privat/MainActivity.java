@@ -50,11 +50,11 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        getWindow().setStatusBarColor(0xFF0E141C);
-        getWindow().setNavigationBarColor(0xFF0B1118);
+        getWindow().setStatusBarColor(0xFF0E0E0E);
+        getWindow().setNavigationBarColor(0xFF0E0E0E);
 
         web = new WebView(this);
-        web.setBackgroundColor(0xFF0E141C);
+        web.setBackgroundColor(0xFF0E0E0E);
         setContentView(web);
 
         WebSettings s = web.getSettings();
@@ -125,10 +125,10 @@ public class MainActivity extends Activity {
     private String offlineHtml() {
         String url = getString(R.string.app_url);
         return "<html><head><meta name='viewport' content='width=device-width,initial-scale=1'></head>"
-                + "<body style='background:#0E141C;color:#E8EEF5;font-family:sans-serif;padding:24px'>"
+                + "<body style='background:#0E0E0E;color:#FAFAFA;font-family:sans-serif;padding:24px'>"
                 + "<h2>Keine Verbindung</h2><p>Beim ersten Start braucht FitApp Internet. "
                 + "Danach läuft sie auch offline.</p>"
-                + "<p><a style='display:inline-block;padding:14px 20px;background:#4C7DFF;color:#fff;"
+                + "<p><a style='display:inline-block;padding:14px 20px;background:#FAFAFA;color:#0E0E0E;"
                 + "border-radius:12px;text-decoration:none' href='" + url + "'>Nochmals versuchen</a></p></body></html>";
     }
 
@@ -260,6 +260,33 @@ public class MainActivity extends Activity {
                     .putLong("endAt", (long) endAt)
                     .putString("label", label == null ? "Pause" : label)
                     .apply();
+        }
+
+        /** Streak für das Widget. last und calc als Datum JJJJ-MM-TT, calc = Tag der Berechnung. */
+        @JavascriptInterface
+        public void setStreak(int streak, int freezes, int best, String last, String calc) {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit()
+                    .putInt("st_streak", streak)
+                    .putInt("st_freezes", freezes)
+                    .putInt("st_best", best)
+                    .putString("st_last", last == null ? "" : last)
+                    .putString("st_calc", calc == null ? "" : calc)
+                    .apply();
+            WidgetBau.updateAll(MainActivity.this);
+        }
+
+        /** Die letzten 7 Tage für das Wochen Widget, Format "JJJJ-MM-TT:o;JJJJ-MM-TT:f" (o geschafft, f Freeze, m verpasst). */
+        @JavascriptInterface
+        public void setStreakTage(String tage) {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString("st_tage", tage == null ? "" : tage).apply();
+            WidgetBau.updateAll(MainActivity.this);
+        }
+
+        /** Trainingsplan pro Wochentag für das breite Widget, Format "1=Chest;2=Running" (0 Sonntag bis 6 Samstag). */
+        @JavascriptInterface
+        public void setPlanWoche(String plan) {
+            getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString("st_plan", plan == null ? "" : plan).apply();
+            WidgetBau.updateAll(MainActivity.this);
         }
 
         @JavascriptInterface
