@@ -408,36 +408,35 @@ const COOP_MEALS = [
     { p: 'popcorn', g: 30, menge: '30 g, eine volle Schüssel', preis: 0.29 },
     { p: 'vaya', g: 40, menge: 'halbe Tüte, 40 g', preis: 1.48 },
     { p: 'zweifel90', g: 45, menge: 'halbe kleine Tüte, 45 g', preis: 1.25 }],
-    note: 'Wähle eine davon. Daneben rohe Paprika, Rüebli oder Gurke von zuhause. Ist die Schüssel leer, knabberst du Gemüse.' }
+    note: 'Wähle eine davon. Daneben Peperoni Sticks mit Quark Dip: 1 rote Peperoni in Streifen, 100 g Magerquark mit 2 EL Milch glatt rühren, dazu eine Prise Salz, 1/2 TL Paprikapulver, 1/4 TL Knoblauchpulver. Das deckt dein Vitamin C für den Tag. Ist die Schüssel leer, knabberst du Peperoni.' }
 ];
 
 const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
 
 /* ======================================================= Trainingsplan */
-const PLAN_V = 2;
+const PLAN_V = 4;
 const DEFAULT_PLAN = { v: PLAN_V, days: [
   { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wds: [1], ex: [
-    { id: 'a1', name: 'Liegestütze', sets: 4, ziel: 'max, Ziel 8 bis 15', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden.', easy: 'Hände auf die Bettkante.' },
-    { id: 'a2', name: 'Liegestütze, Füsse auf dem Bett', sets: 3, ziel: '6 bis 12', pause: 75, einheit: 'Wdh', soll: 6, kg: false, how: 'Füsse aufs Bett, Hände am Boden, Körper zeigt schräg nach unten. Kein Handstand.', easy: 'Normale Liegestütze.' },
-    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '6 bis 10', pause: 75, einheit: 'Wdh', soll: 6, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken.', easy: 'Nur halb so tief runter.' },
-    { id: 'a4', name: 'Enge Liegestütze', sets: 3, ziel: 'max', pause: 60, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper.', easy: 'Auf den Knien.' },
+    { id: 'a1', name: 'Liegestütze', sets: 3, ziel: '8 bis 12, Satz 1 und 2 nicht bis zum Anschlag', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Vorher 2 Min aufwärmen: Armkreisen und 10 Liegestütze auf den Knien. Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss. Weniger Wiederholungen in Satz 2 und 3 sind normal. Schaffst du 3 Mal 12, machst du alle Sätze mit den Füssen auf dem Bett.', easy: 'Hände auf die Bettkante.' },
+    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.' },
+    { id: 'a4', name: 'Enge Liegestütze', sets: 2, ziel: 'max, Knie am Boden ist ok', pause: 60, einheit: 'Wdh', soll: 6, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper. Sobald es auf den Füssen nicht mehr geht, auf den Knien weitermachen.', easy: 'Auf den Knien.' },
     { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.' }
   ] },
   { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wds: [3], ex: [
-    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 60, einheit: 'Wdh', soll: 8, kg: false, how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken.', easy: 'Normaler Ausfallschritt ohne Erhöhung.' },
-    { id: 'b2', name: 'Rucksack Rudern', sets: 4, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen.', easy: 'Weniger Gewicht im Rucksack.' },
-    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '12', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten.', easy: '' },
-    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', soll: 15, kg: false, how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '' }
+    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Vorher 2 Min aufwärmen: 15 Kniebeugen ohne Gewicht und Beine ausschütteln. Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken. Erst alle Wiederholungen mit einem Bein, dann direkt das andere. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Normaler Ausfallschritt ohne Erhöhung.' },
+    { id: 'b2', name: 'Rucksack Rudern', sets: 3, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Schaffst du 3 Mal 12 sauber, kommt 1 kg mehr in den Rucksack.', easy: 'Weniger Gewicht im Rucksack.' },
+    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '10 bis 12', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten. Langsam runter, das ist der wirksame Teil.', easy: 'Ohne Rucksack.' },
+    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', soll: 15, kg: false, how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist, oben 1 s halten. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '' }
   ] },
   { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wds: [5], ex: [
-    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 4, ziel: '15', pause: 60, einheit: 'Wdh', soll: 15, kg: true, kgSoll: 8, how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind.', easy: 'Ohne Rucksack.' },
-    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: 'max', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. Jede Woche eine Wiederholung mehr.', easy: 'Hände auf die Bettkante.' },
-    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 3, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand.', easy: '' },
-    { id: 'c4', name: 'Rucksack Rudern', sets: 3, ziel: '12', pause: 60, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: '' },
-    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 3, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.' }
+    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 3, ziel: '12 bis 15', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Vorher 2 Min aufwärmen: Armkreisen und 10 Kniebeugen ohne Gewicht. Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind.' + ' Satz 1 und 2 mit 1 bis 2 Wiederholungen Reserve.', easy: 'Ohne Rucksack.' },
+    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: '8 bis 12', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Hände auf die Bettkante.' },
+    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 2, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand. Beine abwechseln.', easy: 'Kleinerer Schritt, nicht so tief.' },
+    { id: 'c4', name: 'Rucksack Rudern', sets: 2, ziel: '10 bis 12', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: 'Weniger Gewicht im Rucksack.' },
+    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 2, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.' }
   ] },
   { id: 'J', name: 'Joggen', title: '30 Minuten locker', wds: [2, 4], ex: [
-    { id: 'j1', name: 'Joggen', sets: 1, ziel: '30 Min, so locker dass du noch reden kannst', pause: 0, einheit: 'Min', soll: 30, kg: false, how: 'Lieber langsam und durchgehend als schnell und mit Pausen. Wenn du keuchst, bist du zu schnell.', easy: '1 Min joggen, 1 Min gehen, 15 Mal.' }
+    { id: 'j1', name: 'Joggen', sets: 1, ziel: '30 Min, so locker dass du noch reden kannst', pause: 0, einheit: 'Min', soll: 30, kg: false, how: 'Die ersten 3 Min zügig gehen, dann locker joggen. Lieber langsam und durchgehend als schnell und mit Pausen. Wenn du keuchst, bist du zu schnell. Im Dunkeln: Stirnlampe oder Leuchtweste, und lieber beleuchtete Strassen.', easy: '1 Min joggen, 1 Min gehen, 15 Mal.' }
   ] },
   { id: 'L', name: 'Spaziergang', title: '7000 Schritte', wds: [6, 0], ex: [
     { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '' }
@@ -465,6 +464,10 @@ function migratePlan(p) {
     });
   });
   p.days.forEach(d => { if (!d.wds) { d.wds = d.wd != null ? [d.wd] : []; delete d.wd; } d.ex.forEach(ex => { if (ex.kg == null) ex.kg = false; }); });
+  /* Version 3: Tag A war zu lang für 32 Minuten, wird durch die neue Fassung ersetzt */
+  if ((p.v || 1) < 3) { const i = p.days.findIndex(x => x.id === 'A'); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === 'A')); }
+  /* Version 4: Tag B, Tag C und Joggen ebenfalls auf unter 30 Minuten gebracht */
+  if ((p.v || 1) < 4) ['B', 'C', 'J'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
   p.v = PLAN_V;
   return p;
 }
@@ -678,9 +681,12 @@ function render() {
 /* ======================================================= Stundenplan */
 /* k: training, essen, arbeit, frei, schlaf, pflege */
 /* Jeder Eintrag gilt, bis der nächste beginnt. Darum folgt auf kurze Dinge (Essen, Snack) wieder die Hauptsache. */
-const ABEND_PFLEGE = 'PC aus. Gesicht nur mit Wasser, CeraVe Gel dünn, Nacken 5 Min';
+/* Gel jeden Abend, er verträgt es (19.10.). Brennt oder schuppt die Haut: 3 Tage Pause, dann jeden zweiten Abend. */
+const ABEND_GEL = 'PC aus. Gesicht nur mit Wasser, trocknen, CeraVe Gel dünn, Nacken 5 Min. Glas Wasser ans Bett';
+/* Vitamin D nur Oktober bis März, Omega 3 das ganze Jahr. Beides zum Essen, weil es mit Fett besser aufgenommen wird. */
+const SUPP = (() => { const m = new Date().getMonth(); return (m >= 9 || m <= 2) ? '2 Tropfen Vitamin D und 1 Omega 3 Kapsel' : '1 Omega 3 Kapsel'; })();
 const MORGEN_ARBEIT = (training) => [
-  ['05:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
+  ['05:00', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
   ['05:05', training, 'training'],
   ['05:37', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
   ['05:47', 'Anziehen, Shake in die Flasche, Mittag einpacken', 'essen'],
@@ -691,10 +697,10 @@ const MORGEN_ARBEIT = (training) => [
 ];
 const ABEND = (lichtAus, pc, notiz) => [
   ['17:30', 'Zuhause. Freizeit', 'frei'],
-  ['18:00', 'Gaming mit den Jungs. Snack Schüssel vorher füllen', 'frei'],
-  ['19:00', 'Abendessen mit der Familie, Game pausieren', 'essen'],
+  ['18:00', 'Gaming mit den Jungs. Snack Schüssel vorher füllen, dazu Peperoni Sticks mit Quark Dip', 'frei'],
+  ['19:00', 'Abendessen mit der Familie, Game pausieren. Dazu ' + SUPP, 'essen'],
   ['19:40', 'Gaming oder Freizeit', 'frei'],
-  [pc, ABEND_PFLEGE, 'pflege'],
+  [pc, ABEND_GEL, 'pflege'],
   [lichtAus, 'Licht aus' + (notiz ? '. ' + notiz : ''), 'schlaf']
 ];
 const MITTAG_ARBEIT = [
@@ -711,7 +717,7 @@ const WOCHE = [
   { k: 'Mi', name: 'Mittwoch', art: 'Tag B', items: MORGEN_ARBEIT('Training Tag B: Beine und Rücken').concat(MITTAG_ARBEIT,
       ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
   { k: 'Do', name: 'Donnerstag', art: 'Joggen', items: [
-      ['05:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
+      ['05:00', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
       ['05:05', 'Joggen 30 Min', 'training'],
       ['05:37', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
       ['05:47', 'Anziehen, Shake trinken, Mittag einpacken', 'essen'],
@@ -722,7 +728,7 @@ const WOCHE = [
       ['12:00', 'Mittag in der Pause', 'essen'],
       ['12:45', 'Schule', 'arbeit']].concat(ABEND('21:00', '20:40', 'Morgen Tag C')) },
   { k: 'Fr', name: 'Freitag', art: 'Tag C', items: [
-      ['05:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
+      ['05:00', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
       ['05:05', 'Training Tag C: Ganzkörper und Bauch', 'training'],
       ['05:37', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
       ['05:47', 'Anziehen, Shake trinken, Snack einpacken', 'essen'],
@@ -736,9 +742,9 @@ const WOCHE = [
       ['12:45', 'Zuhause, Mittag', 'essen'],
       ['13:30', 'Freizeit, Wochenende fängt an', 'frei'],
       ['18:00', 'Gaming mit den Jungs', 'frei'],
-      ['19:00', 'Abendessen, Game pausieren', 'essen'],
+      ['19:00', 'Abendessen, Game pausieren. Dazu ' + SUPP, 'essen'],
       ['19:40', 'Gaming', 'frei'],
-      ['00:40', ABEND_PFLEGE, 'pflege'],
+      ['00:40', ABEND_GEL, 'pflege'],
       ['01:00', 'Licht aus. Morgen ausschlafen bis 10:00', 'schlaf']] },
   { k: 'Sa', name: 'Samstag', art: 'Cheat Day', items: [
       ['10:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
@@ -747,9 +753,9 @@ const WOCHE = [
       ['11:30', 'Freizeit', 'frei'],
       ['14:00', 'Raus, 7000 Schritte. Danach duschen', 'training'],
       ['16:00', 'Freizeit und Gaming', 'frei'],
-      ['19:00', 'Abendessen', 'essen'],
+      ['19:00', 'Abendessen. Dazu ' + SUPP, 'essen'],
       ['19:40', 'Freizeit und Gaming', 'frei'],
-      ['23:40', ABEND_PFLEGE, 'pflege'],
+      ['23:40', ABEND_GEL, 'pflege'],
       ['00:00', 'Licht aus. Morgen 09:00', 'schlaf']] },
   { k: 'So', name: 'Sonntag', art: 'Nachholen', items: [
       ['09:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
@@ -759,9 +765,9 @@ const WOCHE = [
       ['11:30', 'Freizeit', 'frei'],
       ['18:00', 'Foto von der Stirn. Einkaufsliste an die Eltern', 'pflege'],
       ['18:15', 'Freizeit', 'frei'],
-      ['19:00', 'Abendessen', 'essen'],
+      ['19:00', 'Abendessen. Dazu ' + SUPP, 'essen'],
       ['19:40', 'Freizeit', 'frei'],
-      ['20:40', ABEND_PFLEGE, 'pflege'],
+      ['20:40', ABEND_GEL, 'pflege'],
       ['21:00', 'Licht aus. Morgen 05:00', 'schlaf']] }
 ];
 const zeitVon = (d, f) => { const t = d.items.find(f); return t ? t[0] : null; };
