@@ -90,6 +90,8 @@ label.field span { display: block; font-size: .8rem; color: var(--muted); margin
 .ex.card { padding-bottom: 16px; }
 .exn { margin: 0; font-size: 1.06rem; font-weight: 600; line-height: 1.3; }
 .ex .ziel { font-size: .84rem; color: var(--muted); margin-top: 2px; }
+.ex a.vid { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; margin: 2px 0 4px; font-size: .84rem; color: var(--ink); text-decoration: none; border: 1px solid var(--line2); border-radius: 10px; padding: 0 12px; }
+.ex a.vid:active { background: var(--fill2); }
 .sethead, .set { display: grid; grid-template-columns: 44px minmax(0, 1fr) 48px; align-items: center; column-gap: 8px; }
 .ex.kg .sethead, .ex.kg .set { grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr) 48px; }
 .sethead { font-size: .74rem; color: var(--faint); padding: 12px 0 6px; border-bottom: 1px solid var(--line); }
@@ -402,7 +404,7 @@ const COOP_MEALS = [
   { zeit: '11:30', titel: 'Mittag 3: Thon und Eier, am meisten Protein', items: [
     { p: 'thon', g: 150, menge: '1 Dose, 150 g abgetropft', preis: 1.30 },
     { p: 'eier', g: 144, menge: '3 Eier aus dem 6er Pack', preis: 1.80 }] },
-  { zeit: '15:30', titel: 'Snack im Büro', items: [
+  { zeit: '15:00', titel: 'Snack im Büro', items: [
     { p: 'eier', g: 96, menge: '2 Eier', preis: 1.20 }] },
   { zeit: 'Gaming', titel: 'Snack Schüssel, eine pro Abend', wahl: true, items: [
     { p: 'popcorn', g: 30, menge: '30 g, eine volle Schüssel', preis: 0.29 },
@@ -414,37 +416,54 @@ const COOP_MEALS = [
 const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
 
 /* ======================================================= Trainingsplan */
-const PLAN_V = 4;
+const PLAN_V = 5;
 const DEFAULT_PLAN = { v: PLAN_V, days: [
   { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wds: [1], ex: [
-    { id: 'a1', name: 'Liegestütze', sets: 3, ziel: '8 bis 12, Satz 1 und 2 nicht bis zum Anschlag', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Vorher 2 Min aufwärmen: Armkreisen und 10 Liegestütze auf den Knien. Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss. Weniger Wiederholungen in Satz 2 und 3 sind normal. Schaffst du 3 Mal 12, machst du alle Sätze mit den Füssen auf dem Bett.', easy: 'Hände auf die Bettkante.' },
-    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.' },
-    { id: 'a4', name: 'Enge Liegestütze', sets: 2, ziel: 'max, Knie am Boden ist ok', pause: 60, einheit: 'Wdh', soll: 6, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper. Sobald es auf den Füssen nicht mehr geht, auf den Knien weitermachen.', easy: 'Auf den Knien.' },
-    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.' }
+    { id: 'a0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups' },
+    { id: 'a1', name: 'Liegestütze', sets: 3, ziel: '8 bis 12, Satz 1 und 2 nicht bis zum Anschlag', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss. Weniger Wiederholungen in Satz 2 und 3 sind normal. Schaffst du 3 Mal 12, machst du alle Sätze mit den Füssen auf dem Bett.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form' },
+    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.', vid: 'pike push up tutorial' },
+    { id: 'a4', name: 'Enge Liegestütze', sets: 2, ziel: 'max, Knie am Boden ist ok', pause: 60, einheit: 'Wdh', soll: 6, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper. Sobald es auf den Füssen nicht mehr geht, auf den Knien weitermachen.', easy: 'Auf den Knien.', vid: 'close grip push up form' },
+    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.', vid: 'forearm plank and hollow body hold' },
+    { id: 'a6', name: 'Nacken: Kinn zurück und Halten', sets: 1, ziel: '10 Mal Kinn zurück, dann je 10 s Halten in 4 Richtungen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen oder stehen. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, 2 s halten, lösen. 10 Mal. Danach Hand an die Stirn legen und den Kopf 10 s leicht dagegen drücken, ohne dass er sich bewegt. Gleich mit der Hand am Hinterkopf, links und rechts. Nur leichter Druck, nie ruckartig.', easy: 'Nur das Kinn zurück, ohne Halten.', vid: 'chin tucks neck isometric exercises' }
   ] },
   { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wds: [3], ex: [
-    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Vorher 2 Min aufwärmen: 15 Kniebeugen ohne Gewicht und Beine ausschütteln. Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken. Erst alle Wiederholungen mit einem Bein, dann direkt das andere. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Normaler Ausfallschritt ohne Erhöhung.' },
-    { id: 'b2', name: 'Rucksack Rudern', sets: 3, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Schaffst du 3 Mal 12 sauber, kommt 1 kg mehr in den Rucksack.', easy: 'Weniger Gewicht im Rucksack.' },
-    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '10 bis 12', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten. Langsam runter, das ist der wirksame Teil.', easy: 'Ohne Rucksack.' },
-    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', soll: 15, kg: false, how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist, oben 1 s halten. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '' }
+    { id: 'b0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, Bein vor und zurück pendeln 10 Mal pro Bein, 15 Kniebeugen ohne Gewicht, 10 Glute Bridges. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute lower body warm up' },
+    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken. Erst alle Wiederholungen mit einem Bein, dann direkt das andere. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Normaler Ausfallschritt ohne Erhöhung.', vid: 'bulgarian split squat form' },
+    { id: 'b2', name: 'Rucksack Rudern', sets: 3, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Schaffst du 3 Mal 12 sauber, kommt 1 kg mehr in den Rucksack.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row' },
+    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '10 bis 12', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten. Langsam runter, das ist der wirksame Teil.', easy: 'Ohne Rucksack.', vid: 'backpack romanian deadlift form' },
+    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', soll: 15, kg: false, how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist, oben 1 s halten. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '', vid: 'glute bridge and prone YTW raises' },
+    { id: 'b5', name: 'Nacken: Kinn zurück und Halten', sets: 1, ziel: '10 Mal Kinn zurück, dann je 10 s Halten in 4 Richtungen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen oder stehen. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, 2 s halten, lösen. 10 Mal. Danach Hand an die Stirn legen und den Kopf 10 s leicht dagegen drücken, ohne dass er sich bewegt. Gleich mit der Hand am Hinterkopf, links und rechts. Nur leichter Druck, nie ruckartig.', easy: 'Nur das Kinn zurück, ohne Halten.', vid: 'chin tucks neck isometric exercises' }
   ] },
   { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wds: [5], ex: [
-    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 3, ziel: '12 bis 15', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Vorher 2 Min aufwärmen: Armkreisen und 10 Kniebeugen ohne Gewicht. Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind.' + ' Satz 1 und 2 mit 1 bis 2 Wiederholungen Reserve.', easy: 'Ohne Rucksack.' },
-    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: '8 bis 12', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Hände auf die Bettkante.' },
-    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 2, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand. Beine abwechseln.', easy: 'Kleinerer Schritt, nicht so tief.' },
-    { id: 'c4', name: 'Rucksack Rudern', sets: 2, ziel: '10 bis 12', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: 'Weniger Gewicht im Rucksack.' },
-    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 2, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.' }
+    { id: 'c0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups' },
+    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 3, ziel: '12 bis 15', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind. Satz 1 und 2 mit 1 bis 2 Wiederholungen Reserve.', easy: 'Ohne Rucksack.', vid: 'goblet squat form' },
+    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: '8 bis 12', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form' },
+    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 2, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand. Beine abwechseln.', easy: 'Kleinerer Schritt, nicht so tief.', vid: 'reverse lunge form' },
+    { id: 'c4', name: 'Rucksack Rudern', sets: 2, ziel: '10 bis 12', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row' },
+    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 2, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.', vid: 'lying leg raise side plank dead bug' },
+    { id: 'c6', name: 'Nacken: Kinn zurück und Halten', sets: 1, ziel: '10 Mal Kinn zurück, dann je 10 s Halten in 4 Richtungen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen oder stehen. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, 2 s halten, lösen. 10 Mal. Danach Hand an die Stirn legen und den Kopf 10 s leicht dagegen drücken, ohne dass er sich bewegt. Gleich mit der Hand am Hinterkopf, links und rechts. Nur leichter Druck, nie ruckartig.', easy: 'Nur das Kinn zurück, ohne Halten.', vid: 'chin tucks neck isometric exercises' }
   ] },
-  { id: 'J', name: 'Joggen', title: '30 Minuten locker', wds: [2, 4], ex: [
-    { id: 'j1', name: 'Joggen', sets: 1, ziel: '30 Min, so locker dass du noch reden kannst', pause: 0, einheit: 'Min', soll: 30, kg: false, how: 'Die ersten 3 Min zügig gehen, dann locker joggen. Lieber langsam und durchgehend als schnell und mit Pausen. Wenn du keuchst, bist du zu schnell. Im Dunkeln: Stirnlampe oder Leuchtweste, und lieber beleuchtete Strassen.', easy: '1 Min joggen, 1 Min gehen, 15 Mal.' }
+  { id: 'J', name: 'Beweglichkeit', title: 'Füsse, Beine, Rücken', wds: [2, 4], ex: [
+    { id: 'j0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: 'Auf der Stelle marschieren, Arme locker kreisen, Schultern hoch und runter, Hüfte kreisen. Nur warm werden, nicht ausser Atem.', easy: '', vid: 'gentle warm up before stretching' },
+    { id: 'j1', name: 'Fussgelenke kreisen und Zehen spreizen', sets: 1, ziel: '10 Kreise pro Richtung und Fuss, dann 10 Mal Zehen spreizen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Auf die Bettkante sitzen, einen Fuss anheben und langsam grosse Kreise machen, 10 in jede Richtung. Dann Zehen so weit wie möglich auseinander spreizen und wieder einkrallen. Anderer Fuss.', easy: '', vid: 'ankle circles and toe spreading exercise' },
+    { id: 'j2', name: 'Wadendehnung an der Wand', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Hände an die Wand, ein Bein weit nach hinten, Ferse bleibt am Boden, Bein gestreckt. Satz 1 mit gestrecktem Bein, Satz 2 mit leicht gebeugtem hinterem Knie, dann dehnt es tiefer unten an der Achillessehne.', easy: 'Kleinerer Schritt nach hinten.', vid: 'calf stretch against wall straight and bent knee' },
+    { id: 'j3', name: 'Knie zur Wand', sets: 2, ziel: '10 pro Bein', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Fuss etwa eine Handbreit vor der Wand, Knie nach vorne zur Wand schieben, Ferse bleibt am Boden. Berührt das Knie die Wand locker, Fuss etwas weiter weg stellen. Das macht deine Fussgelenke beweglicher.', easy: 'Fuss näher an die Wand.', vid: 'knee to wall ankle mobility drill' },
+    { id: 'j4', name: 'Katze und Kuh', sets: 2, ziel: '10 langsam', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Vierfüssler, Hände unter den Schultern, Knie unter der Hüfte. Ausatmen: Rücken rund wie eine Katze, Kopf runter. Einatmen: Bauch Richtung Boden, Brust nach vorne, Blick leicht hoch.', easy: '', vid: 'cat cow stretch' },
+    { id: 'j5', name: 'Hüftbeuger Dehnung im Kniestand', sets: 2, ziel: '30 s pro Seite', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Ein Knie am Boden, Kissen drunter, anderer Fuss vorne. Po anspannen und Becken nach vorne schieben, bis es vorne an der Hüfte zieht. Oberkörper aufrecht, kein Hohlkreuz. Gut gegen langes Sitzen.', easy: 'Weniger weit nach vorne schieben.', vid: 'half kneeling hip flexor stretch' },
+    { id: 'j6', name: 'Oberschenkel hinten dehnen', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Rückenlage, ein Bein gestreckt am Boden, das andere gestreckt hoch. Handtuch um die Fusssohle legen und das Bein sanft Richtung Kopf ziehen. Ziehen ja, Schmerz nein.', easy: 'Knie vom oberen Bein leicht beugen.', vid: 'lying hamstring stretch with towel' },
+    { id: 'j7', name: '90/90 Hüftrotation', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Am Boden sitzen, beide Knie im rechten Winkel, eines zeigt nach vorne, eines zur Seite. Hände hinter dir abstützen, Knie langsam auf die andere Seite kippen. Zurück und wiederholen.', easy: 'Hände weiter hinten abstützen.', vid: '90 90 hip switch mobility' },
+    { id: 'j8', name: 'Rücken öffnen in Seitenlage', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Seitenlage, Knie angewinkelt vor dem Bauch, Arme gestreckt nach vorne aufeinander. Oberen Arm in einem grossen Bogen auf die andere Seite öffnen, Blick folgt der Hand, Knie bleiben unten. 2 s halten, zurück.', easy: '', vid: 'open book thoracic rotation stretch' },
+    { id: 'j9', name: 'Tiefe Hocke halten', sets: 2, ziel: '30 s', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Füsse etwas breiter als schulterbreit, Zehen leicht nach aussen, so tief wie möglich in die Hocke, Fersen am Boden. Ellbogen drücken die Knie leicht nach aussen, Rücken lang.', easy: 'Am Türrahmen festhalten oder die Fersen auf ein gefaltetes Handtuch stellen.', vid: 'deep squat hold mobility' },
+    { id: 'j10', name: 'Kindhaltung', sets: 1, ziel: '60 s', pause: 0, einheit: 'Sek', soll: 60, kg: false, how: 'Kniestand, Po zu den Fersen, Oberkörper nach vorne ablegen, Arme lang nach vorne. Ruhig in den unteren Rücken atmen.', easy: 'Kissen zwischen Po und Fersen.', vid: 'child pose stretch' },
+    { id: 'j11', name: 'Nacken: Kinn zurück und seitlich dehnen', sets: 1, ziel: '10 Mal Kinn zurück, dann 30 s pro Seite', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: '10 Mal Kinn zurück wie an den Krafttagen. Dann Ohr Richtung Schulter neigen, mit der Hand nur ganz leicht nachhelfen, Schultern bleiben unten. 30 s pro Seite.', easy: '', vid: 'chin tuck and neck side stretch' }
   ] },
   { id: 'L', name: 'Spaziergang', title: '7000 Schritte', wds: [6, 0], ex: [
-    { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '' }
+    { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '', vid: '' }
   ] },
   { id: 'M', name: 'Minimum', title: '15 Minuten, wenn gar nichts geht', wds: [], ex: [
-    { id: 'm1', name: 'Liegestütze', sets: 3, ziel: '10', pause: 30, einheit: 'Wdh', soll: 10, kg: false, how: '', easy: 'Hände auf die Bettkante.' },
-    { id: 'm2', name: 'Kniebeugen', sets: 3, ziel: '15', pause: 30, einheit: 'Wdh', soll: 15, kg: false, how: '', easy: '' },
-    { id: 'm3', name: 'Unterarmstütz', sets: 3, ziel: '30 s', pause: 30, einheit: 'Sek', soll: 30, kg: false, how: '', easy: '' }
+    { id: 'm1', name: 'Liegestütze', sets: 3, ziel: '10', pause: 30, einheit: 'Wdh', soll: 10, kg: false, how: '', easy: 'Hände auf die Bettkante.', vid: 'push up proper form' },
+    { id: 'm2', name: 'Kniebeugen', sets: 3, ziel: '15', pause: 30, einheit: 'Wdh', soll: 15, kg: false, how: '', easy: '', vid: 'bodyweight squat form' },
+    { id: 'm3', name: 'Unterarmstütz', sets: 3, ziel: '30 s', pause: 30, einheit: 'Sek', soll: 30, kg: false, how: '', easy: '', vid: 'forearm plank form' }
   ] }
 ] };
 
@@ -466,6 +485,8 @@ function migratePlan(p) {
   p.days.forEach(d => { if (!d.wds) { d.wds = d.wd != null ? [d.wd] : []; delete d.wd; } d.ex.forEach(ex => { if (ex.kg == null) ex.kg = false; }); });
   /* Version 3: Tag A war zu lang für 32 Minuten, wird durch die neue Fassung ersetzt */
   if ((p.v || 1) < 3) { const i = p.days.findIndex(x => x.id === 'A'); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === 'A')); }
+  /* Version 5: Aufwärmen und Nacken in jedem Training, Joggen wird Beweglichkeit, Videos zu jeder Übung */
+  if ((p.v || 1) < 5) ['A', 'B', 'C', 'J', 'L', 'M'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
   /* Version 4: Tag B, Tag C und Joggen ebenfalls auf unter 30 Minuten gebracht */
   if ((p.v || 1) < 4) ['B', 'C', 'J'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
   p.v = PLAN_V;
@@ -682,21 +703,22 @@ function render() {
 /* k: training, essen, arbeit, frei, schlaf, pflege */
 /* Jeder Eintrag gilt, bis der nächste beginnt. Darum folgt auf kurze Dinge (Essen, Snack) wieder die Hauptsache. */
 /* Gel jeden Abend, er verträgt es (19.10.). Brennt oder schuppt die Haut: 3 Tage Pause, dann jeden zweiten Abend. */
-const ABEND_GEL = 'PC aus. Gesicht nur mit Wasser, trocknen, CeraVe Gel dünn, Nacken 5 Min. Glas Wasser ans Bett';
+const ABEND_GEL = 'PC aus. Gesicht nur mit Wasser, trocknen, CeraVe Gel dünn. Glas Wasser ans Bett';
 /* Vitamin D nur Oktober bis März, Omega 3 das ganze Jahr. Beides zum Essen, weil es mit Fett besser aufgenommen wird. */
 const SUPP = (() => { const m = new Date().getMonth(); return (m >= 9 || m <= 2) ? '2 Tropfen Vitamin D und 1 Omega 3 Kapsel' : '1 Omega 3 Kapsel'; })();
+/* Arbeitstage Mo bis Mi: 06:30 bis 16:00, um 17:00 zuhause */
 const MORGEN_ARBEIT = (training) => [
-  ['05:00', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
-  ['05:05', training, 'training'],
-  ['05:37', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
-  ['05:47', 'Anziehen, Shake in die Flasche, Mittag einpacken', 'essen'],
-  ['05:52', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
-  ['05:58', 'Raus, 8 Min zum Bahnhof', 'arbeit'],
-  ['06:08', 'Zug, Shake trinken', 'essen'],
-  ['07:00', 'Arbeit', 'arbeit']
+  ['04:30', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
+  ['04:35', training, 'training'],
+  ['05:07', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
+  ['05:17', 'Anziehen, Shake in die Flasche, Mittag und Eier einpacken', 'essen'],
+  ['05:22', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
+  ['05:28', 'Raus, 8 Min zum Bahnhof', 'arbeit'],
+  ['05:38', 'Zug, Shake trinken', 'essen'],
+  ['06:30', 'Arbeit', 'arbeit']
 ];
-const ABEND = (lichtAus, pc, notiz) => [
-  ['17:30', 'Zuhause. Freizeit', 'frei'],
+const ABEND = (heim, lichtAus, pc, notiz) => [
+  [heim, 'Zuhause. Freizeit', 'frei'],
   ['18:00', 'Gaming mit den Jungs. Snack Schüssel vorher füllen, dazu Peperoni Sticks mit Quark Dip', 'frei'],
   ['19:00', 'Abendessen mit der Familie, Game pausieren. Dazu ' + SUPP, 'essen'],
   ['19:40', 'Gaming oder Freizeit', 'frei'],
@@ -705,20 +727,20 @@ const ABEND = (lichtAus, pc, notiz) => [
 ];
 const MITTAG_ARBEIT = [
   ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'],
-  ['12:15', 'Arbeit', 'arbeit'],
-  ['15:30', 'Snack: 2 Pic Nic Eier', 'essen'],
-  ['15:40', 'Arbeit', 'arbeit'],
-  ['16:30', 'Feierabend, ab nach Hause', 'arbeit']];
+  ['12:00', 'Arbeit', 'arbeit'],
+  ['15:00', 'Snack: 2 Pic Nic Eier', 'essen'],
+  ['15:10', 'Arbeit', 'arbeit'],
+  ['16:00', 'Feierabend, ab nach Hause', 'arbeit']];
 const WOCHE = [
   { k: 'Mo', name: 'Montag', art: 'Tag A', items: MORGEN_ARBEIT('Training Tag A: Brust und Schultern').concat(MITTAG_ARBEIT,
-      ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
-  { k: 'Di', name: 'Dienstag', art: 'Joggen', items: MORGEN_ARBEIT('Joggen 30 Min').concat(MITTAG_ARBEIT,
-      ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
+      ABEND('17:00', '20:30', '20:10', '8 Stunden bis 04:30')) },
+  { k: 'Di', name: 'Dienstag', art: 'Beweglichkeit', items: MORGEN_ARBEIT('Beweglichkeit: Füsse, Beine, Rücken').concat(MITTAG_ARBEIT,
+      ABEND('17:00', '20:30', '20:10', '8 Stunden bis 04:30')) },
   { k: 'Mi', name: 'Mittwoch', art: 'Tag B', items: MORGEN_ARBEIT('Training Tag B: Beine und Rücken').concat(MITTAG_ARBEIT,
-      ABEND('21:00', '20:40', '8 Stunden bis 05:00')) },
-  { k: 'Do', name: 'Donnerstag', art: 'Joggen', items: [
+      ABEND('17:00', '21:00', '20:40', '8 Stunden bis 05:00')) },
+  { k: 'Do', name: 'Donnerstag', art: 'Beweglichkeit', items: [
       ['05:00', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
-      ['05:05', 'Joggen 30 Min', 'training'],
+      ['05:05', 'Beweglichkeit: Füsse, Beine, Rücken', 'training'],
       ['05:37', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
       ['05:47', 'Anziehen, Shake trinken, Mittag einpacken', 'essen'],
       ['05:52', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
@@ -726,7 +748,7 @@ const WOCHE = [
       ['06:30', 'Raus zur Berufsschule', 'arbeit'],
       ['07:30', 'Schule', 'arbeit'],
       ['12:00', 'Mittag in der Pause', 'essen'],
-      ['12:45', 'Schule', 'arbeit']].concat(ABEND('21:00', '20:40', 'Morgen Tag C')) },
+      ['12:45', 'Schule', 'arbeit']].concat(ABEND('17:30', '21:00', '20:40', 'Morgen Tag C')) },
   { k: 'Fr', name: 'Freitag', art: 'Tag C', items: [
       ['05:00', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
       ['05:05', 'Training Tag C: Ganzkörper und Bauch', 'training'],
@@ -767,8 +789,8 @@ const WOCHE = [
       ['18:15', 'Freizeit', 'frei'],
       ['19:00', 'Abendessen. Dazu ' + SUPP, 'essen'],
       ['19:40', 'Freizeit', 'frei'],
-      ['20:40', ABEND_GEL, 'pflege'],
-      ['21:00', 'Licht aus. Morgen 05:00', 'schlaf']] }
+      ['20:10', ABEND_GEL, 'pflege'],
+      ['20:30', 'Licht aus. Morgen 04:30', 'schlaf']] }
 ];
 const zeitVon = (d, f) => { const t = d.items.find(f); return t ? t[0] : null; };
 const lichtAus = d => zeitVon(d, x => /^Licht aus/.test(x[1]));
@@ -876,6 +898,7 @@ function renderTraining() {
     } else {
       h += `<h3 class="exn">${esc(ex.name)}</h3>
         <div class="ziel">${ex.sets} × ${esc(ex.ziel || KA)}${ex.pause ? ' · Pause ' + ex.pause + ' s' : ''}</div>
+        ${ex.vid === '' ? '' : `<a class="vid" href="${esc(videoLink(ex))}" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>Video ansehen</a>`}
         <div class="sethead"><span>Satz</span>${ex.kg ? '<span>kg</span>' : ''}<span>${ex.einheit === 'Wdh' ? 'Wiederholungen' : ex.einheit === 'Sek' ? 'Sekunden' : 'Minuten'}</span><span>Fertig</span></div>`;
       sets.forEach((st, i) => {
         h += `<div class="set ${ex.kg ? '' : 'nokg'} ${st.d ? 'done' : ''}">
@@ -957,6 +980,12 @@ $('#main').addEventListener('change', e => {
     if (ex) { ex.einheit = e.target.value; savePlan(); }
   }
 });
+
+/* Vorschau: YouTube Suche mit englischem Suchbegriff, eigene Übungen über ihren Namen */
+function videoLink(ex) {
+  const q = ex.vid || (ex.name + ' Übung richtig ausführen');
+  return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
+}
 
 function finishTraining() {
   const day = dayById(curDay); const s = sessionFor(day);
@@ -1041,7 +1070,7 @@ function streakKarte(kompakt) {
 }
 /* Für das Widget auf dem Startbildschirm (nur in der APK) */
 /* Englische Namen fürs Widget, eigene Tage fallen auf ihren Titel zurück. */
-const WIDGET_PLAN_EN = { A: 'Chest & shoulders', B: 'Legs & back', C: 'Full body', J: 'Running', L: 'Walk' };
+const WIDGET_PLAN_EN = { A: 'Chest & shoulders', B: 'Legs & back', C: 'Full body', J: 'Mobility', L: 'Walk' };
 function streakAnsWidget() {
   try {
     if (!NATIVE || typeof NATIVE.setStreak !== 'function') return;
