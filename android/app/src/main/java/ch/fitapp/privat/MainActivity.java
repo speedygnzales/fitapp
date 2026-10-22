@@ -20,6 +20,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -43,9 +44,11 @@ public class MainActivity extends Activity {
     static final String CHANNEL = "pausentimer_v1";
     private static final int REQ_FILE = 1;
     private static final int REQ_NOTIF = 2;
+    private static final int REQ_CAM = 3;
 
     private WebView web;
     private ValueCallback<Uri[]> fileCallback;
+    private PermissionRequest camRequest;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -107,6 +110,35 @@ public class MainActivity extends Activity {
                 }
                 return true;
             }
+
+            /* Kamera für den Barcode Scanner: nur Video, nur für die eigene App Seite */
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                runOnUiThread(() -> {
+                    boolean video = false;
+                    for (String r : request.getResources()) {
+                        if (PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(r)) {
+                            video = true;
+                        }
+                    }
+                    Uri home = Uri.parse(getString(R.string.app_url));
+                    Uri von = request.getOrigin();
+                    boolean eigene = von != null && home.getHost() != null && home.getHost().equalsIgnoreCase(von.getHost());
+                    if (!video || !eigene) {
+                        request.deny();
+                        return;
+                    }
+                    if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        request.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE});
+                    } else {
+                        if (camRequest != null) {
+                            camRequest.deny();
+                        }
+                        camRequest = request;
+                        requestPermissions(new String[]{Manifest.permission.CAMERA}, REQ_CAM);
+                    }
+                });
+            }
         });
 
         if (state != null) {
@@ -119,6 +151,19 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 33
                 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_NOTIF);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int code, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(code, permissions, results);
+        if (code == REQ_CAM && camRequest != null) {
+            if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
+                camRequest.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE});
+            } else {
+                camRequest.deny();
+            }
+            camRequest = null;
         }
     }
 

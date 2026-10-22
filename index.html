@@ -90,8 +90,60 @@ label.field span { display: block; font-size: .8rem; color: var(--muted); margin
 .ex.card { padding-bottom: 16px; }
 .exn { margin: 0; font-size: 1.06rem; font-weight: 600; line-height: 1.3; }
 .ex .ziel { font-size: .84rem; color: var(--muted); margin-top: 2px; }
-.ex a.vid { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; margin: 2px 0 4px; font-size: .84rem; color: var(--ink); text-decoration: none; border: 1px solid var(--line2); border-radius: 10px; padding: 0 12px; }
-.ex a.vid:active { background: var(--fill2); }
+.ex.aktiv { border-color: var(--muted); }
+.ex.fertig .exhead, .ex.fertig .extools { opacity: .55; }
+.ex .jetzt { display: inline-block; font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; color: var(--inv); background: var(--ink); border-radius: 6px; padding: 3px 7px; margin: -4px 0 10px; }
+.exhead { display: flex; gap: 12px; align-items: center; }
+.exinfo { min-width: 0; flex: 1; }
+.exhead .exn { margin: 0; }
+.ex .last { font-size: .8rem; color: var(--faint); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.pv { flex: 0 0 auto; width: 64px; height: 64px; padding: 0; border: 1px solid var(--line2); border-radius: 12px; overflow: hidden; background: var(--fill); display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.pv-leer { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.pv-anim { position: relative; display: block; width: 100%; height: 100%; background: #141414; }
+.pv-anim img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+.pv-anim img + img { animation: pvwechsel 2.4s steps(1, end) infinite; }
+.pv-anim.kaputt { display: none; }
+@keyframes pvwechsel { 0% { opacity: 0; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pv-anim img + img { animation: none; opacity: 0; } }
+.extools { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; }
+.tbtn { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 1px solid var(--line2); border-radius: 10px; background: transparent; color: var(--ink); font-size: .84rem; }
+.tbtn:active, .vidbtn:active { background: var(--fill2); }
+.ueb-bild { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); aspect-ratio: 4 / 3; background: var(--fill); display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.ueb-bild .pv-anim img { object-fit: cover; }
+.ueb-fakten { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 14px; }
+.ueb-fakten > div { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.ueb-fakten b { display: block; margin-top: 4px; font-weight: 600; font-size: .92rem; }
+.chip.on { color: var(--ink); background: var(--fill2); border-color: var(--fill2); min-height: 32px; font-size: .82rem; cursor: default; }
+.scanbtn { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 64px; margin-bottom: 12px; padding: 12px 16px; border: 1px solid var(--ink); border-radius: var(--r); background: var(--ink); color: var(--inv); text-align: left; }
+.scanbtn > span { display: flex; flex-direction: column; gap: 2px; }
+.scanbtn .muted { color: var(--inv); opacity: .65; }
+.scan-cam { position: relative; border-radius: 14px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; }
+.scan-cam[hidden] { display: none; }
+.scan-cam video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.scan-rahmen { position: absolute; left: 12%; right: 12%; top: 30%; bottom: 30%; border: 2px solid rgba(255,255,255,.9); border-radius: 12px; box-shadow: 0 0 0 999px rgba(0,0,0,.35); }
+.scan-hand { display: flex; gap: 8px; margin-top: 10px; }
+.scan-hand input { flex: 1; min-width: 0; min-height: 48px; border-radius: var(--rs); border: 1px solid var(--line2); background: var(--fill); color: var(--ink); padding: 0 12px; font: inherit; }
+.scan-alt-liste { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.scan-alt { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); text-align: left; }
+.scan-alt img, .scan-alt .ph { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; background: var(--fill2); flex: 0 0 auto; }
+.scan-alt > span { display: flex; flex-direction: column; min-width: 0; }
+.prod-kopf { display: flex; gap: 14px; align-items: center; }
+.prod-kopf img { width: 76px; height: 76px; object-fit: contain; border-radius: 12px; background: #fff; flex: 0 0 auto; }
+.prod-kopf h3 { margin: 0 0 4px; }
+.faint { color: var(--faint); }
+.urteil ul { margin: 6px 0 0; padding-left: 18px; }
+.urteil.gut { border-color: var(--ink); }
+.scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; margin-top: 12px; }
+.score { border: 1px solid var(--line); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+.score .scn { font-size: 1.6rem; font-weight: 600; line-height: 1.1; }
+.naehr { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: .92rem; }
+.naehr td { padding: 8px 0; border-top: 1px solid var(--hair); }
+.naehr td + td { text-align: right; font-variant-numeric: tabular-nums; }
+.konzern-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.konzern-links .tbtn { text-decoration: none; }
+ol.schritte { margin: 8px 0 0; padding-left: 22px; }
+ol.schritte li { margin: 0 0 8px; line-height: 1.45; }
+.vidbtn { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 14px; color: var(--ink); text-decoration: none; }
 .sethead, .set { display: grid; grid-template-columns: 44px minmax(0, 1fr) 48px; align-items: center; column-gap: 8px; }
 .ex.kg .sethead, .ex.kg .set { grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr) 48px; }
 .sethead { font-size: .74rem; color: var(--faint); padding: 12px 0 6px; border-bottom: 1px solid var(--line); }
@@ -243,16 +295,38 @@ nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 600; }
 .plan-now .big { font-size: 1.35rem; font-weight: 600; margin: 6px 0 6px; line-height: 1.25; }
 .plan-now b { color: var(--ink); font-weight: 600; }
 .tl { list-style: none; margin: 0; padding: 0; }
-.tl li { display: grid; grid-template-columns: 50px 12px 1fr; gap: 8px; align-items: start; padding: 10px 0; border-top: 1px solid var(--hair); }
+.tl li { display: grid; grid-template-columns: 46px 22px 1fr auto; gap: 8px; align-items: center; padding: 9px 0; border-top: 1px solid var(--hair); }
+.tl .ico { color: var(--faint); display: flex; }
+.tl li.k-training .ico { color: var(--ink); }
+.tl .tx { line-height: 1.35; }
+.tl-ab { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--faint); margin: 14px 0 2px; }
+.tl-ab:first-of-type { margin-top: 10px; }
+.tl-k { width: 32px; height: 32px; border-radius: 9px; border: 1px solid var(--line2); background: transparent; color: var(--ink); font-size: 1rem; display: flex; align-items: center; justify-content: center; padding: 0; }
+.tl-k.hak.on { background: var(--ink); color: var(--inv); border-color: var(--ink); font-weight: 700; }
+.tl li.now .tl-k { border-color: var(--inv); color: var(--inv); }
+.tl li.now .tl-k.hak.on { background: var(--inv); color: var(--ink); }
+.tl li.now .ico { color: var(--inv); }
+.nowrow { display: flex; gap: 12px; align-items: center; margin: 8px 0 4px; }
+.nowrow .big { margin: 0; }
+.nico { width: 40px; height: 40px; flex: 0 0 auto; border-radius: 12px; background: var(--ink); color: var(--inv); display: flex; align-items: center; justify-content: center; }
+.nbar, .gew-bar { height: 4px; border-radius: 4px; background: var(--fill2); overflow: hidden; margin: 10px 0 8px; }
+.nbar i, .gew-bar i { display: block; height: 100%; background: var(--ink); border-radius: 4px; }
+.nnext { display: flex; flex-direction: column; gap: 2px; font-size: .86rem; }
+.nnext b { font-weight: 600; }
+.nacts { display: flex; gap: 8px; margin-top: 12px; }
+.nacts .btn { flex: 1; }
+.gew-kopf { display: flex; justify-content: space-between; align-items: baseline; }
+.gew-liste { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.gew-item { display: flex; align-items: center; gap: 10px; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); padding: 0 12px; text-align: left; font-size: .92rem; }
+.gew-item .box { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--line2); display: flex; align-items: center; justify-content: center; font-size: .8rem; font-weight: 700; }
+.gew-item.on { color: var(--muted); }
+.gew-item.on .box { background: var(--ink); border-color: var(--ink); color: var(--inv); }
 .tl li:first-child { border-top: 0; }
 .tl .t { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .88rem; padding-top: 1px; }
-.tl .dot { width: 7px; height: 7px; border-radius: 2px; margin-top: 8px; background: var(--line2); }
-.tl .dot.k-training { background: var(--ink); }
 .tl li.past { opacity: .4; }
 .tl li.now { background: var(--ink); color: var(--inv); border-radius: var(--rs); margin: 0 -10px; padding: 10px; border-top-color: transparent; }
 .tl li.now + li { border-top-color: transparent; }
 .tl li.now .t { color: var(--inv); font-weight: 600; }
-.tl li.now .dot { background: var(--inv); }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .76rem; color: var(--faint); margin-top: 12px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { width: 7px; height: 7px; border-radius: 2px; display: inline-block; background: var(--line2); }
@@ -416,54 +490,58 @@ const COOP_MEALS = [
 const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
 
 /* ======================================================= Trainingsplan */
-const PLAN_V = 5;
+const PLAN_V = 6;
 const DEFAULT_PLAN = { v: PLAN_V, days: [
   { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wds: [1], ex: [
-    { id: 'a0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups' },
-    { id: 'a1', name: 'Liegestütze', sets: 3, ziel: '8 bis 12, Satz 1 und 2 nicht bis zum Anschlag', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss. Weniger Wiederholungen in Satz 2 und 3 sind normal. Schaffst du 3 Mal 12, machst du alle Sätze mit den Füssen auf dem Bett.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form' },
-    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.', vid: 'pike push up tutorial' },
-    { id: 'a4', name: 'Enge Liegestütze', sets: 2, ziel: 'max, Knie am Boden ist ok', pause: 60, einheit: 'Wdh', soll: 6, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper. Sobald es auf den Füssen nicht mehr geht, auf den Knien weitermachen.', easy: 'Auf den Knien.', vid: 'close grip push up form' },
-    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.', vid: 'forearm plank and hollow body hold' },
-    { id: 'a6', name: 'Nacken: Kinn zurück und Halten', sets: 1, ziel: '10 Mal Kinn zurück, dann je 10 s Halten in 4 Richtungen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen oder stehen. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, 2 s halten, lösen. 10 Mal. Danach Hand an die Stirn legen und den Kopf 10 s leicht dagegen drücken, ohne dass er sich bewegt. Gleich mit der Hand am Hinterkopf, links und rechts. Nur leichter Druck, nie ruckartig.', easy: 'Nur das Kinn zurück, ohne Halten.', vid: 'chin tucks neck isometric exercises' }
+    { id: 'a0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups', bild: 'Arm_Circles', mus: 'Schultern, ganzer Körper' },
+    { id: 'a1', name: 'Liegestütze', sets: 3, ziel: '8 bis 12, Satz 1 und 2 nicht bis zum Anschlag', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss. Weniger Wiederholungen in Satz 2 und 3 sind normal. Schaffst du 3 Mal 12, machst du alle Sätze mit den Füssen auf dem Bett.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps, Schultern vorne' },
+    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.', vid: 'pike push up tutorial', bild: '', mus: 'Schultern, Trizeps' },
+    { id: 'a4', name: 'Enge Liegestütze', sets: 2, ziel: 'max, Knie am Boden ist ok', pause: 60, einheit: 'Wdh', soll: 6, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper. Sobald es auf den Füssen nicht mehr geht, auf den Knien weitermachen.', easy: 'Auf den Knien.', vid: 'close grip push up form', bild: 'Push-Ups_-_Close_Triceps_Position', mus: 'Trizeps, Brust' },
+    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.', vid: 'forearm plank and hollow body hold', bild: 'Plank', mus: 'Bauch, Rumpf', bildHinweis: 'Bild zeigt den Stütz, der Hollow kommt direkt danach in Rückenlage.' },
+    { id: 'a6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken' },
+    { id: 'a7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich' }
   ] },
   { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wds: [3], ex: [
-    { id: 'b0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, Bein vor und zurück pendeln 10 Mal pro Bein, 15 Kniebeugen ohne Gewicht, 10 Glute Bridges. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute lower body warm up' },
-    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken. Erst alle Wiederholungen mit einem Bein, dann direkt das andere. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Normaler Ausfallschritt ohne Erhöhung.', vid: 'bulgarian split squat form' },
-    { id: 'b2', name: 'Rucksack Rudern', sets: 3, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Schaffst du 3 Mal 12 sauber, kommt 1 kg mehr in den Rucksack.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row' },
-    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '10 bis 12', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten. Langsam runter, das ist der wirksame Teil.', easy: 'Ohne Rucksack.', vid: 'backpack romanian deadlift form' },
-    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', soll: 15, kg: false, how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist, oben 1 s halten. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '', vid: 'glute bridge and prone YTW raises' },
-    { id: 'b5', name: 'Nacken: Kinn zurück und Halten', sets: 1, ziel: '10 Mal Kinn zurück, dann je 10 s Halten in 4 Richtungen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen oder stehen. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, 2 s halten, lösen. 10 Mal. Danach Hand an die Stirn legen und den Kopf 10 s leicht dagegen drücken, ohne dass er sich bewegt. Gleich mit der Hand am Hinterkopf, links und rechts. Nur leichter Druck, nie ruckartig.', easy: 'Nur das Kinn zurück, ohne Halten.', vid: 'chin tucks neck isometric exercises' }
+    { id: 'b0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, Bein vor und zurück pendeln 10 Mal pro Bein, 15 Kniebeugen ohne Gewicht, 10 Glute Bridges. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute lower body warm up', bild: 'Bodyweight_Squat', mus: 'Beine, Hüfte' },
+    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken. Erst alle Wiederholungen mit einem Bein, dann direkt das andere. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Normaler Ausfallschritt ohne Erhöhung.', vid: 'bulgarian split squat form', bild: '', mus: 'Oberschenkel vorne, Po' },
+    { id: 'b2', name: 'Rucksack Rudern', sets: 3, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Schaffst du 3 Mal 12 sauber, kommt 1 kg mehr in den Rucksack.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', mus: 'Rücken Mitte, Latissimus, Bizeps', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack mit beiden Händen.' },
+    { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '10 bis 12', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten. Langsam runter, das ist der wirksame Teil.', easy: 'Ohne Rucksack.', vid: 'backpack romanian deadlift form', bild: 'Romanian_Deadlift', mus: 'Oberschenkel hinten, Po, unterer Rücken', bildHinweis: 'Bild mit Langhantel, du nimmst den Rucksack.' },
+    { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', soll: 15, kg: false, how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist, oben 1 s halten. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '', vid: 'glute bridge and prone YTW raises', bild: 'Butt_Lift_Bridge', mus: 'Po, oberer Rücken', bildHinweis: 'Bild zeigt die Bridge. YTW: in Bauchlage die Arme als Y, T und W heben.' },
+    { id: 'b5', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken' },
+    { id: 'b6', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich' }
   ] },
   { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wds: [5], ex: [
-    { id: 'c0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups' },
-    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 3, ziel: '12 bis 15', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind. Satz 1 und 2 mit 1 bis 2 Wiederholungen Reserve.', easy: 'Ohne Rucksack.', vid: 'goblet squat form' },
-    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: '8 bis 12', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form' },
-    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 2, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand. Beine abwechseln.', easy: 'Kleinerer Schritt, nicht so tief.', vid: 'reverse lunge form' },
-    { id: 'c4', name: 'Rucksack Rudern', sets: 2, ziel: '10 bis 12', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row' },
-    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 2, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.', vid: 'lying leg raise side plank dead bug' },
-    { id: 'c6', name: 'Nacken: Kinn zurück und Halten', sets: 1, ziel: '10 Mal Kinn zurück, dann je 10 s Halten in 4 Richtungen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen oder stehen. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, 2 s halten, lösen. 10 Mal. Danach Hand an die Stirn legen und den Kopf 10 s leicht dagegen drücken, ohne dass er sich bewegt. Gleich mit der Hand am Hinterkopf, links und rechts. Nur leichter Druck, nie ruckartig.', easy: 'Nur das Kinn zurück, ohne Halten.', vid: 'chin tucks neck isometric exercises' }
+    { id: 'c0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups', bild: 'Arm_Circles', mus: 'Schultern, ganzer Körper' },
+    { id: 'c1', name: 'Rucksack Kniebeugen', sets: 3, ziel: '12 bis 15', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind. Satz 1 und 2 mit 1 bis 2 Wiederholungen Reserve.', easy: 'Ohne Rucksack.', vid: 'goblet squat form', bild: 'Goblet_Squat', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Kettlebell, du hältst den Rucksack vor der Brust.' },
+    { id: 'c2', name: 'Liegestütze', sets: 3, ziel: '8 bis 12', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps, Schultern vorne' },
+    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 2, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand. Beine abwechseln.', easy: 'Kleinerer Schritt, nicht so tief.', vid: 'reverse lunge form', bild: 'Dumbbell_Rear_Lunge', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Hanteln, du machst es ohne Gewicht.' },
+    { id: 'c4', name: 'Rucksack Rudern', sets: 2, ziel: '10 bis 12', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', mus: 'Rücken Mitte, Latissimus, Bizeps', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack.' },
+    { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 2, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.', vid: 'lying leg raise side plank dead bug', bild: 'Dead_Bug', mus: 'Bauch, Rumpf', bildHinweis: 'Bild zeigt den Dead Bug.' },
+    { id: 'c6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken' },
+    { id: 'c7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich' }
   ] },
   { id: 'J', name: 'Beweglichkeit', title: 'Füsse, Beine, Rücken', wds: [2, 4], ex: [
-    { id: 'j0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: 'Auf der Stelle marschieren, Arme locker kreisen, Schultern hoch und runter, Hüfte kreisen. Nur warm werden, nicht ausser Atem.', easy: '', vid: 'gentle warm up before stretching' },
-    { id: 'j1', name: 'Fussgelenke kreisen und Zehen spreizen', sets: 1, ziel: '10 Kreise pro Richtung und Fuss, dann 10 Mal Zehen spreizen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Auf die Bettkante sitzen, einen Fuss anheben und langsam grosse Kreise machen, 10 in jede Richtung. Dann Zehen so weit wie möglich auseinander spreizen und wieder einkrallen. Anderer Fuss.', easy: '', vid: 'ankle circles and toe spreading exercise' },
-    { id: 'j2', name: 'Wadendehnung an der Wand', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Hände an die Wand, ein Bein weit nach hinten, Ferse bleibt am Boden, Bein gestreckt. Satz 1 mit gestrecktem Bein, Satz 2 mit leicht gebeugtem hinterem Knie, dann dehnt es tiefer unten an der Achillessehne.', easy: 'Kleinerer Schritt nach hinten.', vid: 'calf stretch against wall straight and bent knee' },
-    { id: 'j3', name: 'Knie zur Wand', sets: 2, ziel: '10 pro Bein', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Fuss etwa eine Handbreit vor der Wand, Knie nach vorne zur Wand schieben, Ferse bleibt am Boden. Berührt das Knie die Wand locker, Fuss etwas weiter weg stellen. Das macht deine Fussgelenke beweglicher.', easy: 'Fuss näher an die Wand.', vid: 'knee to wall ankle mobility drill' },
-    { id: 'j4', name: 'Katze und Kuh', sets: 2, ziel: '10 langsam', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Vierfüssler, Hände unter den Schultern, Knie unter der Hüfte. Ausatmen: Rücken rund wie eine Katze, Kopf runter. Einatmen: Bauch Richtung Boden, Brust nach vorne, Blick leicht hoch.', easy: '', vid: 'cat cow stretch' },
-    { id: 'j5', name: 'Hüftbeuger Dehnung im Kniestand', sets: 2, ziel: '30 s pro Seite', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Ein Knie am Boden, Kissen drunter, anderer Fuss vorne. Po anspannen und Becken nach vorne schieben, bis es vorne an der Hüfte zieht. Oberkörper aufrecht, kein Hohlkreuz. Gut gegen langes Sitzen.', easy: 'Weniger weit nach vorne schieben.', vid: 'half kneeling hip flexor stretch' },
-    { id: 'j6', name: 'Oberschenkel hinten dehnen', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Rückenlage, ein Bein gestreckt am Boden, das andere gestreckt hoch. Handtuch um die Fusssohle legen und das Bein sanft Richtung Kopf ziehen. Ziehen ja, Schmerz nein.', easy: 'Knie vom oberen Bein leicht beugen.', vid: 'lying hamstring stretch with towel' },
-    { id: 'j7', name: '90/90 Hüftrotation', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Am Boden sitzen, beide Knie im rechten Winkel, eines zeigt nach vorne, eines zur Seite. Hände hinter dir abstützen, Knie langsam auf die andere Seite kippen. Zurück und wiederholen.', easy: 'Hände weiter hinten abstützen.', vid: '90 90 hip switch mobility' },
-    { id: 'j8', name: 'Rücken öffnen in Seitenlage', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Seitenlage, Knie angewinkelt vor dem Bauch, Arme gestreckt nach vorne aufeinander. Oberen Arm in einem grossen Bogen auf die andere Seite öffnen, Blick folgt der Hand, Knie bleiben unten. 2 s halten, zurück.', easy: '', vid: 'open book thoracic rotation stretch' },
-    { id: 'j9', name: 'Tiefe Hocke halten', sets: 2, ziel: '30 s', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Füsse etwas breiter als schulterbreit, Zehen leicht nach aussen, so tief wie möglich in die Hocke, Fersen am Boden. Ellbogen drücken die Knie leicht nach aussen, Rücken lang.', easy: 'Am Türrahmen festhalten oder die Fersen auf ein gefaltetes Handtuch stellen.', vid: 'deep squat hold mobility' },
-    { id: 'j10', name: 'Kindhaltung', sets: 1, ziel: '60 s', pause: 0, einheit: 'Sek', soll: 60, kg: false, how: 'Kniestand, Po zu den Fersen, Oberkörper nach vorne ablegen, Arme lang nach vorne. Ruhig in den unteren Rücken atmen.', easy: 'Kissen zwischen Po und Fersen.', vid: 'child pose stretch' },
-    { id: 'j11', name: 'Nacken: Kinn zurück und seitlich dehnen', sets: 1, ziel: '10 Mal Kinn zurück, dann 30 s pro Seite', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: '10 Mal Kinn zurück wie an den Krafttagen. Dann Ohr Richtung Schulter neigen, mit der Hand nur ganz leicht nachhelfen, Schultern bleiben unten. 30 s pro Seite.', easy: '', vid: 'chin tuck and neck side stretch' }
+    { id: 'j0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: 'Auf der Stelle marschieren, Arme locker kreisen, Schultern hoch und runter, Hüfte kreisen. Nur warm werden, nicht ausser Atem.', easy: '', vid: 'gentle warm up before stretching', bild: 'Arm_Circles', mus: 'ganzer Körper' },
+    { id: 'j1', name: 'Fussgelenke kreisen und Zehen spreizen', sets: 1, ziel: '10 Kreise pro Richtung und Fuss, dann 10 Mal Zehen spreizen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Auf die Bettkante sitzen, einen Fuss anheben und langsam grosse Kreise machen, 10 in jede Richtung. Dann Zehen so weit wie möglich auseinander spreizen und wieder einkrallen. Anderer Fuss.', easy: '', vid: 'ankle circles and toe spreading exercise', bild: 'Ankle_Circles', mus: 'Fussgelenke, Füsse' },
+    { id: 'j2', name: 'Wadendehnung an der Wand', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Hände an die Wand, ein Bein weit nach hinten, Ferse bleibt am Boden, Bein gestreckt. Satz 1 mit gestrecktem Bein, Satz 2 mit leicht gebeugtem hinterem Knie, dann dehnt es tiefer unten an der Achillessehne.', easy: 'Kleinerer Schritt nach hinten.', vid: 'calf stretch against wall straight and bent knee', bild: 'Calf_Stretch_Hands_Against_Wall', mus: 'Waden, Achillessehne' },
+    { id: 'j3', name: 'Knie zur Wand', sets: 2, ziel: '10 pro Bein', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Fuss etwa eine Handbreit vor der Wand, Knie nach vorne zur Wand schieben, Ferse bleibt am Boden. Berührt das Knie die Wand locker, Fuss etwas weiter weg stellen. Das macht deine Fussgelenke beweglicher.', easy: 'Fuss näher an die Wand.', vid: 'knee to wall ankle mobility drill', bild: '', mus: 'Fussgelenke, Waden' },
+    { id: 'j4', name: 'Katze und Kuh', sets: 2, ziel: '10 langsam', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Vierfüssler, Hände unter den Schultern, Knie unter der Hüfte. Ausatmen: Rücken rund wie eine Katze, Kopf runter. Einatmen: Bauch Richtung Boden, Brust nach vorne, Blick leicht hoch.', easy: '', vid: 'cat cow stretch', bild: 'Cat_Stretch', mus: 'Rücken' },
+    { id: 'j5', name: 'Hüftbeuger Dehnung im Kniestand', sets: 2, ziel: '30 s pro Seite', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Ein Knie am Boden, Kissen drunter, anderer Fuss vorne. Po anspannen und Becken nach vorne schieben, bis es vorne an der Hüfte zieht. Oberkörper aufrecht, kein Hohlkreuz. Gut gegen langes Sitzen.', easy: 'Weniger weit nach vorne schieben.', vid: 'half kneeling hip flexor stretch', bild: 'Kneeling_Hip_Flexor', mus: 'Hüftbeuger, Oberschenkel vorne' },
+    { id: 'j6', name: 'Oberschenkel hinten dehnen', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Rückenlage, ein Bein gestreckt am Boden, das andere gestreckt hoch. Handtuch um die Fusssohle legen und das Bein sanft Richtung Kopf ziehen. Ziehen ja, Schmerz nein.', easy: 'Knie vom oberen Bein leicht beugen.', vid: 'lying hamstring stretch with towel', bild: 'Hamstring_Stretch', mus: 'Oberschenkel hinten', bildHinweis: 'Bild mit Band, du nimmst ein Handtuch.' },
+    { id: 'j7', name: '90/90 Hüftrotation', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Am Boden sitzen, beide Knie im rechten Winkel, eines zeigt nach vorne, eines zur Seite. Hände hinter dir abstützen, Knie langsam auf die andere Seite kippen. Zurück und wiederholen.', easy: 'Hände weiter hinten abstützen.', vid: '90 90 hip switch mobility', bild: '', mus: 'Hüfte' },
+    { id: 'j8', name: 'Rücken öffnen in Seitenlage', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Seitenlage, Knie angewinkelt vor dem Bauch, Arme gestreckt nach vorne aufeinander. Oberen Arm in einem grossen Bogen auf die andere Seite öffnen, Blick folgt der Hand, Knie bleiben unten. 2 s halten, zurück.', easy: '', vid: 'open book thoracic rotation stretch', bild: '', mus: 'Brustwirbelsäule, oberer Rücken' },
+    { id: 'j9', name: 'Tiefe Hocke halten', sets: 2, ziel: '30 s', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Füsse etwas breiter als schulterbreit, Zehen leicht nach aussen, so tief wie möglich in die Hocke, Fersen am Boden. Ellbogen drücken die Knie leicht nach aussen, Rücken lang.', easy: 'Am Türrahmen festhalten oder die Fersen auf ein gefaltetes Handtuch stellen.', vid: 'deep squat hold mobility', bild: '', mus: 'Hüfte, Fussgelenke, Rücken' },
+    { id: 'j10', name: 'Kindhaltung', sets: 1, ziel: '45 s', pause: 0, einheit: 'Sek', soll: 45, kg: false, how: 'Kniestand, Po zu den Fersen, Oberkörper nach vorne ablegen, Arme lang nach vorne. Ruhig in den unteren Rücken atmen.', easy: 'Kissen zwischen Po und Fersen.', vid: 'child pose stretch', bild: 'Childs_Pose', mus: 'unterer Rücken, Hüfte' },
+    { id: 'j11', name: 'Kinn zurückziehen', sets: 1, ziel: '10 Mal, je 2 s halten', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen, Blick nach vorne. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, der Kopf kippt dabei nicht. 2 s halten, lösen. Gut gegen den Kopf, der beim Gamen nach vorne wandert.', easy: '', vid: 'chin tuck exercise posture', bild: '', mus: 'Nacken, Haltung' },
+    { id: 'j12', name: 'Nacken seitlich dehnen', sets: 1, ziel: '30 s pro Seite', pause: 0, einheit: 'Sek', soll: 30, kg: false, how: 'Ohr Richtung Schulter neigen, mit der Hand auf der Kopfseite nur ganz leicht nachhelfen. Die andere Schulter bleibt unten. 30 s, dann Seite wechseln.', easy: '', vid: 'neck side stretch', bild: 'Side_Neck_Stretch', mus: 'Nacken seitlich' }
   ] },
   { id: 'L', name: 'Spaziergang', title: '7000 Schritte', wds: [6, 0], ex: [
-    { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '', vid: '' }
+    { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '', vid: '', bild: '', mus: 'Ausdauer' }
   ] },
   { id: 'M', name: 'Minimum', title: '15 Minuten, wenn gar nichts geht', wds: [], ex: [
-    { id: 'm1', name: 'Liegestütze', sets: 3, ziel: '10', pause: 30, einheit: 'Wdh', soll: 10, kg: false, how: '', easy: 'Hände auf die Bettkante.', vid: 'push up proper form' },
-    { id: 'm2', name: 'Kniebeugen', sets: 3, ziel: '15', pause: 30, einheit: 'Wdh', soll: 15, kg: false, how: '', easy: '', vid: 'bodyweight squat form' },
-    { id: 'm3', name: 'Unterarmstütz', sets: 3, ziel: '30 s', pause: 30, einheit: 'Sek', soll: 30, kg: false, how: '', easy: '', vid: 'forearm plank form' }
+    { id: 'm1', name: 'Liegestütze', sets: 3, ziel: '10', pause: 30, einheit: 'Wdh', soll: 10, kg: false, how: '', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps' },
+    { id: 'm2', name: 'Kniebeugen', sets: 3, ziel: '15', pause: 30, einheit: 'Wdh', soll: 15, kg: false, how: '', easy: '', vid: 'bodyweight squat form', bild: 'Bodyweight_Squat', mus: 'Beine, Po' },
+    { id: 'm3', name: 'Unterarmstütz', sets: 3, ziel: '30 s', pause: 30, einheit: 'Sek', soll: 30, kg: false, how: '', easy: '', vid: 'forearm plank form', bild: 'Plank', mus: 'Bauch, Rumpf' }
   ] }
 ] };
 
@@ -486,7 +564,8 @@ function migratePlan(p) {
   /* Version 3: Tag A war zu lang für 32 Minuten, wird durch die neue Fassung ersetzt */
   if ((p.v || 1) < 3) { const i = p.days.findIndex(x => x.id === 'A'); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === 'A')); }
   /* Version 5: Aufwärmen und Nacken in jedem Training, Joggen wird Beweglichkeit, Videos zu jeder Übung */
-  if ((p.v || 1) < 5) ['A', 'B', 'C', 'J', 'L', 'M'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
+  /* Version 6: Bilder, Muskeln, Nacken in zwei Übungen */
+  if ((p.v || 1) < 6) ['A', 'B', 'C', 'J', 'L', 'M'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
   /* Version 4: Tag B, Tag C und Joggen ebenfalls auf unter 30 Minuten gebracht */
   if ((p.v || 1) < 4) ['B', 'C', 'J'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
   p.v = PLAN_V;
@@ -807,6 +886,35 @@ const WOCHE_SPALTEN = [
 ];
 const KIND_NAMES = { training: 'Training', essen: 'Essen', arbeit: 'Arbeit, Schule', frei: 'Freizeit', schlaf: 'Schlaf', pflege: 'Pflege' };
 let planDay = null;
+const KIND_ICON = {
+  schlaf: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>',
+  training: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 8v8M3.5 10v4M18 8v8M20.5 10v4M6 12h12"/></svg>',
+  pflege: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5c3 4 6 7 6 10.5a6 6 0 0 1-12 0c0-3.5 3-6.5 6-10.5z"/></svg>',
+  essen: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2 1.5-3 4-3 7v2h3"/></svg>',
+  arbeit: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="7" width="17" height="12" rx="2"/><path d="M9 7V5h6v2M3.5 12h17"/></svg>',
+  frei: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9h10a4 4 0 0 1 3.9 4.9l-.6 2.6a2 2 0 0 1-3.5.8L15 15H9l-1.8 2.3a2 2 0 0 1-3.5-.8l-.6-2.6A4 4 0 0 1 7 9z"/><path d="M8 11.5v2M7 12.5h2"/></svg>'
+};
+/* Kleine tägliche Gewohnheiten zum Abhaken. Training zählt automatisch aus dem Verlauf. */
+const ICON_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const GEW_NAMEN = { wasser: 'Glas Wasser am Morgen', training: 'Training', supp: 'Vitamin D und Omega 3', gel: 'Gel und Wasser ans Bett', foto: 'Foto der Stirn' };
+function gewohnheitVon(it) {
+  const t = it[1];
+  if (/Glas Wasser vom Nachttisch/.test(t)) return 'wasser';
+  if (/Vitamin D|Omega 3/.test(t)) return 'supp';
+  if (t === ABEND_GEL) return 'gel';
+  if (/Foto von der Stirn/.test(t)) return 'foto';
+  if (it[2] === 'training') return 'training';
+  return null;
+}
+function gewHeute() { const alle = LS.get('gew', {}); return alle[tagKey(new Date())] || {}; }
+function gewToggle(k) {
+  const alle = LS.get('gew', {}); const key = tagKey(new Date());
+  const t = alle[key] || {}; if (t[k]) delete t[k]; else t[k] = 1; alle[key] = t;
+  Object.keys(alle).sort().slice(0, -14).forEach(x => delete alle[x]);
+  LS.set('gew', alle);
+}
+function trainingHeuteFertig() { const k = tagKey(new Date()); return history.some(h => h.voll !== false && tagKey(new Date(h.date)) === k); }
+function dauerText(m) { if (m == null) return ''; if (m < 60) return m + ' Min'; const h = Math.floor(m / 60), r = m % 60; return h + ' h' + (r ? ' ' + r + ' Min' : ''); }
 const toMin = t => { const m = /^(\d\d):(\d\d)$/.exec(t); return m ? (+m[1]) * 60 + (+m[2]) : null; };
 
 function renderPlan() {
@@ -823,17 +931,53 @@ function renderPlan() {
   let h = '<div class="chips" role="tablist">' + WOCHE.map((x, i) =>
     `<button class="chip" data-pday="${i}" aria-pressed="${i === planDay}">${x.k}${i === todayIdx ? ' · heute' : ''}</button>`).join('') + '</div>';
   h += streakKarte(false);
+  const mins = d.items.map(it => { let m = toMin(it[0]); if (m != null && m < start) m += 1440; return m; });
+  const nm = nowMin;
   if (isToday) {
     const c = cur >= 0 ? d.items[cur] : null;
+    const bis = next ? mins[cur + 1] - nm : null;
+    const von = cur >= 0 ? mins[cur] : null;
+    const blockPct = (c && next && mins[cur + 1] > von) ? Math.min(100, Math.round((nm - von) / (mins[cur + 1] - von) * 100)) : 0;
+    const g = c ? gewohnheitVon(c) : null;
+    const trainingBald = (c && c[2] === 'training') || (next && next[2] === 'training' && bis != null && bis <= 20);
     h += `<div class="card plan-now"><div class="lab">Jetzt · ${esc(d.name)} · ${esc(d.art)}</div>
-      <div class="big">${c ? esc(c[1]) : 'Noch Nacht. Schlaf weiter'}</div>
-      ${next ? `<div class="small muted">Als Nächstes um <b>${esc(next[0])}</b>: ${esc(next[1])}</div>` : ''}</div>`;
+      <div class="nowrow"><span class="nico">${KIND_ICON[c ? c[2] : 'schlaf']}</span><div class="big">${c ? esc(c[1]) : 'Noch Nacht. Schlaf weiter'}</div></div>
+      ${next ? `<div class="nbar" role="img" aria-label="${blockPct} Prozent dieses Abschnitts vorbei"><i style="width:${blockPct}%"></i></div>
+      <div class="nnext"><span>noch <b>${dauerText(bis)}</b></span><span class="muted">dann ${esc(next[0])}: ${esc(next[1])}</span></div>` : ''}
+      ${trainingBald || (g && g !== 'training') ? `<div class="nacts">
+        ${trainingBald ? '<button class="btn primary" data-goto="training">Training öffnen</button>' : ''}
+        ${g && g !== 'training' ? `<button class="btn ${gewHeute()[g] ? 'ok' : ''}" data-gew="${g}">${gewHeute()[g] ? 'Erledigt' : 'Abhaken'}</button>` : ''}</div>` : ''}
+    </div>`;
+    /* Gewohnheiten von heute */
+    const keys = []; d.items.forEach(it => { const k = gewohnheitVon(it); if (k && keys.indexOf(k) < 0) keys.push(k); });
+    if (keys.length) {
+      const st = gewHeute(); const erl = keys.filter(k => k === 'training' ? trainingHeuteFertig() : st[k]).length;
+      h += `<div class="card gew"><div class="gew-kopf"><span class="lab">Heute erledigt</span><span class="small muted">${erl} von ${keys.length}</span></div>
+        <div class="gew-bar"><i style="width:${Math.round(erl / keys.length * 100)}%"></i></div>
+        <div class="gew-liste">${keys.map(k => { const on = k === 'training' ? trainingHeuteFertig() : !!st[k];
+          return `<button class="gew-item ${on ? 'on' : ''}" ${k === 'training' ? 'data-goto="training"' : `data-gew="${k}"`} aria-pressed="${on}"><span class="box">${on ? ICON_CHECK : ''}</span>${GEW_NAMEN[k]}</button>`; }).join('')}</div></div>`;
+    }
   } else {
-    h += `<div class="card"><div class="lab">${esc(d.art)}</div><h3 style="margin-top:4px">${esc(d.name)}</h3></div>`;
+    h += `<div class="card"><div class="lab">${esc(d.art)}</div><h3 style="margin-top:4px">${esc(d.name)}</h3>
+      <div class="small muted">Aufstehen ${esc(d.items[0][0])} · Licht aus ${esc(lichtAus(d) || KA)}</div></div>`;
   }
-  h += '<div class="card"><ul class="tl">' + d.items.map((it, i) =>
-    `<li class="${isToday && i < cur ? 'past' : ''} ${isToday && i === cur ? 'now' : ''}"><span class="t">${esc(it[0])}</span><span class="dot k-${it[2]}"></span><span>${esc(it[1])}</span></li>`).join('') + '</ul>';
-  h += '<div class="legend"><span><i class="k-training"></i>Training</span><span><i></i>Alles andere</span></div></div>';
+  /* Tagesablauf in Abschnitten */
+  const abschnitt = m => m == null ? 'Tag' : (m < 9 * 60 ? 'Morgen' : m < 17 * 60 ? 'Tag' : 'Abend');
+  const tagStart = mins[0], tagEnde = mins[mins.length - 1];
+  const tagPct = isToday ? Math.max(0, Math.min(100, Math.round((nm - tagStart) / (tagEnde - tagStart) * 100))) : 0;
+  h += `<div class="card tlcard">${isToday ? `<div class="gew-kopf"><span class="lab">Dein Tag</span><span class="small muted">${tagPct} % vorbei</span></div><div class="gew-bar"><i style="width:${tagPct}%"></i></div>` : ''}`;
+  let letzter = '';
+  d.items.forEach((it, i) => {
+    const ab = abschnitt(mins[i]);
+    if (ab !== letzter) { h += (letzter ? '</ul>' : '') + `<div class="tl-ab">${ab}</div><ul class="tl">`; letzter = ab; }
+    const g = gewohnheitVon(it);
+    const on = g ? (g === 'training' ? trainingHeuteFertig() : !!gewHeute()[g]) : false;
+    const knopf = !isToday || !g ? '' : g === 'training'
+      ? `<button class="tl-k" data-goto="training" aria-label="Training öffnen">›</button>`
+      : `<button class="tl-k hak ${on ? 'on' : ''}" data-gew="${g}" aria-pressed="${on}" aria-label="${GEW_NAMEN[g]} abhaken">${on ? ICON_CHECK : ''}</button>`;
+    h += `<li class="${isToday && i < cur ? 'past' : ''} ${isToday && i === cur ? 'now' : ''} k-${it[2]}"><span class="t">${esc(it[0])}</span><span class="ico">${KIND_ICON[it[2]] || ''}</span><span class="tx">${esc(it[1])}</span>${knopf}</li>`;
+  });
+  h += '</ul></div>';
 
   h += '<div class="card"><h3>Die Woche</h3><div class="wk"><table><thead><tr><th>Tag</th>' +
     WOCHE_SPALTEN.map(c => `<th>${c[0]}</th>`).join('') + '</tr></thead><tbody>';
@@ -857,7 +1001,9 @@ function renderPlan() {
 }
 $('#main').addEventListener('click', e => {
   if (tab !== 'plan') return;
-  const b = e.target.closest('[data-pday]'); if (b) { planDay = +b.dataset.pday; renderPlan(); }
+  const b = e.target.closest('[data-pday]'); if (b) { planDay = +b.dataset.pday; renderPlan(); return; }
+  const g = e.target.closest('[data-gew]'); if (g) { gewToggle(g.dataset.gew); renderPlan(); return; }
+  const go = e.target.closest('[data-goto]'); if (go) { curDay = todayDayId(); setTab(go.dataset.goto); }
 });
 setInterval(() => { if (tab === 'plan' && document.visibilityState === 'visible' && $('#sheet').hidden) renderPlan(); }, 60000);
 
@@ -879,10 +1025,11 @@ function renderTraining() {
   if (!editMode) h += streakKarte(true);
   h += `<div class="card daycard"><div class="ring" style="--p:${pct}" role="img" aria-label="${done} von ${total} Sätzen erledigt"><span>${done}/${total}</span></div>
     <div><div class="lab">${heuteHinweis(day)}</div><h2>${esc(day.name)}: ${esc(day.title)}</h2>
-    <div class="sub">${done} von ${total} Sätzen · <button data-act="history">Verlauf</button></div></div></div>`;
+    <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="history">Verlauf</button></div></div></div>`;
+  const aktivIdx = done ? day.ex.findIndex(x => s.sets[x.id].some(st => !st.d)) : 0;
   day.ex.forEach((ex, xi) => {
     const sets = s.sets[ex.id];
-    h += `<section class="ex ${editMode ? 'card' : (ex.kg ? 'kg' : '')}" data-ex="${esc(ex.id)}">`;
+    h += `<section class="ex ${editMode ? 'card' : (ex.kg ? 'kg' : '')} ${!editMode && xi === aktivIdx ? 'aktiv' : ''} ${!editMode && sets.every(x => x.d) ? 'fertig' : ''}" data-ex="${esc(ex.id)}">`;
     if (editMode) {
       h += `<label class="field"><span>Name</span><input type="text" data-edit="name" value="${esc(ex.name)}"></label>
         <div class="edit-grid">
@@ -896,9 +1043,20 @@ function renderTraining() {
         </div>
         <button class="btn danger sm" data-act="delex">Übung löschen</button>`;
     } else {
-      h += `<h3 class="exn">${esc(ex.name)}</h3>
-        <div class="ziel">${ex.sets} × ${esc(ex.ziel || KA)}${ex.pause ? ' · Pause ' + ex.pause + ' s' : ''}</div>
-        ${ex.vid === '' ? '' : `<a class="vid" href="${esc(videoLink(ex))}" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>Video ansehen</a>`}
+      const lm = letztesMal(ex);
+      const offen = sets.some(x => !x.d);
+      const halten = (ex.einheit === 'Sek' || ex.einheit === 'Min') && ex.soll;
+      h += `${xi === aktivIdx ? '<div class="jetzt">Jetzt dran</div>' : ''}
+        <div class="exhead">
+          <button class="pv" data-act="detail" aria-label="Anleitung für ${esc(ex.name)}">${bildHtml(ex)}</button>
+          <div class="exinfo"><h3 class="exn">${esc(ex.name)}</h3>
+            <div class="ziel">${ex.sets} × ${esc(ex.ziel || KA)}${ex.pause ? ' · Pause ' + ex.pause + ' s' : ''}</div>
+            ${lm ? `<div class="last">Letztes Mal: ${esc(lm)}</div>` : ''}</div>
+        </div>
+        <div class="extools">
+          ${halten && offen ? `<button class="tbtn" data-act="halten"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>${ex.einheit === 'Min' ? ex.soll + ' Min' : ex.soll + ' s'} Timer</button>` : ''}
+          <button class="tbtn" data-act="detail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>Anleitung</button>
+        </div>
         <div class="sethead"><span>Satz</span>${ex.kg ? '<span>kg</span>' : ''}<span>${ex.einheit === 'Wdh' ? 'Wiederholungen' : ex.einheit === 'Sek' ? 'Sekunden' : 'Minuten'}</span><span>Fertig</span></div>`;
       sets.forEach((st, i) => {
         h += `<div class="set ${ex.kg ? '' : 'nokg'} ${st.d ? 'done' : ''}">
@@ -908,7 +1066,6 @@ function renderTraining() {
           <button class="sc" data-act="toggle" data-i="${i}" aria-pressed="${st.d}" aria-label="Satz ${i + 1} ${st.d ? 'erledigt' : 'abhaken'}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
         </div>`;
       });
-      if (ex.how || ex.easy) h += `<details class="how"><summary>So geht's</summary><p>${esc(ex.how)}</p>${ex.easy ? `<p class="muted"><b>Zu schwer:</b> ${esc(ex.easy)}</p>` : ''}</details>`;
     }
     h += '</section>';
   });
@@ -938,6 +1095,10 @@ $('#main').addEventListener('click', e => {
     if (st.d && ex.pause > 0) Timer.start(ex.pause, ex.name + ', Satz ' + (+b.dataset.i + 1));
     if (st.d) requestWake();
     renderTraining();
+  } else if (act === 'detail' && ex) openUebung(ex);
+  else if (act === 'halten' && ex) {
+    unlockAudio(); requestWake();
+    Timer.start(ex.einheit === 'Min' ? ex.soll * 60 : ex.soll, (ex.einheit === 'Min' ? '' : 'Halten: ') + ex.name);
   } else if (act === 'finish') finishTraining();
   else if (act === 'history') openHistory();
   else if (act === 'edit') { editMode = true; renderTraining(); }
@@ -980,6 +1141,58 @@ $('#main').addEventListener('change', e => {
     if (ex) { ex.einheit = e.target.value; savePlan(); }
   }
 });
+
+/* Bilder: Free Exercise DB (github.com/yuhonas/free-exercise-db), Public Domain. Zwei Fotos, Start und Ende, im Wechsel wie ein kurzes Video */
+const BILD_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+const ICON_HANTEL = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 8v8M3.5 10v4M18 8v8M20.5 10v4M6 12h12"/></svg>';
+function bildHtml(ex, gross) {
+  if (!ex.bild) return `<span class="pv-leer">${ICON_HANTEL}</span>`;
+  const u = BILD_BASE + encodeURIComponent(ex.bild) + '/';
+  return `<span class="pv-anim ${gross ? 'gross' : ''}"><img src="${u}0.jpg" alt="" loading="lazy" decoding="async" onerror="this.closest('.pv-anim').classList.add('kaputt')"><img src="${u}1.jpg" alt="" loading="lazy" decoding="async"></span>`;
+}
+/* Werte vom letzten Mal, z. B. "10 · 9 · 8" oder "8 kg × 10 · 8 kg × 9" */
+function letztesMal(ex) {
+  if (ex.einheit === 'Min') return '';
+  for (let i = history.length - 1; i >= 0; i--) {
+    const e = (history[i].ex || []).find(x => x.id === ex.id);
+    if (e && e.sets && e.sets.length) {
+      const eh = ex.einheit === 'Sek' ? ' s' : '';
+      const t = e.sets.map(st => (ex.kg && st.w ? st.w + ' kg × ' : '') + (st.r || '?') + eh).join(' · ');
+      const d = new Date(history[i].date);
+      return t + ' (' + d.getDate() + '.' + (d.getMonth() + 1) + '.)';
+    }
+  }
+  return '';
+}
+/* Geschätzte Dauer: Satzzeit plus Pausen plus Wechsel zwischen den Übungen */
+function dauerMin(day) {
+  let t = 0;
+  day.ex.forEach((x, i) => {
+    const per = /pro (Bein|Seite)/.test(x.ziel || '') ? 2 : 1;
+    const satz = x.einheit === 'Min' ? (x.soll || 1) * 60 : x.einheit === 'Sek' ? ((x.soll || 30) + 10) * per * (/2 Mal/.test(x.ziel || '') ? 2 : 1) : (/Zirkel/.test(x.name) ? 100 : 40 * per);
+    t += x.sets * satz + (x.sets - 1) * (x.pause || 0) + (i ? 30 : 0);
+  });
+  return Math.max(1, Math.round(t / 60));
+}
+function openUebung(ex) {
+  const schritte = (ex.how || '').split(/(?<=\.)\s+(?=[A-ZÄÖÜ0-9])/).map(x => x.trim()).filter(Boolean);
+  const lm = letztesMal(ex);
+  const body = `<div class="ueb">
+    <div class="ueb-bild">${bildHtml(ex, true)}</div>
+    ${ex.bildHinweis ? `<p class="muted small" style="margin:8px 0 0">${esc(ex.bildHinweis)}</p>` : ''}
+    <div class="ueb-fakten">
+      <div><span class="lab">Ziel</span><b>${ex.sets} × ${esc(ex.ziel || KA)}</b></div>
+      ${ex.pause ? `<div><span class="lab">Pause</span><b>${ex.pause} s</b></div>` : ''}
+      ${lm ? `<div><span class="lab">Letztes Mal</span><b>${esc(lm)}</b></div>` : ''}
+    </div>
+    ${ex.mus ? `<div class="lab" style="margin-top:14px">Trainiert</div><div class="chips" style="margin-top:6px">${ex.mus.split(',').map(m => `<span class="chip on">${esc(m.trim())}</span>`).join('')}</div>` : ''}
+    ${schritte.length ? `<div class="lab" style="margin-top:14px">So geht's</div><ol class="schritte">${schritte.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
+    ${ex.easy ? `<div class="card" style="margin-top:12px"><div class="lab">Zu schwer?</div><p style="margin:6px 0 0">${esc(ex.easy)}</p></div>` : ''}
+    ${ex.vid === '' ? '' : `<a class="btn wide vidbtn" href="${esc(videoLink(ex))}" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>Videos auf YouTube</a>`}
+    ${ex.bild ? '<p class="muted small" style="margin-top:12px">Bilder: Free Exercise DB, gemeinfrei.</p>' : ''}
+  </div>`;
+  openSheet(ex.name, body);
+}
 
 /* Vorschau: YouTube Suche mit englischem Suchbegriff, eigene Übungen über ihren Namen */
 function videoLink(ex) {
@@ -1658,7 +1871,8 @@ function proteinPerChf(p) { const pr = priceOf(p); return (p.pr != null && p.g &
 function renderSnacks() {
   const list = DATA ? (sf.laden === 'coop' ? DATA.coop : DATA.migros) || [] : [];
   const q = (DATA && DATA.quellen && DATA.quellen[sf.laden]) || null;
-  let h = `<div class="seg" role="tablist"><button data-laden="migros" aria-pressed="${sf.laden === 'migros'}">Migros</button><button data-laden="coop" aria-pressed="${sf.laden === 'coop'}">Coop</button></div>`;
+  let h = `<button class="scanbtn" data-act="scan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M8 9v6M11 9v6M14 9v6M17 9v6"/></svg><span><b>Produkt scannen</b><span class="small muted">Strichcode, Nährwerte, Hersteller und Konzern</span></span></button>`;
+  h += `<div class="seg" role="tablist"><button data-laden="migros" aria-pressed="${sf.laden === 'migros'}">Migros</button><button data-laden="coop" aria-pressed="${sf.laden === 'coop'}">Coop</button></div>`;
   if (!DATA) { $('#main').innerHTML = h + noDataHint('Snacks'); return; }
   h += `<div class="muted small" style="margin:-4px 0 10px">Stand ${q && q.stand ? datumZeit(q.stand) : KA}${q && q.ok === false ? ' · <span style="color:var(--warn)">letzter Abruf fehlgeschlagen, Daten sind älter</span>' : ''}${sf.laden === 'coop' ? ' · Coop Daten aus Open Food Facts, ohne Preise' : ''}</div>`;
   h += `<div class="card" style="padding:10px 14px">
@@ -1703,6 +1917,7 @@ function snackCard(p) {
 }
 $('#main').addEventListener('click', e => {
   if (tab !== 'snacks') return;
+  if (e.target.closest('[data-act="scan"]')) { openScanner(); return; }
   const l = e.target.closest('[data-laden]'); if (l) { sf.laden = l.dataset.laden; sf.cat = sf.cat; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
   const c = e.target.closest('[data-cat]'); if (c) { sf.cat = c.dataset.cat; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
   const sw = e.target.closest('.switch[data-sf]'); if (sw) { sf[sw.dataset.sf] = !sf[sw.dataset.sf]; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
@@ -1771,12 +1986,214 @@ function openLists() {
 $('#btnListe').addEventListener('click', openLists);
 
 /* ======================================================= Sheet */
+
+/* ======================================================= Barcode Scanner
+   Daten: Open Food Facts (frei, ODbL). Yuka hat keine öffentliche Schnittstelle und verbietet automatisches Abfragen.
+   Hersteller und Mutterkonzern: Wikidata. Für Firmenethik gibt es keine freie, verlässliche Quelle, darum nur Fakten und Links. */
+const ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+const OFF_FELDER = 'code,product_name,product_name_de,brands,brand_owner,quantity,image_front_small_url,nutriscore_grade,nova_group,ecoscore_grade,additives_tags,nutriments,labels_tags';
+const scan = { stream: null, reader: null, timer: 0, aktiv: false };
+function ladeSkript(url) {
+  return new Promise((ok, nein) => {
+    if (window.ZXing) { ok(); return; }
+    const sc = document.createElement('script'); sc.src = url; sc.async = true;
+    sc.onload = () => ok(); sc.onerror = () => nein(new Error('Skript nicht geladen'));
+    document.head.appendChild(sc);
+  });
+}
+function scanStopp() {
+  scan.aktiv = false; clearTimeout(scan.timer);
+  try { if (scan.reader) scan.reader.reset(); } catch (e) {}
+  scan.reader = null;
+  try { if (scan.stream) scan.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+  scan.stream = null;
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') scanStopp(); });
+function scanVerlauf() { return LS.get('scans', []); }
+function openScanner() {
+  scanStopp();
+  const v = scanVerlauf();
+  openSheet('Produkt scannen', `<div class="scan">
+    <div class="scan-cam" id="scanCam"><video id="scanVid" playsinline muted autoplay></video><div class="scan-rahmen"></div></div>
+    <p id="scanStatus" class="small muted" role="status">Kamera startet</p>
+    <div class="scan-hand"><input id="scanCode" inputmode="numeric" autocomplete="off" placeholder="Oder Nummer unter dem Strichcode eintippen" aria-label="Strichcode Nummer"><button class="btn" id="scanGo">Suchen</button></div>
+    ${v.length ? `<div class="lab" style="margin-top:18px">Zuletzt gescannt</div><div class="scan-alt-liste">${v.map(x => `<button class="scan-alt" data-code="${esc(x.code)}">${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy">` : '<span class="ph"></span>'}<span><b>${esc(x.n || x.code)}</b><span class="small muted">${esc(x.b || '')}${x.ns && /^[a-e]$/.test(x.ns) ? ' · Nutri-Score ' + x.ns.toUpperCase() : ''}</span></span></button>`).join('')}</div>` : ''}
+  </div>`);
+  const body = $('#sheetBody');
+  body.onclick = e => {
+    if (e.target.closest('#scanGo')) { const c = $('#scanCode').value; scanStopp(); zeigeProdukt(c); return; }
+    const alt = e.target.closest('[data-code]'); if (alt) { scanStopp(); zeigeProdukt(alt.dataset.code); }
+  };
+  body.onkeydown = e => { if (e.target.id === 'scanCode' && e.key === 'Enter') { e.preventDefault(); scanStopp(); zeigeProdukt(e.target.value); } };
+  starteKamera();
+}
+async function starteKamera() {
+  const st = $('#scanStatus'), vid = $('#scanVid'), cam = $('#scanCam');
+  const ohneKamera = text => { st.textContent = text; if (cam) cam.hidden = true; scanStopp(); };
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { ohneKamera('Hier ist keine Kamera verfügbar. Tipp die Nummer unter dem Strichcode ein.'); return; }
+  scan.aktiv = true;
+  try {
+    let formate = [];
+    if ('BarcodeDetector' in window) { try { formate = await BarcodeDetector.getSupportedFormats(); } catch (e) { formate = []; } }
+    if (formate.indexOf('ean_13') >= 0) {
+      scan.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+      if (!scan.aktiv) { scanStopp(); return; }
+      vid.srcObject = scan.stream; await vid.play();
+      const det = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'].filter(f => formate.indexOf(f) >= 0) });
+      st.textContent = 'Halte den Strichcode in den Rahmen.';
+      const runde = async () => {
+        if (!scan.aktiv) return;
+        try { const r = await det.detect(vid); if (r && r.length) { treffer(r[0].rawValue); return; } } catch (e) {}
+        scan.timer = setTimeout(runde, 200);
+      };
+      runde();
+      return;
+    }
+    st.textContent = 'Scanner wird geladen';
+    await ladeSkript(ZXING_URL);
+    if (!scan.aktiv) return;
+    const hints = new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E]);
+    scan.reader = new ZXing.BrowserMultiFormatReader(hints, 250);
+    st.textContent = 'Halte den Strichcode in den Rahmen.';
+    await scan.reader.decodeFromConstraints({ video: { facingMode: 'environment' }, audio: false }, vid, res => { if (res && scan.aktiv) treffer(res.getText()); });
+  } catch (e) {
+    const verboten = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError' || e.name === 'PermissionDeniedError');
+    ohneKamera(verboten
+      ? (NATIVE ? 'Die App darf die Kamera nicht benutzen. Installier die neue FitApp Version und erlaube die Kamera. Bis dahin: Nummer eintippen.' : 'Kamera nicht erlaubt. Erlaube sie im Browser oder tipp die Nummer ein.')
+      : 'Kamera konnte nicht starten. Tipp die Nummer unter dem Strichcode ein.');
+  }
+}
+function treffer(code) {
+  if (!scan.aktiv) return;
+  scanStopp();
+  try { if (navigator.vibrate) navigator.vibrate(60); } catch (e) {}
+  zeigeProdukt(code);
+}
+const zahl = v => { const n = parseFloat(v); return isFinite(n) ? n : null; };
+const gr = (v, e) => v == null ? KA : (Math.round(v * 10) / 10).toString().replace('.', ',') + (e || ' g');
+function scoreKachel(titel, wert, text) {
+  return `<div class="score"><span class="lab">${titel}</span><span class="scn n-${esc(String(wert).toLowerCase())}">${esc(String(wert).toUpperCase())}</span><span class="small muted">${text}</span></div>`;
+}
+const NOVA_TEXT = { 1: 'kaum verarbeitet', 2: 'verarbeitete Zutat', 3: 'verarbeitet', 4: 'stark verarbeitet' };
+async function zeigeProdukt(roh) {
+  const code = String(roh || '').replace(/\D/g, '');
+  if (code.length < 8) { toast('Die Nummer ist zu kurz. Sie hat meist 8 oder 13 Ziffern.'); return; }
+  openSheet('Produkt', '<p class="muted" role="status">Suche bei Open Food Facts</p>');
+  let p = null;
+  try {
+    const r = await fetch('https://world.openfoodfacts.org/api/v2/product/' + code + '.json?fields=' + OFF_FELDER);
+    const j = await r.json();
+    if (j && j.status === 1 && j.product) p = j.product;
+  } catch (e) {
+    $('#sheetBody').innerHTML = `<p>Keine Verbindung zu Open Food Facts. Versuch es mit Internet nochmals.</p><button class="btn wide" data-neu>Nochmals scannen</button>`;
+    $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) openScanner(); };
+    return;
+  }
+  if (!p) {
+    $('#sheetBody').innerHTML = `<p><b>${esc(code)}</b> ist bei Open Food Facts noch nicht erfasst.</p>
+      <p class="small muted">Du kannst das Produkt dort selbst eintragen, dann hilft es auch allen anderen.</p>
+      <a class="btn wide vidbtn" href="https://world.openfoodfacts.org/product/${code}" target="_blank" rel="noopener">Bei Open Food Facts öffnen</a>
+      <button class="btn wide" style="margin-top:10px" data-neu>Anderes Produkt scannen</button>`;
+    $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) openScanner(); };
+    return;
+  }
+  const n = p.nutriments || {};
+  const w = { k: zahl(n['energy-kcal_100g']), pr: zahl(n.proteins_100g), z: zahl(n.sugars_100g), f: zahl(n.fat_100g), sa: zahl(n.salt_100g), cat: '' };
+  const name = p.product_name_de || p.product_name || code;
+  const marke = (p.brands || '').split(',')[0].trim();
+  const besitzer = (p.brand_owner || '').trim();
+  const ns = (p.nutriscore_grade || '').toLowerCase(), eco = (p.ecoscore_grade || '').toLowerCase(), nova = p.nova_group;
+  const verlauf = scanVerlauf().filter(x => x.code !== code);
+  verlauf.unshift({ code, n: name, b: marke, ns, img: p.image_front_small_url || '' });
+  LS.set('scans', verlauf.slice(0, 15));
+  /* Deine Snack Regel aus dem Snacks Tab */
+  let urteil, grund = [];
+  if (w.k == null || w.z == null) urteil = 'Nährwerte fehlen, deine Regel lässt sich nicht prüfen.';
+  else {
+    const ppk = w.pr != null && w.k ? w.pr / w.k * 100 : null;
+    if (w.z > 5) grund.push(gr(w.z) + ' Zucker pro 100 g, erlaubt sind höchstens 5 g');
+    if (!((ppk != null && ppk >= 5) || w.k <= 100)) grund.push('zu wenig Protein für die Kalorien (' + (ppk == null ? KA : gr(ppk, ' g')) + ' pro 100 kcal, Ziel 5 g)');
+    urteil = isGood(w) ? 'Passt zu deiner Snack Regel.' : 'Passt nicht zu deiner Snack Regel.';
+  }
+  const zusatz = (p.additives_tags || []).map(t => t.replace(/^en:/, '').toUpperCase());
+  const scores = [];
+  if (/^[a-e]$/.test(ns)) scores.push(scoreKachel('Nutri-Score', ns, 'Nährwerte'));
+  if (nova) scores.push(scoreKachel('NOVA', nova, NOVA_TEXT[nova] || ''));
+  if (/^(a\+?|a-plus|[b-f])$/.test(eco)) scores.push(scoreKachel('Umwelt', eco.replace('-plus', '+'), 'Green-Score'));
+  $('#sheetBody').innerHTML = `<div class="prod">
+    <div class="prod-kopf">${p.image_front_small_url ? `<img src="${esc(p.image_front_small_url)}" alt="">` : ''}
+      <div><h3>${esc(name)}</h3><div class="small muted">${esc([marke, p.quantity].filter(Boolean).join(' · '))}</div><div class="small faint">${esc(code)}</div></div></div>
+    <div class="card urteil ${isGood(w) ? 'gut' : ''}" style="margin-top:14px"><b>${urteil}</b>${grund.length ? `<ul class="small">${grund.map(g => `<li>${esc(g)}</li>`).join('')}</ul>` : ''}</div>
+    ${scores.length ? `<div class="scores">${scores.join('')}</div>` : '<p class="small muted">Für dieses Produkt gibt es noch keinen Nutri-Score.</p>'}
+    <div class="lab" style="margin-top:16px">Pro 100 g</div>
+    <table class="naehr"><tbody>
+      <tr><td>Kalorien</td><td>${w.k == null ? KA : Math.round(w.k) + ' kcal'}</td></tr>
+      <tr><td>Protein</td><td>${gr(w.pr)}</td></tr><tr><td>Zucker</td><td>${gr(w.z)}</td></tr>
+      <tr><td>Fett</td><td>${gr(w.f)}</td></tr><tr><td>Salz</td><td>${gr(w.sa)}</td></tr></tbody></table>
+    <div class="lab" style="margin-top:16px">Zusatzstoffe</div>
+    <p class="small" style="margin:6px 0 0">${zusatz.length ? `${zusatz.length}: ${esc(zusatz.join(', '))}` : 'Keine angegeben.'}</p>
+    <p class="small muted" style="margin:4px 0 0">Zusatzstoffe sind nicht automatisch schlecht. Die zugelassenen sind geprüft, einige sind umstritten.</p>
+    <div class="lab" style="margin-top:16px">Hersteller und Konzern</div>
+    <div id="konzern" class="small" style="margin-top:6px">${besitzer ? 'Markeninhaber laut Open Food Facts: <b>' + esc(besitzer) + '</b><br>' : ''}<span class="muted">Suche auf Wikidata</span></div>
+    <a class="btn wide vidbtn" href="https://world.openfoodfacts.org/product/${code}" target="_blank" rel="noopener">Bei Open Food Facts ansehen</a>
+    <button class="btn wide" style="margin-top:10px" data-neu>Nächstes Produkt scannen</button>
+    <p class="muted small" style="margin-top:12px">Daten: Open Food Facts (ODbL) und Wikidata. Von Freiwilligen erfasst, kann unvollständig sein.</p>
+  </div>`;
+  $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) openScanner(); };
+  const suchname = besitzer || marke;
+  if (!suchname) { $('#konzern').innerHTML = 'Keine Marke angegeben.'; return; }
+  try {
+    const k = await wikidataKonzern(suchname);
+    const el = $('#konzern'); if (!el) return;
+    let t = besitzer ? 'Markeninhaber laut Open Food Facts: <b>' + esc(besitzer) + '</b><br>' : '';
+    if (!k) t += `Auf Wikidata nichts Eindeutiges zu „${esc(suchname)}“ gefunden.`;
+    else {
+      t += `Gefunden: <a href="${esc(k.marke.url)}" target="_blank" rel="noopener">${esc(k.marke.label)}</a>${k.marke.desc ? ' <span class="muted">(' + esc(k.marke.desc) + ')</span>' : ''}`;
+      if (k.besitzer.length) t += '<br>Gehört zu: ' + k.besitzer.map(b => `<a href="${esc(b.url)}" target="_blank" rel="noopener"><b>${esc(b.label)}</b></a>`).join(', ');
+      else t += '<br>Kein Mutterkonzern eingetragen.';
+    }
+    const recherche = (k && k.besitzer[0] && k.besitzer[0].label) || besitzer || marke;
+    t += `<div class="konzern-links"><a class="tbtn" href="https://de.wikipedia.org/w/index.php?search=${encodeURIComponent(recherche)}" target="_blank" rel="noopener">Konzern auf Wikipedia</a><a class="tbtn" href="https://www.google.com/search?q=${encodeURIComponent(recherche + ' Konzern Kritik Ethik')}" target="_blank" rel="noopener">Kritik suchen</a></div>
+      <p class="muted" style="margin:8px 0 0">Eine Ethik Note gibt es nicht: Dafür existiert keine freie, verlässliche Datenquelle. Automatisch gefunden, kann falsch sein.</p>`;
+    el.innerHTML = t;
+  } catch (e) {
+    const el = $('#konzern'); if (el) el.innerHTML = (besitzer ? 'Markeninhaber: <b>' + esc(besitzer) + '</b><br>' : '') + '<span class="muted">Wikidata gerade nicht erreichbar.</span>';
+  }
+}
+function wikiUrl(ent, id) {
+  const sl = ent && ent.sitelinks || {};
+  if (sl.dewiki) return 'https://de.wikipedia.org/wiki/' + encodeURIComponent(sl.dewiki.title.replace(/ /g, '_'));
+  if (sl.enwiki) return 'https://en.wikipedia.org/wiki/' + encodeURIComponent(sl.enwiki.title.replace(/ /g, '_'));
+  return 'https://www.wikidata.org/wiki/' + id;
+}
+const lbl = (ent, id) => (ent && ent.labels && ((ent.labels.de && ent.labels.de.value) || (ent.labels.en && ent.labels.en.value))) || id;
+async function wikidataKonzern(name) {
+  const api = 'https://www.wikidata.org/w/api.php?origin=*&format=json&';
+  const r = await (await fetch(api + 'action=wbsearchentities&type=item&limit=7&language=de&uselang=de&search=' + encodeURIComponent(name))).json();
+  const passend = (r.search || []).find(x => /marke|brand|unternehmen|company|hersteller|manufacturer|konzern|firma|corporation|lebensmittel|food|getränk|drink|beverage|chips|schokolade|chocolate|molkerei|dairy|brauerei|brewery|detailhändler|retailer|genossenschaft|cooperative/i.test(x.description || ''));
+  if (!passend) return null;
+  const e = await (await fetch(api + 'action=wbgetentities&props=claims|labels|descriptions|sitelinks&languages=de|en&sitefilter=dewiki|enwiki&ids=' + passend.id)).json();
+  const ent = e.entities && e.entities[passend.id];
+  if (!ent) return null;
+  const ids = [];
+  ['P127', 'P749', 'P176'].forEach(prop => (ent.claims && ent.claims[prop] || []).forEach(c => {
+    const v = c.mainsnak && c.mainsnak.datavalue && c.mainsnak.datavalue.value; if (v && v.id && ids.indexOf(v.id) < 0 && v.id !== passend.id) ids.push(v.id);
+  }));
+  let besitzer = [];
+  if (ids.length) {
+    const e2 = await (await fetch(api + 'action=wbgetentities&props=labels|sitelinks&languages=de|en&sitefilter=dewiki|enwiki&ids=' + ids.slice(0, 5).join('|'))).json();
+    besitzer = ids.slice(0, 5).map(id => ({ id, label: lbl(e2.entities[id], id), url: wikiUrl(e2.entities[id], id) }));
+  }
+  return { marke: { id: passend.id, label: lbl(ent, passend.id), desc: (ent.descriptions && ((ent.descriptions.de && ent.descriptions.de.value) || (ent.descriptions.en && ent.descriptions.en.value))) || '', url: wikiUrl(ent, passend.id) }, besitzer };
+}
+
 function openSheet(title, body) {
   $('#sheetTitle').textContent = title; $('#sheetBody').innerHTML = body;
   $('#sheetBody').onclick = null; $('#sheetBody').onkeydown = null; $('#sheetBody').onchange = null;
   $('#sheet').hidden = false;
 }
-function closeSheet() { $('#sheet').hidden = true; render(); }
+function closeSheet() { scanStopp(); $('#sheet').hidden = true; render(); }
 $('#sheetClose').addEventListener('click', closeSheet);
 $('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
