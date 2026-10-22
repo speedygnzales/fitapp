@@ -79,7 +79,7 @@ label.field span { display: block; font-size: .8rem; color: var(--muted); margin
 
 /* Training */
 .daycard { display: flex; align-items: center; gap: 16px; }
-.ring { width: 58px; height: 58px; border-radius: 50%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+.ring { width: 58px; height: 58px; border-radius: 50%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; transition: --p .6s cubic-bezier(.2,.8,.2,1);
   background: conic-gradient(var(--ink) calc(var(--p) * 1%), var(--line) 0); }
 .ring span { width: 48px; height: 48px; border-radius: 50%; background: var(--bg); display: flex; align-items: center; justify-content: center;
   font-size: .78rem; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -282,13 +282,11 @@ nav.tabs { position: fixed; bottom: 0; left: 0; right: 0; z-index: 30; display: 
   height: calc(var(--tab-h) + var(--safe-b)); padding: 0 8px var(--safe-b); background: var(--bg); border-top: 1px solid var(--line); }
 nav.tabs button { border: 0; background: transparent; color: var(--faint); display: flex; flex-direction: column; align-items: center;
   justify-content: center; gap: 3px; font-size: .7rem; font-weight: 500; }
-nav.tabs button svg { width: 22px; height: 22px; }
+nav.tabs button svg { width: 22px; height: 22px; padding: 4px 16px; box-sizing: content-box; border-radius: 16px; transition: background-color .25s ease, color .2s ease, transform .2s ease; }
+nav.tabs button { transition: color .2s ease; -webkit-tap-highlight-color: transparent; }
+nav.tabs button[aria-selected="true"] svg { background: var(--fill2); }
+nav.tabs button:active svg { transform: scale(.92); }
 nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 600; }
-nav.tabs button.mitte { position: relative; }
-nav.tabs .mitte-kreis { width: 50px; height: 50px; margin-top: -22px; border-radius: 50%; background: var(--ink); color: var(--inv); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 5px var(--bg), 0 6px 18px rgba(0,0,0,.45); transition: transform .15s; }
-nav.tabs .mitte-kreis svg { width: 24px; height: 24px; }
-nav.tabs button.mitte:active .mitte-kreis { transform: scale(.94); }
-nav.tabs button.mitte[aria-selected="true"] .mitte-kreis { box-shadow: 0 0 0 5px var(--bg), 0 0 0 6px var(--ink); }
 .seg.drei button { font-size: .88rem; padding: 0 4px; }
 .scan-status { margin: 10px 2px 0; font-size: .9rem; color: var(--muted); min-height: 1.3em; }
 .scan-info { margin-top: 12px; }
@@ -365,9 +363,42 @@ nav.tabs button.mitte[aria-selected="true"] .mitte-kreis { box-shadow: 0 0 0 5px
 .cheat li { margin: 6px 0; }
 #toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--tab-h) + var(--safe-b) + 16px); z-index: 60;
   background: var(--ink); color: var(--inv); padding: 12px 18px; border-radius: 12px; font-weight: 600; max-width: 90vw;
-  opacity: 0; pointer-events: none; transition: opacity .2s; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
-#toast.show { opacity: 1; }
+  opacity: 0; pointer-events: none; transform: translate(-50%, 10px) scale(.98); transition: opacity .22s ease, transform .28s cubic-bezier(.2,.8,.2,1); box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+#toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
 body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-h) + 24px); }
+
+/* ======================================================= Bewegung
+   Kurz, ruhig, mit Zweck: Eintritt beim Tab Wechsel, Blätter von unten, Druck Feedback, Haken, Fortschritt.
+   Wer im System weniger Bewegung eingestellt hat, bekommt keine. */
+@property --p { syntax: '<number>'; inherits: true; initial-value: 0; }
+@keyframes rein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes blattHoch { from { transform: translateY(100%); } to { transform: none; } }
+@keyframes blattRunter { from { transform: none; } to { transform: translateY(100%); } }
+@keyframes einblenden { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ausblenden { from { opacity: 1; } to { opacity: 0; } }
+@keyframes hak { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes druck { 0% { transform: scale(1); } 40% { transform: scale(.94); } 100% { transform: scale(1); } }
+#main.eintritt > * { animation: rein .34s cubic-bezier(.2,.8,.2,1) both; }
+#main.eintritt > *:nth-child(2) { animation-delay: .03s; }
+#main.eintritt > *:nth-child(3) { animation-delay: .06s; }
+#main.eintritt > *:nth-child(4) { animation-delay: .09s; }
+#main.eintritt > *:nth-child(5) { animation-delay: .12s; }
+#main.eintritt > *:nth-child(n+6) { animation-delay: .15s; }
+.sheet:not([hidden]) { animation: einblenden .22s ease both; }
+.sheet:not([hidden]) .panel { animation: blattHoch .34s cubic-bezier(.2,.85,.25,1) both; }
+.sheet.zu { animation: ausblenden .2s ease both; }
+.sheet.zu .panel { animation: blattRunter .22s cubic-bezier(.4,0,1,1) both; }
+#timerbar:not([hidden]) { animation: rein .3s cubic-bezier(.2,.8,.2,1) both; }
+.btn, .chip, .tbtn, .gew-item, .scan-alt, .seg button, .iconbtn, .sc, .tl-k, .pv, .scanbtn { transition: transform .12s ease, background-color .18s ease, border-color .18s ease, color .18s ease; }
+.btn:active, .chip:active, .tbtn:active, .gew-item:active, .scan-alt:active, .iconbtn:active, .tl-k:active, .pv:active { transform: scale(.97); }
+.sc:active { transform: scale(.92); }
+.sc.pop svg, .gew-item.pop .box svg, .tl-k.pop svg { animation: hak .34s cubic-bezier(.3,1.5,.5,1) both; }
+.sc.pop { animation: druck .3s ease; }
+.set { transition: background-color .25s ease; }
+.nbar i, .gew-bar i { transition: width .6s cubic-bezier(.2,.8,.2,1); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
 </style>
 </head>
 <body>
@@ -397,8 +428,8 @@ body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5h12a2.5 2.5 0 0 1 2.5 2.5v10A2.5 2.5 0 0 1 18 20H6a2.5 2.5 0 0 1-2.5-2.5v-10A2.5 2.5 0 0 1 6 5zM3.5 10h17M8 3v4M16 3v4"/></svg>Heute</button>
   <button role="tab" data-tab="training" aria-selected="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 8v8M17.5 8v8M3.5 10v4M20.5 10v4M6.5 12h11"/></svg>Training</button>
-  <button role="tab" data-tab="scan" aria-selected="false" class="mitte" aria-label="Scannen">
-    <span class="mitte-kreis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M8 9v6M11 9v6M14 9v6M17 9v6"/></svg></span>Scannen</button>
+  <button role="tab" data-tab="scan" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M8 9v6M11 9v6M14 9v6M17 9v6"/></svg>Scannen</button>
   <button role="tab" data-tab="vorrat" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2 1.5-3 4-3 7v2h3"/></svg>Essen</button>
   <button role="tab" data-tab="snacks" aria-selected="false">
@@ -782,12 +813,15 @@ if (!TITLES[tab]) tab = 'training';
 function setTab(t) {
   if (t === 'coop') { rf.mode = 'coop'; LS.set('rfilter', rf); t = 'vorrat'; }
   if (t !== 'scan') { scan.ansicht = null; scanStopp(); }
+  const anders = t !== tab;
   tab = t; LS.set('tab', t);
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
   $('#title').textContent = TITLES[t];
   const showTimer = t === 'training';
   $('#timerbar').hidden = !showTimer;
   document.body.classList.toggle('with-timer', showTimer);
+  const m = $('#main');
+  if (anders || !m.classList.contains('eintritt')) { m.classList.remove('eintritt'); void m.offsetWidth; m.classList.add('eintritt'); clearTimeout(setTab.t); setTab.t = setTimeout(() => m.classList.remove('eintritt'), 700); }
   render();
   window.scrollTo(0, 0);
 }
@@ -1026,7 +1060,14 @@ function renderPlan() {
 $('#main').addEventListener('click', e => {
   if (tab !== 'plan') return;
   const b = e.target.closest('[data-pday]'); if (b) { planDay = +b.dataset.pday; renderPlan(); return; }
-  const g = e.target.closest('[data-gew]'); if (g) { gewToggle(g.dataset.gew); renderPlan(); return; }
+  const g = e.target.closest('[data-gew]');
+  if (g) {
+    const k = g.dataset.gew; const alt = $('.gew .gew-bar i'); const vorher = alt ? alt.style.width : null;
+    gewToggle(k); renderPlan();
+    if (gewHeute()[k]) $$(`[data-gew="${k}"]`).forEach(x => x.classList.add('pop'));
+    const neu = $('.gew .gew-bar i'); if (neu && vorher != null) { const ziel = neu.style.width; neu.style.width = vorher; requestAnimationFrame(() => requestAnimationFrame(() => { neu.style.width = ziel; })); }
+    return;
+  }
   const go = e.target.closest('[data-goto]'); if (go) { curDay = todayDayId(); setTab(go.dataset.goto); }
 });
 setInterval(() => { if (tab === 'plan' && document.visibilityState === 'visible' && $('#sheet').hidden) renderPlan(); }, 60000);
@@ -1101,6 +1142,8 @@ function renderTraining() {
       <button class="btn wide" data-act="edit">Plan bearbeiten</button></div>`;
   }
   $('#main').innerHTML = h;
+  const ring = $('.daycard .ring');
+  if (ring) { const alt = renderTraining.p; if (alt != null && alt !== pct && renderTraining.tag === day.id) { ring.style.setProperty('--p', alt); requestAnimationFrame(() => requestAnimationFrame(() => ring.style.setProperty('--p', pct))); } renderTraining.p = pct; renderTraining.tag = day.id; }
 }
 
 $('#main').addEventListener('click', e => {
@@ -1119,6 +1162,7 @@ $('#main').addEventListener('click', e => {
     if (st.d && ex.pause > 0) Timer.start(ex.pause, ex.name + ', Satz ' + (+b.dataset.i + 1));
     if (st.d) requestWake();
     renderTraining();
+    if (st.d) { const nb = $(`[data-ex="${ex.id}"] [data-act="toggle"][data-i="${b.dataset.i}"]`); if (nb) nb.classList.add('pop'); }
   } else if (act === 'detail' && ex) openUebung(ex);
   else if (act === 'halten' && ex) {
     unlockAudio(); requestWake();
@@ -2245,11 +2289,19 @@ async function wikidataKonzern(name) {
 }
 
 function openSheet(title, body) {
+  clearTimeout(blattZu); $('#sheet').classList.remove('zu');
   $('#sheetTitle').textContent = title; $('#sheetBody').innerHTML = body;
   $('#sheetBody').onclick = null; $('#sheetBody').onkeydown = null; $('#sheetBody').onchange = null;
   $('#sheet').hidden = false;
 }
-function closeSheet() { scan.ansicht = null; scanStopp(); $('#sheet').hidden = true; render(); }
+let blattZu = 0;
+function closeSheet() {
+  scan.ansicht = null; scanStopp();
+  const sh = $('#sheet'); if (sh.hidden) return;
+  const ruhig = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  sh.classList.add('zu'); clearTimeout(blattZu);
+  blattZu = setTimeout(() => { sh.hidden = true; sh.classList.remove('zu'); render(); }, ruhig ? 0 : 200);
+}
 $('#sheetClose').addEventListener('click', closeSheet);
 $('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
