@@ -114,13 +114,25 @@ label.field span { display: block; font-size: .8rem; color: var(--muted); margin
 .ueb-fakten > div { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
 .ueb-fakten b { display: block; margin-top: 4px; font-weight: 600; font-size: .92rem; }
 .chip.on { color: var(--ink); background: var(--fill2); border-color: var(--fill2); min-height: 32px; font-size: .82rem; cursor: default; }
-.scanbtn { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 64px; margin-bottom: 12px; padding: 12px 16px; border: 1px solid var(--ink); border-radius: var(--r); background: var(--ink); color: var(--inv); text-align: left; }
-.scanbtn > span { display: flex; flex-direction: column; gap: 2px; }
-.scanbtn .muted { color: var(--inv); opacity: .65; }
-.scan-cam { position: relative; border-radius: 14px; overflow: hidden; background: #000; aspect-ratio: 4 / 3; }
+.scan-cam { position: relative; border-radius: 18px; overflow: hidden; background: #000; height: min(56vh, 480px); }
 .scan-cam[hidden] { display: none; }
-.scan-cam video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.scan-rahmen { position: absolute; left: 12%; right: 12%; top: 30%; bottom: 30%; border: 2px solid rgba(255,255,255,.9); border-radius: 12px; box-shadow: 0 0 0 999px rgba(0,0,0,.35); }
+.scan-cam video { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .25s; background: #000; }
+.scan-cam.laeuft video { opacity: 1; }
+.scan-load { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.scan-cam.laeuft .scan-load { display: none; }
+.spin { width: 26px; height: 26px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.18); border-top-color: #fff; animation: drehen .8s linear infinite; display: inline-block; }
+@keyframes drehen { to { transform: rotate(360deg); } }
+.scan-linie { position: absolute; left: 8%; right: 8%; top: 50%; height: 2px; background: #fff; opacity: 0; box-shadow: 0 0 12px rgba(255,255,255,.8); }
+.scan-cam.laeuft .scan-linie { opacity: .85; animation: linie 1.8s ease-in-out infinite alternate; }
+@keyframes linie { from { top: 12%; } to { top: 86%; } }
+.scan-cam.ok .scan-rahmen { border-color: #fff; border-width: 3px; }
+.scan-cam.ok .scan-linie { animation: none; opacity: 0; }
+.scan-licht { position: absolute; right: 12px; bottom: 12px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.35); background: rgba(0,0,0,.45); color: #fff; display: flex; align-items: center; justify-content: center; }
+.scan-licht[aria-pressed="true"] { background: #fff; color: #000; }
+.scan-licht[hidden] { display: none; }
+.prod-laden { display: flex; align-items: center; gap: 12px; color: var(--muted); padding: 18px 0; }
+@media (prefers-reduced-motion: reduce) { .scan-cam.laeuft .scan-linie, .spin { animation: none; } }
+.scan-rahmen { position: absolute; left: 10%; right: 10%; top: 28%; bottom: 28%; border: 2px solid rgba(255,255,255,.9); border-radius: 14px; box-shadow: 0 0 0 999px rgba(0,0,0,.4); overflow: hidden; transition: border-width .15s; }
 .scan-hand { display: flex; gap: 8px; margin-top: 10px; }
 .scan-hand input { flex: 1; min-width: 0; min-height: 48px; border-radius: var(--rs); border: 1px solid var(--line2); background: var(--fill); color: var(--ink); padding: 0 12px; font: inherit; }
 .scan-alt-liste { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
@@ -272,6 +284,14 @@ nav.tabs button { border: 0; background: transparent; color: var(--faint); displ
   justify-content: center; gap: 3px; font-size: .7rem; font-weight: 500; }
 nav.tabs button svg { width: 22px; height: 22px; }
 nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 600; }
+nav.tabs button.mitte { position: relative; }
+nav.tabs .mitte-kreis { width: 50px; height: 50px; margin-top: -22px; border-radius: 50%; background: var(--ink); color: var(--inv); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 5px var(--bg), 0 6px 18px rgba(0,0,0,.45); transition: transform .15s; }
+nav.tabs .mitte-kreis svg { width: 24px; height: 24px; }
+nav.tabs button.mitte:active .mitte-kreis { transform: scale(.94); }
+nav.tabs button.mitte[aria-selected="true"] .mitte-kreis { box-shadow: 0 0 0 5px var(--bg), 0 0 0 6px var(--ink); }
+.seg.drei button { font-size: .88rem; padding: 0 4px; }
+.scan-status { margin: 10px 2px 0; font-size: .9rem; color: var(--muted); min-height: 1.3em; }
+.scan-info { margin-top: 12px; }
 
 /* Sheet */
 .sheet { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.7); display: flex; align-items: flex-end; justify-content: center; }
@@ -292,7 +312,7 @@ nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 600; }
 .bars i { flex: 1; background: var(--ink); border-radius: 3px 3px 0 0; min-height: 2px; }
 
 /* Stundenplan */
-.plan-now .big { font-size: 1.35rem; font-weight: 600; margin: 6px 0 6px; line-height: 1.25; }
+.plan-now .big { font-size: 1.15rem; font-weight: 600; margin: 6px 0 6px; line-height: 1.3; }
 .plan-now b { color: var(--ink); font-weight: 600; }
 .tl { list-style: none; margin: 0; padding: 0; }
 .tl li { display: grid; grid-template-columns: 46px 22px 1fr auto; gap: 8px; align-items: center; padding: 9px 0; border-top: 1px solid var(--hair); }
@@ -374,13 +394,13 @@ body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-
 
 <nav class="tabs" role="tablist">
   <button role="tab" data-tab="plan" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5h12a2.5 2.5 0 0 1 2.5 2.5v10A2.5 2.5 0 0 1 18 20H6a2.5 2.5 0 0 1-2.5-2.5v-10A2.5 2.5 0 0 1 6 5zM3.5 10h17M8 3v4M16 3v4"/></svg>Plan</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 5h12a2.5 2.5 0 0 1 2.5 2.5v10A2.5 2.5 0 0 1 18 20H6a2.5 2.5 0 0 1-2.5-2.5v-10A2.5 2.5 0 0 1 6 5zM3.5 10h17M8 3v4M16 3v4"/></svg>Heute</button>
   <button role="tab" data-tab="training" aria-selected="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 8v8M17.5 8v8M3.5 10v4M20.5 10v4M6.5 12h11"/></svg>Training</button>
-  <button role="tab" data-tab="coop" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11h16a8 8 0 0 1-16 0zM9 7c0-1.5 1-1.5 1-3M14 7c0-1.5 1-1.5 1-3"/></svg>Coop</button>
+  <button role="tab" data-tab="scan" aria-selected="false" class="mitte" aria-label="Scannen">
+    <span class="mitte-kreis"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M8 9v6M11 9v6M14 9v6M17 9v6"/></svg></span>Scannen</button>
   <button role="tab" data-tab="vorrat" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h11a2 2 0 0 1 2 2v14H7.5A2.5 2.5 0 0 1 5 17.5v-12A1.5 1.5 0 0 1 6.5 4zM5 17.5A2.5 2.5 0 0 1 7.5 15H19M9 8h6M9 11h4"/></svg>Rezepte</button>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2 1.5-3 4-3 7v2h3"/></svg>Essen</button>
   <button role="tab" data-tab="snacks" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8V6a3 3 0 0 1 6 0v2"/></svg>Snacks</button>
 </nav>
@@ -753,11 +773,15 @@ $('#timerbar').addEventListener('click', e => {
 });
 
 /* ======================================================= Tabs */
-const TITLES = { plan: 'Stundenplan', training: 'Training', coop: 'Coop Essen', vorrat: 'Rezepte', snacks: 'Snacks' };
+const TITLES = { plan: 'Heute', training: 'Training', scan: 'Scannen', vorrat: 'Essen', snacks: 'Snacks' };
 let tab = LS.get('tab', 'plan');
+const warCoop = tab === 'coop';
+if (warCoop) { tab = 'vorrat'; LS.set('tab', tab); }
 if (!TITLES[tab]) tab = 'training';
 
 function setTab(t) {
+  if (t === 'coop') { rf.mode = 'coop'; LS.set('rfilter', rf); t = 'vorrat'; }
+  if (t !== 'scan') { scan.ansicht = null; scanStopp(); }
   tab = t; LS.set('tab', t);
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
   $('#title').textContent = TITLES[t];
@@ -772,7 +796,7 @@ $('nav.tabs').addEventListener('click', e => { const b = e.target.closest('[data
 function render() {
   if (tab === 'plan') renderPlan();
   else if (tab === 'training') renderTraining();
-  else if (tab === 'coop') renderCoop();
+  else if (tab === 'scan') renderScan();
   else if (tab === 'vorrat') renderVorrat();
   else renderSnacks();
   updateBadge();
@@ -930,7 +954,6 @@ function renderPlan() {
   const next = isToday ? d.items[cur + 1] : null;
   let h = '<div class="chips" role="tablist">' + WOCHE.map((x, i) =>
     `<button class="chip" data-pday="${i}" aria-pressed="${i === planDay}">${x.k}${i === todayIdx ? ' · heute' : ''}</button>`).join('') + '</div>';
-  h += streakKarte(false);
   const mins = d.items.map(it => { let m = toMin(it[0]); if (m != null && m < start) m += 1440; return m; });
   const nm = nowMin;
   if (isToday) {
@@ -961,6 +984,7 @@ function renderPlan() {
     h += `<div class="card"><div class="lab">${esc(d.art)}</div><h3 style="margin-top:4px">${esc(d.name)}</h3>
       <div class="small muted">Aufstehen ${esc(d.items[0][0])} · Licht aus ${esc(lichtAus(d) || KA)}</div></div>`;
   }
+  h += streakKarte(false);
   /* Tagesablauf in Abschnitten */
   const abschnitt = m => m == null ? 'Tag' : (m < 9 * 60 ? 'Morgen' : m < 17 * 60 ? 'Tag' : 'Abend');
   const tagStart = mins[0], tagEnde = mins[mins.length - 1];
@@ -1370,7 +1394,7 @@ function handBild(key, p) {
   if (r && DATA && Array.isArray(DATA.coop)) { const t = DATA.coop.find(x => x.img && regelPasst(r, x.n, x.b)); if (t) img = t.img; }
   bildCache[key] = img; return img;
 }
-function renderCoop() {
+function coopHtml() {
   const hand = coopHand(); const P = hand.produkte;
   let h = `<div class="note"><b>Falle:</b> Prix Garantie Poulet Aufschnitt sieht aus wie Pouletbrust, ist aber Fleischkäse mit 22 g Fett und nur 12 g Protein pro 100 g. Liegen lassen.</div>`;
   COOP_MEALS.forEach((m, mi) => {
@@ -1395,10 +1419,10 @@ function renderCoop() {
       <div class="spread" style="margin-top:12px"><button class="btn sm" data-meal="${mi}">Auf die Coop Liste</button>${pics ? '<span class="credit">Fotos: Open Food Facts</span>' : ''}</div></div>`;
   });
   h += `<p class="muted small">${esc(hand.quelle)} Stand ${datum(hand.stand)}. Protein und Energie sind aus den Werten pro 100 g berechnet.</p>`;
-  $('#main').innerHTML = h;
+  return h;
 }
 $('#main').addEventListener('click', e => {
-  if (tab !== 'coop') return;
+  if (tab !== 'vorrat' || rf.mode !== 'coop') return;
   const b = e.target.closest('[data-meal]'); if (!b) return;
   const m = COOP_MEALS[+b.dataset.meal]; const P = coopHand().produkte;
   let added = 0;
@@ -1605,7 +1629,8 @@ function vorschlaege(q) {
   return out.slice(0, 8);
 }
 function recipeNoGo(r) { return (r.zn || []).some(z => nogo.some(n => n && z.indexOf(n) >= 0)) || nogo.some(n => n && normTerm(r.n).indexOf(n) >= 0); }
-if (!rf.mode) rf.mode = 'zutaten';
+if (!rf.mode) rf.mode = 'suche';
+if (warCoop) { rf.mode = 'coop'; LS.set('rfilter', rf); }
 if (!rf.sort) rf.sort = 'match';
 if (typeof rf.q !== 'string') rf.q = '';
 
@@ -1704,7 +1729,8 @@ let filtOffen = false;
 function renderVorrat() {
   const recs = (DATA && DATA.rezepte) || [];
   const set = new Set(zutaten);
-  let h = `<div class="seg" role="tablist"><button data-mode="zutaten" aria-pressed="${rf.mode === 'zutaten'}">Meine Zutaten</button><button data-mode="suche" aria-pressed="${rf.mode === 'suche'}">Gericht suchen</button></div>`;
+  let h = `<div class="seg drei" role="tablist"><button data-mode="suche" aria-pressed="${rf.mode === 'suche'}">Gerichte</button><button data-mode="zutaten" aria-pressed="${rf.mode === 'zutaten'}">Meine Zutaten</button><button data-mode="coop" aria-pressed="${rf.mode === 'coop'}">Coop Mittag</button></div>`;
+  if (rf.mode === 'coop') { $('#main').innerHTML = h + coopHtml(); return; }
   if (rf.mode === 'suche') {
     h += `<div class="card"><h3>Was willst du essen?</h3>
       <input type="search" id="rIn" value="${esc(rf.q)}" placeholder="z.B. Poulet Curry, Lasagne, Bowl" autocomplete="off" enterkeyhint="search" aria-label="Gericht suchen">
@@ -1871,7 +1897,7 @@ function proteinPerChf(p) { const pr = priceOf(p); return (p.pr != null && p.g &
 function renderSnacks() {
   const list = DATA ? (sf.laden === 'coop' ? DATA.coop : DATA.migros) || [] : [];
   const q = (DATA && DATA.quellen && DATA.quellen[sf.laden]) || null;
-  let h = `<button class="scanbtn" data-act="scan"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M8 9v6M11 9v6M14 9v6M17 9v6"/></svg><span><b>Produkt scannen</b><span class="small muted">Strichcode, Nährwerte, Hersteller und Konzern</span></span></button>`;
+  let h = '';
   h += `<div class="seg" role="tablist"><button data-laden="migros" aria-pressed="${sf.laden === 'migros'}">Migros</button><button data-laden="coop" aria-pressed="${sf.laden === 'coop'}">Coop</button></div>`;
   if (!DATA) { $('#main').innerHTML = h + noDataHint('Snacks'); return; }
   h += `<div class="muted small" style="margin:-4px 0 10px">Stand ${q && q.stand ? datumZeit(q.stand) : KA}${q && q.ok === false ? ' · <span style="color:var(--warn)">letzter Abruf fehlgeschlagen, Daten sind älter</span>' : ''}${sf.laden === 'coop' ? ' · Coop Daten aus Open Food Facts, ohne Preise' : ''}</div>`;
@@ -1917,7 +1943,6 @@ function snackCard(p) {
 }
 $('#main').addEventListener('click', e => {
   if (tab !== 'snacks') return;
-  if (e.target.closest('[data-act="scan"]')) { openScanner(); return; }
   const l = e.target.closest('[data-laden]'); if (l) { sf.laden = l.dataset.laden; sf.cat = sf.cat; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
   const c = e.target.closest('[data-cat]'); if (c) { sf.cat = c.dataset.cat; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
   const sw = e.target.closest('.switch[data-sf]'); if (sw) { sf[sw.dataset.sf] = !sf[sw.dataset.sf]; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
@@ -1992,7 +2017,7 @@ $('#btnListe').addEventListener('click', openLists);
    Hersteller und Mutterkonzern: Wikidata. Für Firmenethik gibt es keine freie, verlässliche Quelle, darum nur Fakten und Links. */
 const ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
 const OFF_FELDER = 'code,product_name,product_name_de,brands,brand_owner,quantity,image_front_small_url,nutriscore_grade,nova_group,ecoscore_grade,additives_tags,nutriments,labels_tags';
-const scan = { stream: null, reader: null, timer: 0, aktiv: false };
+const scan = { stream: null, reader: null, timer: 0, aktiv: false, ansicht: null };
 function ladeSkript(url) {
   return new Promise((ok, nein) => {
     if (window.ZXing) { ok(); return; }
@@ -2010,65 +2035,95 @@ function scanStopp() {
 }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') scanStopp(); });
 function scanVerlauf() { return LS.get('scans', []); }
-function openScanner() {
-  scanStopp();
+function renderScan() {
+  /* Läuft die Kamera schon auf dieser Seite, nicht neu aufbauen (sonst flackert sie) */
+  if (scan.aktiv && $('#scanCam') && scan.ansicht === 'kamera') return;
   const v = scanVerlauf();
-  openSheet('Produkt scannen', `<div class="scan">
-    <div class="scan-cam" id="scanCam"><video id="scanVid" playsinline muted autoplay></video><div class="scan-rahmen"></div></div>
-    <p id="scanStatus" class="small muted" role="status">Kamera startet</p>
-    <div class="scan-hand"><input id="scanCode" inputmode="numeric" autocomplete="off" placeholder="Oder Nummer unter dem Strichcode eintippen" aria-label="Strichcode Nummer"><button class="btn" id="scanGo">Suchen</button></div>
-    ${v.length ? `<div class="lab" style="margin-top:18px">Zuletzt gescannt</div><div class="scan-alt-liste">${v.map(x => `<button class="scan-alt" data-code="${esc(x.code)}">${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy">` : '<span class="ph"></span>'}<span><b>${esc(x.n || x.code)}</b><span class="small muted">${esc(x.b || '')}${x.ns && /^[a-e]$/.test(x.ns) ? ' · Nutri-Score ' + x.ns.toUpperCase() : ''}</span></span></button>`).join('')}</div>` : ''}
-  </div>`);
-  const body = $('#sheetBody');
-  body.onclick = e => {
-    if (e.target.closest('#scanGo')) { const c = $('#scanCode').value; scanStopp(); zeigeProdukt(c); return; }
-    const alt = e.target.closest('[data-code]'); if (alt) { scanStopp(); zeigeProdukt(alt.dataset.code); }
-  };
-  body.onkeydown = e => { if (e.target.id === 'scanCode' && e.key === 'Enter') { e.preventDefault(); scanStopp(); zeigeProdukt(e.target.value); } };
+  $('#main').innerHTML = `<div class="scan">
+    <div class="scan-cam" id="scanCam"><video id="scanVid" playsinline muted autoplay disablepictureinpicture poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>
+      <div class="scan-load" id="scanLoad"><span class="spin" aria-hidden="true"></span></div>
+      <div class="scan-rahmen" id="scanRahmen"><i class="scan-linie"></i></div>
+      <button class="scan-licht" id="scanLicht" hidden aria-pressed="false" aria-label="Taschenlampe"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8l-1.5 5h-5zM9.5 8h5v4l-1 9h-3l-1-9z"/></svg></button>
+    </div>
+    <p id="scanStatus" class="scan-status" role="status">Kamera startet</p>
+    <div class="scan-hand"><input id="scanCode" inputmode="numeric" autocomplete="off" placeholder="Strichcode Nummer" aria-label="Strichcode Nummer eintippen"><button class="btn" id="scanGo">Suchen</button></div>
+    <p class="small faint" style="margin:10px 2px 0">Du siehst Nutri-Score, Verarbeitung, Nährwerte, Zusatzstoffe, ob es zu deiner Snack Regel passt und wem die Marke gehört.</p>
+    ${v.length ? `<div class="lab" style="margin-top:20px">Zuletzt gescannt</div><div class="scan-alt-liste">${v.map(x => `<button class="scan-alt" data-code="${esc(x.code)}">${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ph'}))">` : '<span class="ph"></span>'}<span><b>${esc(x.n || x.code)}</b><span class="small muted">${esc(x.b || '')}${x.ns && /^[a-e]$/.test(x.ns) ? ' · Nutri-Score ' + x.ns.toUpperCase() : ''}</span></span></button>`).join('')}</div>` : ''}
+  </div>`;
+  scan.ansicht = 'kamera';
   starteKamera();
 }
+$('#main').addEventListener('click', e => {
+  if (tab !== 'scan') return;
+  if (e.target.closest('#scanLicht')) { lichtUmschalten(); return; }
+  if (e.target.closest('#scanGo')) { const c = $('#scanCode').value; scanStopp(); zeigeProdukt(c); return; }
+  const alt = e.target.closest('[data-code]'); if (alt) { scanStopp(); zeigeProdukt(alt.dataset.code); }
+});
+$('#main').addEventListener('keydown', e => {
+  if (tab === 'scan' && e.target.id === 'scanCode' && e.key === 'Enter') { e.preventDefault(); scanStopp(); zeigeProdukt(e.target.value); }
+});
+/* Für ältere Aufrufe: Scanner öffnen heisst jetzt den Tab wechseln */
+function openScanner() { if ($('#sheet').hidden === false) { $('#sheet').hidden = true; } scan.ansicht = null; setTab('scan'); }
 async function starteKamera() {
   const st = $('#scanStatus'), vid = $('#scanVid'), cam = $('#scanCam');
+  if (!vid) return;
   const ohneKamera = text => { st.textContent = text; if (cam) cam.hidden = true; scanStopp(); };
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { ohneKamera('Hier ist keine Kamera verfügbar. Tipp die Nummer unter dem Strichcode ein.'); return; }
-  scan.aktiv = true;
+  scanStopp(); scan.aktiv = true;
+  cam.classList.remove('laeuft', 'ok'); cam.hidden = false; st.textContent = 'Kamera startet';
   try {
+    /* Rückkamera, scharf genug für Strichcodes, ohne Ton */
+    scan.stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+    if (!scan.aktiv) { scanStopp(); return; }
+    const track = scan.stream.getVideoTracks()[0];
+    const caps = track && track.getCapabilities ? track.getCapabilities() : {};
+    try { if (caps.focusMode && caps.focusMode.indexOf('continuous') >= 0) await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }); } catch (e) {}
+    const licht = $('#scanLicht'); if (licht) { licht.hidden = !caps.torch; licht.setAttribute('aria-pressed', 'false'); }
+    vid.onplaying = () => { cam.classList.add('laeuft'); st.textContent = 'Halte den Strichcode in den Rahmen.'; };
     let formate = [];
     if ('BarcodeDetector' in window) { try { formate = await BarcodeDetector.getSupportedFormats(); } catch (e) { formate = []; } }
     if (formate.indexOf('ean_13') >= 0) {
-      scan.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-      if (!scan.aktiv) { scanStopp(); return; }
-      vid.srcObject = scan.stream; await vid.play();
+      vid.srcObject = scan.stream;
+      try { await vid.play(); } catch (e) {}
       const det = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'].filter(f => formate.indexOf(f) >= 0) });
-      st.textContent = 'Halte den Strichcode in den Rahmen.';
       const runde = async () => {
         if (!scan.aktiv) return;
-        try { const r = await det.detect(vid); if (r && r.length) { treffer(r[0].rawValue); return; } } catch (e) {}
-        scan.timer = setTimeout(runde, 200);
+        try { if (vid.readyState >= 2) { const r = await det.detect(vid); if (r && r.length) { scanTreffer(r[0].rawValue); return; } } } catch (e) {}
+        scan.timer = setTimeout(runde, 150);
       };
       runde();
       return;
     }
-    st.textContent = 'Scanner wird geladen';
+    /* ZXing hängt den Strom selbst an das Video und startet es. Vorher anhängen würde den Start blockieren. */
     await ladeSkript(ZXING_URL);
     if (!scan.aktiv) return;
     const hints = new Map();
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E]);
-    scan.reader = new ZXing.BrowserMultiFormatReader(hints, 250);
-    st.textContent = 'Halte den Strichcode in den Rahmen.';
-    await scan.reader.decodeFromConstraints({ video: { facingMode: 'environment' }, audio: false }, vid, res => { if (res && scan.aktiv) treffer(res.getText()); });
+    hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+    scan.reader = new ZXing.BrowserMultiFormatReader(hints, 150);
+    scan.reader.decodeFromStream(scan.stream, vid, res => { if (res && scan.aktiv) scanTreffer(res.getText()); }).catch(() => {});
   } catch (e) {
     const verboten = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError' || e.name === 'PermissionDeniedError');
     ohneKamera(verboten
-      ? (NATIVE ? 'Die App darf die Kamera nicht benutzen. Installier die neue FitApp Version und erlaube die Kamera. Bis dahin: Nummer eintippen.' : 'Kamera nicht erlaubt. Erlaube sie im Browser oder tipp die Nummer ein.')
-      : 'Kamera konnte nicht starten. Tipp die Nummer unter dem Strichcode ein.');
+      ? (NATIVE ? 'FitApp darf die Kamera nicht benutzen. Erlaube sie in den Android Einstellungen unter Apps, FitApp, Berechtigungen. Bis dahin: Nummer eintippen.' : 'Kamera nicht erlaubt. Erlaube sie im Browser oder tipp die Nummer ein.')
+      : (e && e.message === 'Skript nicht geladen' ? 'Der Scanner braucht Internet. Tipp die Nummer ein oder versuch es mit Verbindung.' : 'Kamera konnte nicht starten. Tipp die Nummer unter dem Strichcode ein.'));
   }
 }
-function treffer(code) {
+async function lichtUmschalten() {
+  const b = $('#scanLicht'); const t = scan.stream && scan.stream.getVideoTracks()[0]; if (!b || !t) return;
+  const an = b.getAttribute('aria-pressed') !== 'true';
+  try { await t.applyConstraints({ advanced: [{ torch: an }] }); b.setAttribute('aria-pressed', String(an)); } catch (e) { toast('Licht lässt sich hier nicht einschalten.'); }
+}
+/* Nach einem App Wechsel ist der Kamerastrom tot. Beim Zurückkommen neu starten statt schwarz zu bleiben. */
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && tab === 'scan' && scan.ansicht === 'kamera' && $('#sheet').hidden && $('#scanVid')) starteKamera();
+});
+function scanTreffer(code) {
   if (!scan.aktiv) return;
-  scanStopp();
+  scan.aktiv = false;
   try { if (navigator.vibrate) navigator.vibrate(60); } catch (e) {}
-  zeigeProdukt(code);
+  const cam = $('#scanCam'); if (cam) cam.classList.add('ok');
+  setTimeout(() => { scanStopp(); zeigeProdukt(code); }, 220);
 }
 const zahl = v => { const n = parseFloat(v); return isFinite(n) ? n : null; };
 const gr = (v, e) => v == null ? KA : (Math.round(v * 10) / 10).toString().replace('.', ',') + (e || ' g');
@@ -2078,8 +2133,9 @@ function scoreKachel(titel, wert, text) {
 const NOVA_TEXT = { 1: 'kaum verarbeitet', 2: 'verarbeitete Zutat', 3: 'verarbeitet', 4: 'stark verarbeitet' };
 async function zeigeProdukt(roh) {
   const code = String(roh || '').replace(/\D/g, '');
-  if (code.length < 8) { toast('Die Nummer ist zu kurz. Sie hat meist 8 oder 13 Ziffern.'); return; }
-  openSheet('Produkt', '<p class="muted" role="status">Suche bei Open Food Facts</p>');
+  if (code.length < 8) { toast('Die Nummer ist zu kurz. Sie hat meist 8 oder 13 Ziffern.'); if (tab === 'scan' && $('#scanVid')) starteKamera(); return; }
+  scan.ansicht = 'produkt';
+  openSheet('Produkt', '<div class="prod-laden" role="status"><span class="spin" aria-hidden="true"></span>Suche bei Open Food Facts</div>');
   let p = null;
   try {
     const r = await fetch('https://world.openfoodfacts.org/api/v2/product/' + code + '.json?fields=' + OFF_FELDER);
@@ -2087,7 +2143,7 @@ async function zeigeProdukt(roh) {
     if (j && j.status === 1 && j.product) p = j.product;
   } catch (e) {
     $('#sheetBody').innerHTML = `<p>Keine Verbindung zu Open Food Facts. Versuch es mit Internet nochmals.</p><button class="btn wide" data-neu>Nochmals scannen</button>`;
-    $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) openScanner(); };
+    $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) closeSheet(); };
     return;
   }
   if (!p) {
@@ -2095,7 +2151,7 @@ async function zeigeProdukt(roh) {
       <p class="small muted">Du kannst das Produkt dort selbst eintragen, dann hilft es auch allen anderen.</p>
       <a class="btn wide vidbtn" href="https://world.openfoodfacts.org/product/${code}" target="_blank" rel="noopener">Bei Open Food Facts öffnen</a>
       <button class="btn wide" style="margin-top:10px" data-neu>Anderes Produkt scannen</button>`;
-    $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) openScanner(); };
+    $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) closeSheet(); };
     return;
   }
   const n = p.nutriments || {};
@@ -2140,7 +2196,7 @@ async function zeigeProdukt(roh) {
     <button class="btn wide" style="margin-top:10px" data-neu>Nächstes Produkt scannen</button>
     <p class="muted small" style="margin-top:12px">Daten: Open Food Facts (ODbL) und Wikidata. Von Freiwilligen erfasst, kann unvollständig sein.</p>
   </div>`;
-  $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) openScanner(); };
+  $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) closeSheet(); };
   const suchname = besitzer || marke;
   if (!suchname) { $('#konzern').innerHTML = 'Keine Marke angegeben.'; return; }
   try {
@@ -2193,7 +2249,7 @@ function openSheet(title, body) {
   $('#sheetBody').onclick = null; $('#sheetBody').onkeydown = null; $('#sheetBody').onchange = null;
   $('#sheet').hidden = false;
 }
-function closeSheet() { scanStopp(); $('#sheet').hidden = true; render(); }
+function closeSheet() { scan.ansicht = null; scanStopp(); $('#sheet').hidden = true; render(); }
 $('#sheetClose').addEventListener('click', closeSheet);
 $('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet') closeSheet(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });

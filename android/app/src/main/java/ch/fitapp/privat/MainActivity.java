@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -109,6 +110,12 @@ public class MainActivity extends Activity {
                     return false;
                 }
                 return true;
+            }
+
+            /* Kein graues Play Symbol, bevor ein Video oder die Kamera läuft */
+            @Override
+            public Bitmap getDefaultVideoPoster() {
+                return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
             }
 
             /* Kamera für den Barcode Scanner: nur Video, nur für die eigene App Seite */
