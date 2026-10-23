@@ -323,6 +323,7 @@ nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 600; }
 .sheet-head h2 { flex: 1; margin: 0; font-size: 1.15rem; font-weight: 600; }
 .sheet-body { overflow-y: auto; padding: 12px 20px 24px; }
 .sheet-body .card { background: transparent; }
+.sheet .panel.hoch { height: 88vh; }
 .li { display: flex; align-items: center; gap: 12px; min-height: 58px; border-bottom: 1px solid var(--hair); }
 .chk { width: 44px; height: 44px; flex: 0 0 auto; border-radius: var(--rs); border: 1.5px solid #444; background: transparent; font-weight: 700; }
 .chk[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--inv); }
@@ -389,6 +390,150 @@ nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 600; }
   opacity: 0; pointer-events: none; transform: translate(-50%, 10px) scale(.98); transition: opacity .22s ease, transform .28s cubic-bezier(.2,.8,.2,1); box-shadow: 0 8px 24px rgba(0,0,0,.5); }
 #toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
 body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-h) + 24px); }
+body.blatt #toast { top: calc(env(safe-area-inset-top, 0px) + 14px); bottom: auto; transform: translate(-50%, -10px) scale(.98); }
+body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
+
+/* Tagebuch */
+.linkbtn { border: 0; background: none; padding: 8px 0; color: var(--ink); font-size: .86rem; text-decoration: underline; text-decoration-color: var(--line2); text-underline-offset: 3px; }
+.tb-datum { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.tb-datum > div { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
+.tb-datum b { font-weight: 600; font-size: 1.05rem; }
+.tb-datum .iconbtn[disabled] { opacity: .25; pointer-events: none; }
+.tb-sum { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 20px; align-items: center; padding: 18px; }
+.tb-ring { position: relative; width: clamp(108px, 31vw, 132px); aspect-ratio: 1; flex: 0 0 auto; }
+.tb-ring svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); }
+.tb-ring circle { fill: none; stroke-width: 9; }
+.tb-ring .bg { stroke: var(--fill2); }
+.tb-ring .fg { stroke: var(--ink); stroke-linecap: round; transition: stroke-dasharray .9s cubic-bezier(.2,.8,.2,1); }
+.tb-ring .fg.null { stroke-opacity: 0; }
+.tb-ring .mitte { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.tb-ring .mitte b { font-size: 1.7rem; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.tb-ring .mitte span { font-size: .7rem; color: var(--muted); margin-top: 5px; letter-spacing: .02em; }
+.tb-mak { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.tb-mk .kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: .82rem; }
+.tb-mk .kopf > span:first-child { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-mk .kopf > span:last-child { white-space: nowrap; }
+.tb-unter { font-size: .72rem; color: var(--faint); margin-top: 5px; }
+.tb-mk .kopf b { font-weight: 600; color: var(--ink); }
+.tb-mk .kopf small { color: var(--faint); font-size: .76rem; }
+.tb-mk.haupt .kopf > span:first-child { color: var(--ink); font-weight: 500; }
+.tb-bar { height: 6px; border-radius: 6px; background: var(--fill2); overflow: hidden; margin-top: 7px; }
+.tb-bar i { display: block; height: 100%; border-radius: 6px; background: #9A9A9A; transition: width .9s cubic-bezier(.2,.8,.2,1); }
+.tb-mk.haupt .tb-bar i { background: var(--ink); }
+.tb-sum-unten { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid var(--hair); padding-top: 6px; font-size: .84rem; color: var(--muted); }
+.tb-sum-unten b { color: var(--ink); font-weight: 600; }
+.tb-hw { grid-column: 1 / -1; margin: 0; font-size: .76rem; color: var(--faint); line-height: 1.45; }
+.tb-akt { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.tb-akt .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; border-radius: 14px; }
+.tb-mahl { padding: 12px 16px 6px; }
+.tb-mahl-kopf { display: flex; align-items: center; gap: 10px; min-height: 40px; margin-bottom: 4px; }
+.tb-mahl-kopf h3 { margin: 0; flex: 1; font-size: 1.02rem; }
+.tb-mahl-kopf .num { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+.tb-plus-k { width: 36px; height: 36px; border-radius: 11px; border: 1px solid var(--line2); background: transparent; color: var(--ink); display: flex; align-items: center; justify-content: center; padding: 0; flex: 0 0 auto; }
+.tb-e { display: flex; align-items: center; gap: 12px; min-height: 62px; padding: 8px; margin: 0 -8px; border-radius: 12px; cursor: pointer; position: relative; }
+.tb-e + .tb-e::before, .tb-mahl-kopf + .tb-e::before { content: ""; position: absolute; left: 8px; right: 8px; top: 0; border-top: 1px solid var(--hair); }
+.tb-e:active { background: var(--fill); }
+.tb-e.neu { animation: tbNeu 1.4s ease both; }
+@keyframes tbNeu { 0%, 35% { background: var(--fill2); } 100% { background: transparent; } }
+.tb-img { width: 44px; height: 44px; border-radius: 11px; background: #fff; flex: 0 0 auto; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.tb-img img { width: 100%; height: 100%; object-fit: contain; padding: 3px; display: block; }
+.tb-img.leer { background: var(--fill2); color: var(--muted); font-weight: 600; font-size: .95rem; }
+.tb-e .t, .tb-li .t, .mg-kopf .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.tb-e .t b, .tb-li .t b { font-weight: 500; font-size: .95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-e .t span, .tb-li .t span { font-size: .78rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tb-w { text-align: right; display: flex; flex-direction: column; flex: 0 0 auto; }
+.tb-w b { font-weight: 600; font-size: .95rem; }
+.tb-w b small { font-weight: 400; color: var(--muted); font-size: .72rem; }
+.tb-w span { font-size: .74rem; color: var(--faint); }
+.tb-p1 { min-width: 42px; height: 36px; border-radius: 10px; border: 1px solid var(--line2); background: transparent; font-size: .82rem; font-weight: 600; color: var(--ink); padding: 0 8px; flex: 0 0 auto; font-variant-numeric: tabular-nums; }
+.tb-leer { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 10px; }
+.tb-leer .tbtn { min-height: 40px; color: var(--muted); }
+.tb-leer .tbtn svg { width: 15px; height: 15px; }
+.tb-chart { position: relative; height: 104px; margin-top: 18px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.tb-tag { height: 100%; display: flex; align-items: flex-end; justify-content: center; border: 0; background: transparent; padding: 0; }
+.tb-tag i { display: block; width: 100%; max-width: 28px; border-radius: 7px 7px 4px 4px; background: var(--ink); transition: height .8s cubic-bezier(.2,.8,.2,1), box-shadow .2s ease; }
+.tb-tag.cheat i { background: repeating-linear-gradient(135deg, #6A6A6A 0 3px, transparent 3px 6px); box-shadow: inset 0 0 0 1px #6A6A6A; }
+.tb-tag.akt i { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--ink); }
+.tb-tag.cheat.akt i { box-shadow: inset 0 0 0 1px #6A6A6A, 0 0 0 2px var(--bg), 0 0 0 3.5px var(--ink); }
+.tb-ziel { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed #5C5C5C; pointer-events: none; z-index: 1; }
+.tb-ziel span { position: absolute; right: 0; bottom: 3px; font-size: .64rem; color: var(--faint); background: var(--bg); padding: 0 0 0 5px; font-variant-numeric: tabular-nums; }
+.tb-tage { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 9px; }
+.tb-tage span { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: .7rem; color: var(--faint); }
+.tb-tage i { width: 6px; height: 6px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line2); }
+.tb-tage i.an { background: var(--ink); box-shadow: none; }
+.tb-tage span.akt { color: var(--ink); font-weight: 600; }
+.tb-stat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.tb-stat div { border: 1px solid var(--line); border-radius: 11px; padding: 10px 11px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.tb-stat b { font-size: 1.05rem; font-weight: 600; white-space: nowrap; }
+.tb-stat span { font-size: .7rem; color: var(--muted); line-height: 1.3; }
+.tb-kg { margin-top: 4px; }
+.tb-kg b { font-size: 1.9rem; font-weight: 600; letter-spacing: -.02em; }
+.tb-spark { display: block; width: 100%; height: 48px; margin-top: 12px; }
+.tb-spark polyline { fill: none; stroke: var(--ink); stroke-width: 1.8; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
+.tb-spark polygon { fill: rgba(250,250,250,.06); }
+.tb-mini { width: 100%; display: flex; align-items: center; gap: 14px; text-align: left; color: var(--ink); font: inherit; }
+.tb-ring.klein { width: 52px; }
+.tb-ring.klein circle { stroke-width: 13; }
+.tb-mini .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tb-mini b { font-size: 1.12rem; font-weight: 600; }
+.tb-mini b small { font-size: .8rem; color: var(--muted); font-weight: 400; }
+.tb-mini > svg { color: var(--faint); flex: 0 0 auto; }
+/* Suchen */
+.tb-q { position: sticky; top: -12px; z-index: 2; background: #121212; margin: -12px 0 0; padding: 12px 0 10px; }
+.tb-schnell { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 2px 0 14px; }
+.tb-schnell button { min-height: 66px; border-radius: 14px; border: 1px solid var(--line2); background: transparent; color: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: .8rem; font-weight: 500; padding: 0 4px; }
+.tb-schnell button:first-child { background: var(--ink); border-color: var(--ink); color: var(--inv); font-weight: 600; }
+.tb-lab { margin: 4px 0 4px; }
+.tb-li { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 8px 0; border-bottom: 1px solid var(--hair); cursor: pointer; }
+.tb-li .t .q { font-size: .64rem; letter-spacing: .07em; text-transform: uppercase; color: var(--faint); margin-top: 2px; }
+.tb-plus { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line2); background: transparent; color: var(--ink); display: flex; align-items: center; justify-content: center; padding: 0; flex: 0 0 auto; font-weight: 700; font-size: .84rem; font-variant-numeric: tabular-nums; }
+.tb-plus.hat { background: var(--ink); border-color: var(--ink); color: var(--inv); }
+.tb-plus.pop { animation: druck .3s ease; }
+/* Menge */
+.mg-zur { margin: 0 0 12px; padding-left: 6px; }
+.mg-zur svg { width: 16px; height: 16px; }
+.mg-kopf { display: flex; gap: 14px; align-items: center; }
+.mg-kopf .tb-img { width: 58px; height: 58px; border-radius: 14px; }
+.mg-kopf h3 { margin: 0; font-size: 1.06rem; font-weight: 600; line-height: 1.3; }
+.mg-fav { border: 0; color: var(--muted); }
+.mg-fav[aria-pressed="true"] { color: var(--ink); }
+.mg-fav.pop svg { animation: hak .34s cubic-bezier(.3,1.5,.5,1) both; }
+.mg-nw { display: grid; grid-template-columns: 1.25fr 1fr 1fr 1fr; gap: 8px; margin-top: 16px; }
+.mg-nw > div { border: 1px solid var(--line); border-radius: 13px; padding: 11px 10px 10px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.mg-nw > div.haupt { background: var(--ink); color: var(--inv); border-color: var(--ink); }
+.mg-nw b { font-size: 1.32rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; white-space: nowrap; }
+.mg-nw b small { font-size: .72rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.mg-nw b.ka { font-size: 1rem; color: var(--faint); font-weight: 500; }
+.mg-nw span { font-size: .68rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mg-nw > div.haupt span { color: #555; }
+.mg-rest { margin: 12px 2px 0; font-size: .84rem; color: var(--muted); line-height: 1.45; min-height: 2.9em; }
+.mg-rest b { color: var(--ink); font-weight: 600; }
+.mg-lab { margin: 16px 0 8px; }
+.mg-einh { display: flex; flex-wrap: wrap; gap: 6px; }
+.mg-step { display: flex; align-items: stretch; gap: 10px; }
+.mg-step > button { width: 60px; min-height: 60px; border-radius: 16px; border: 1px solid var(--line2); background: transparent; color: var(--ink); font-size: 1.6rem; font-weight: 400; display: flex; align-items: center; justify-content: center; padding: 0; flex: 0 0 auto; transition: transform .12s ease, background-color .18s ease; }
+.mg-step > button:active { transform: scale(.94); background: var(--fill2); }
+.mg-step .feld { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line2); border-radius: 16px; min-height: 60px; background: var(--fill); padding: 0 12px; cursor: text; }
+.mg-step .feld:focus-within { border-color: var(--ink); }
+.mg-step .feld input[inputmode] { width: 3ch; min-width: 2ch; min-height: 56px; border: 0; background: transparent; padding: 0; text-align: right; font-size: 1.7rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.mg-step .feld span { color: var(--muted); font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mg-schnell { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+.mg-schnell .chip { min-width: 0; padding: 0 2px; justify-content: center; font-variant-numeric: tabular-nums; font-size: .86rem; }
+.seg.vier button { font-size: .86rem; padding: 0 2px; }
+.chips.laden { padding-bottom: 8px; }
+.mg-mahl { margin-bottom: 0; }
+.mg-ok { margin-top: 18px; min-height: 54px; border-radius: 14px; font-size: 1rem; }
+.mg-det { display: block; margin: 12px auto 0; }
+#toast.mit { display: flex; align-items: center; gap: 16px; padding: 8px 8px 8px 18px; }
+#toast.mit.show { pointer-events: auto; }
+#toast.mit span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+#toast.mit button { flex: 0 0 auto; border: 0; border-radius: 9px; background: #E4E4E4; color: var(--inv); font-weight: 700; font-size: .84rem; padding: 8px 12px; }
+.scan-ziel { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line2); border-radius: 14px; padding: 8px 8px 8px 14px; margin-bottom: 12px; font-size: .9rem; }
+.scan-ziel span { flex: 1; min-width: 0; }
+.scan-ziel b { font-weight: 600; }
+.tb-plus-k, .tb-p1, .tb-plus, .tb-schnell button, .tb-tag, .linkbtn { transition: transform .12s ease, background-color .18s ease, border-color .18s ease, color .18s ease; }
+.tb-plus-k:active, .tb-p1:active, .tb-plus:active, .tb-schnell button:active, .tb-mini:active { transform: scale(.95); }
+@media (max-width: 360px) { .tb-sum { gap: 12px 14px; padding: 16px 14px; } .tb-ring .mitte b { font-size: 1.45rem; } .mg-nw b { font-size: 1.12rem; } }
 
 /* ======================================================= Bewegung
    Kurz, ruhig, mit Zweck: Eintritt beim Tab Wechsel, Blätter von unten, Druck Feedback, Haken, Fortschritt.
@@ -460,8 +605,8 @@ body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M8 9v6M11 9v6M14 9v6M17 9v6"/></svg>Scannen</button>
   <button role="tab" data-tab="vorrat" aria-selected="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2 1.5-3 4-3 7v2h3"/></svg>Essen</button>
-  <button role="tab" data-tab="snacks" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8V6a3 3 0 0 1 6 0v2"/></svg>Snacks</button>
+  <button role="tab" data-tab="tagebuch" aria-selected="false">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5"/><path d="M12 3.5V12h8.5A8.5 8.5 0 0 0 12 3.5z"/></svg>Tagebuch</button>
 </nav>
 
 <div class="sheet" id="sheet" hidden>
@@ -524,8 +669,10 @@ const IDB = {
 };
 
 let toastTimer = null;
+/* Ist ein Blatt offen, erscheint der Hinweis oben über dem Hintergrund, damit er keine Knöpfe verdeckt */
+function toastOrt() { const sh = $('#sheet'); document.body.classList.toggle('blatt', !!sh && !sh.hidden && !sh.classList.contains('zu')); }
 function toast(msg) {
-  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  const t = $('#toast'); t.classList.remove('mit'); t.textContent = msg; toastOrt(); t.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2600);
 }
 
@@ -534,6 +681,7 @@ let DATA = null;
 /* Nach neuen Daten alle abgeleiteten Zwischenspeicher leeren (Zutaten Häufigkeit, Bewertungsmittel, Coop Fotos) */
 function datenGeaendert() {
   try { zutHaeufig = null; bewMittel = null; Object.keys(bildCache).forEach(k => { delete bildCache[k]; }); } catch (e) {}
+  try { tbDatenIdx = null; tbCodes = null; } catch (e) {}
 }
 let EMBEDDED = false;
 
@@ -937,15 +1085,16 @@ $('#timerbar').addEventListener('click', e => {
 });
 
 /* ======================================================= Tabs */
-const TITLES = { plan: 'Heute', training: 'Training', scan: 'Scannen', vorrat: 'Essen', snacks: 'Snacks' };
+const TITLES = { plan: 'Heute', training: 'Training', scan: 'Scannen', vorrat: 'Essen', tagebuch: 'Tagebuch' };
 let tab = LS.get('tab', 'plan');
 const warCoop = tab === 'coop';
 if (warCoop) { tab = 'vorrat'; LS.set('tab', tab); }
+if (tab === 'snacks') { tab = 'tagebuch'; LS.set('tab', tab); }
 if (!TITLES[tab]) tab = 'training';
 
 function setTab(t) {
-  if (t === 'coop') { rf.mode = 'coop'; LS.set('rfilter', rf); t = 'vorrat'; }
-  if (t !== 'scan') { scan.ansicht = null; scanStopp(); }
+  if (t === 'coop' || t === 'snacks') { rf.mode = t; LS.set('rfilter', rf); t = 'vorrat'; }
+  if (t !== 'scan') { scan.ansicht = null; scanStopp(); scan.ziel = null; }
   const anders = t !== tab;
   tab = t; LS.set('tab', t);
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
@@ -976,7 +1125,7 @@ function render() {
   else if (tab === 'training') renderTraining();
   else if (tab === 'scan') renderScan();
   else if (tab === 'vorrat') renderVorrat();
-  else renderSnacks();
+  else renderTagebuch();
   updateBadge();
 }
 
@@ -1149,6 +1298,7 @@ function renderPlan() {
         ${trainingBald ? '<button class="btn primary" data-goto="training">Training öffnen</button>' : ''}
         ${g && g !== 'training' ? `<button class="btn ${gewHeute()[g] ? 'ok' : ''}" data-gew="${g}">${gewHeute()[g] ? 'Erledigt' : 'Abhaken'}</button>` : ''}</div>` : ''}
     </div>`;
+    h += tbHeuteKarte();
     /* Gewohnheiten von heute */
     const keys = []; d.items.forEach(it => { const k = gewohnheitVon(it); if (k && keys.indexOf(k) < 0) keys.push(k); });
     if (keys.length) {
@@ -1200,6 +1350,7 @@ function renderPlan() {
       <li><b>Ein schlechter Tag unter der Woche ist kein zweiter Cheat Day.</b> Abhaken und mit der nächsten Mahlzeit weiter.</li>
     </ol></div>`;
   $('#main').innerHTML = h;
+  tbAnimieren();
 }
 $('#main').addEventListener('click', e => {
   if (tab !== 'plan') return;
@@ -1924,11 +2075,16 @@ function hatBewertungen() { return ((DATA && DATA.rezepte) || []).some(r => r.rt
 const IDEEN = ['Curry', 'Pasta', 'Bowl', 'Salat', 'Suppe', 'Risotto', 'Wrap', 'Burger', 'Pizza', 'Geschnetzeltes', 'Ofengemüse', 'Lasagne'];
 const catOffen = {};
 let filtOffen = false;
+function vorratSeg() {
+  return `<div class="seg vier" role="tablist">${[['suche', 'Gerichte'], ['zutaten', 'Zutaten'], ['coop', 'Coop'], ['snacks', 'Snacks']].map(([k, l]) => `<button data-mode="${k}" aria-pressed="${rf.mode === k}">${l}</button>`).join('')}</div>`;
+}
+function snackAktiv() { return tab === 'vorrat' && rf.mode === 'snacks'; }
 function renderVorrat() {
   const recs = (DATA && DATA.rezepte) || [];
   const set = new Set(zutaten);
-  let h = `<div class="seg drei" role="tablist"><button data-mode="suche" aria-pressed="${rf.mode === 'suche'}">Gerichte</button><button data-mode="zutaten" aria-pressed="${rf.mode === 'zutaten'}">Meine Zutaten</button><button data-mode="coop" aria-pressed="${rf.mode === 'coop'}">Coop Mittag</button></div>`;
+  let h = vorratSeg();
   if (rf.mode === 'coop') { $('#main').innerHTML = h + coopHtml(); return; }
+  if (rf.mode === 'snacks') { renderSnacks(); return; }
   if (rf.mode === 'suche') {
     h += `<div class="card"><h3>Was willst du essen?</h3>
       <input type="search" id="rIn" value="${esc(rf.q)}" placeholder="z.B. Poulet Curry, Lasagne, Bowl" autocomplete="off" enterkeyhint="search" aria-label="Gericht suchen">
@@ -2016,7 +2172,7 @@ function recipeCard(x) {
         : `${x.hat.length ? `<div class="have"><b>Hast du:</b> ${esc(namen(x.hat).join(', '))}</div>` : ''}
            ${x.fehlt.length ? `<div class="miss"><b>Fehlt:</b> ${esc(namen(x.fehlt.slice(0, 6)).join(', '))}${x.fehlt.length > 6 ? ' und ' + (x.fehlt.length - 6) + ' mehr' : ''}</div>` : ''}`}
       </div>
-      <a href="${lnk(r.u)}" target="_blank" rel="noopener" class="small" style="display:inline-block;margin-top:12px">Rezept öffnen</a>
+      <div class="row" style="margin-top:12px;gap:14px">${r.kc != null ? `<button class="btn sm" data-rlog="${((DATA && DATA.rezepte) || []).indexOf(r)}">1 Portion eintragen</button>` : ''}<a href="${lnk(r.u)}" target="_blank" rel="noopener" class="small">Rezept öffnen</a></div>
     </div></div>`;
 }
 function zutatDazu(id) {
@@ -2034,6 +2190,7 @@ function zeigeVorschlaege(q) {
 let suchTimer = null;
 $('#main').addEventListener('click', e => {
   if (tab !== 'vorrat') return;
+  const rl = e.target.closest('[data-rlog]'); if (rl) { const r = ((DATA && DATA.rezepte) || [])[+rl.dataset.rlog]; if (r) openMenge(foodAusRezept(r), { m: mahlJetzt(), tag: tbHeute() }); return; }
   const mo = e.target.closest('[data-mode]'); if (mo) { rf.mode = mo.dataset.mode; LS.set('rfilter', rf); recLimit = 30; renderVorrat(); return; }
   const idee = e.target.closest('[data-idee]');
   if (idee) { rf.q = falt(rf.q) === falt(idee.dataset.idee) ? '' : idee.dataset.idee; LS.set('rfilter', rf); recLimit = 30; renderVorrat(); return; }
@@ -2095,8 +2252,8 @@ function proteinPerChf(p) { const pr = priceOf(p); return (p.pr != null && p.g &
 function renderSnacks() {
   const list = DATA ? (sf.laden === 'coop' ? DATA.coop : DATA.migros) || [] : [];
   const q = (DATA && DATA.quellen && DATA.quellen[sf.laden]) || null;
-  let h = '';
-  h += `<div class="seg" role="tablist"><button data-laden="migros" aria-pressed="${sf.laden === 'migros'}">Migros</button><button data-laden="coop" aria-pressed="${sf.laden === 'coop'}">Coop</button></div>`;
+  let h = vorratSeg();
+  h += `<div class="chips laden" role="tablist"><button class="chip" data-laden="migros" aria-pressed="${sf.laden === 'migros'}">Migros</button><button class="chip" data-laden="coop" aria-pressed="${sf.laden === 'coop'}">Coop</button></div>`;
   if (!DATA) { $('#main').innerHTML = h + noDataHint('Snacks'); return; }
   h += `<div class="muted small" style="margin:-4px 0 10px">Stand ${q && q.stand ? datumZeit(q.stand) : KA}${q && q.ok === false ? ' · <span style="color:var(--warn)">letzter Abruf fehlgeschlagen, Daten sind älter</span>' : ''}${sf.laden === 'coop' ? ' · Coop Daten aus Open Food Facts, ohne Preise' : ''}</div>`;
   h += `<div class="card" style="padding:10px 14px">
@@ -2135,12 +2292,13 @@ function snackCard(p) {
     <div class="row" style="margin-top:6px">${isGood(p) ? '<span class="tag good">gut</span>' : ''}${p.x ? `<span class="tag both">${other}</span>` : ''}<span class="tag">${esc(KATS[p.cat] || p.cat || '')}</span></div>
     <div class="row" style="margin-top:8px">
       <button class="btn sm star" data-fav aria-pressed="${fav}" aria-label="${fav ? 'Favorit entfernen' : 'Als Favorit merken'}">${fav ? '★' : '☆'}</button>
+      <button class="btn sm primary" data-tblog>Eintragen</button>
       <button class="btn sm" data-addlist>+ Liste</button>
       <a class="btn sm" style="display:inline-flex;align-items:center;text-decoration:none;color:inherit" href="${lnk(p.u)}" target="_blank" rel="noopener">${sf.laden === 'coop' ? 'Bei Coop suchen' : 'Öffnen'}</a>
     </div></div></div></div>`;
 }
 $('#main').addEventListener('click', e => {
-  if (tab !== 'snacks') return;
+  if (!snackAktiv()) return;
   const l = e.target.closest('[data-laden]'); if (l) { sf.laden = l.dataset.laden; sf.cat = sf.cat; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
   const c = e.target.closest('[data-cat]'); if (c) { sf.cat = c.dataset.cat; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
   const sw = e.target.closest('.switch[data-sf]'); if (sw) { sf[sw.dataset.sf] = !sf[sw.dataset.sf]; LS.set('snack', sf); snackLimit = 50; renderSnacks(); return; }
@@ -2148,16 +2306,17 @@ $('#main').addEventListener('click', e => {
   const card = e.target.closest('[data-pid]'); if (!card) return;
   const list = sf.laden === 'coop' ? DATA.coop : DATA.migros; const p = list.find(x => String(x.id) === card.dataset.pid); if (!p) return;
   if (e.target.closest('[data-fav]')) { const k = sf.laden + ':' + p.id; if (favs[k]) delete favs[k]; else favs[k] = 1; LS.set('fav', favs); renderSnacks(); }
+  else if (e.target.closest('[data-tblog]')) openMenge(foodAusProdukt(p, sf.laden), { m: mahlJetzt(), tag: tbHeute() });
   else if (e.target.closest('[data-addlist]')) { toast(addToList(sf.laden, p.n + (p.s ? ' (' + p.s + ')' : ''), p.u) ? 'Auf der ' + (sf.laden === 'coop' ? 'Coop' : 'Migros') + ' Liste' : 'Schon auf der Liste'); }
 });
 let searchTimer = null;
 $('#main').addEventListener('input', e => {
-  if (tab !== 'snacks' || e.target.dataset.sf !== 'q') return;
+  if (!snackAktiv() || e.target.dataset.sf !== 'q') return;
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => { sf.q = e.target.value; LS.set('snack', sf); snackLimit = 50; const pos = e.target.selectionStart; renderSnacks(); const i = $('[data-sf="q"]'); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch (er) {} } }, 300);
 });
 $('#main').addEventListener('change', e => {
-  if (tab !== 'snacks' || e.target.dataset.sf !== 'sort') return;
+  if (!snackAktiv() || e.target.dataset.sf !== 'sort') return;
   sf.sort = e.target.value; LS.set('snack', sf); renderSnacks();
 });
 
@@ -2208,6 +2367,741 @@ function openLists() {
 }
 $('#btnListe').addEventListener('click', openLists);
 
+/* ======================================================= Modul 5: Tagebuch
+   Was du isst: Kalorien, Protein, Kohlenhydrate, Fett. Quellen: deine Migros und Coop Daten (Strichcode auch offline),
+   Rezepte, Open Food Facts und eigene Lebensmittel. Alles bleibt auf dem Handy und ist in der Sicherung dabei. */
+const MAHL = [['morgen', 'Morgen'], ['mittag', 'Mittag'], ['abend', 'Abend'], ['snack', 'Snacks']];
+const MAHL_NAME = { morgen: 'Morgen', mittag: 'Mittag', abend: 'Abend', snack: 'Snacks' };
+const ZIELE_START = { k: 2400, pr: 150, kh: 290, f: 70 };
+const NWK = ['k', 'pr', 'kh', 'f'];
+const NW_NAME = { k: 'Kalorien', pr: 'Protein', kh: 'Kohlenhydrate', f: 'Fett' };
+const WT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+const QUELLE_NAME = { fooby: 'fooby', migusto: 'migusto', bettybossi: 'Betty Bossi' };
+const SRC_NAME = { migros: 'Migros', coop: 'Coop', rezept: 'Rezept', off: 'Open Food Facts', eigen: 'Eigenes' };
+let tb = LS.get('tb', {});
+let foods = LS.get('foods', {});
+let ziele = Object.assign({}, ZIELE_START, LS.get('ziele', {}));
+let gewicht = LS.get('gewicht', {});
+let tbTag = null;
+let tbDatenIdx = null, tbCodes = null, tbFrisch = null, tbFrischT = 0;
+let tbSuchQ = '', tbSuchAnsicht = 'zuletzt';
+const tbAnim = {};
+
+const I_PLUS = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+const I_SCAN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16M8 9v6M11 9v6M14 9v6M17 9v6"/></svg>';
+const I_SUCHE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>';
+const I_BLITZ = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6z"/></svg>';
+const I_STIFT = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></svg>';
+const I_LINKS = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>';
+const I_RECHTS = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg>';
+const I_STERN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>';
+const I_STERN_V = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>';
+const I_KOPIE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4h-7A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8"/></svg>';
+
+function tbLaden() { tb = LS.get('tb', {}); foods = LS.get('foods', {}); ziele = Object.assign({}, ZIELE_START, LS.get('ziele', {})); gewicht = LS.get('gewicht', {}); tbTag = null; }
+/* Zahlen wie auf der Packung: Komma, und ein echtes Minus statt Bindestrich */
+const fz = (v, d) => { if (v == null || !isFinite(v)) return KA; const f = Math.pow(10, d || 0); const r = Math.round(v * f) / f; return String(Object.is(r, -0) ? 0 : r).replace('.', ',').replace('-', '−'); };
+const fx = x => x === 0.5 ? '½' : x === 1.5 ? '1½' : x === 2.5 ? '2½' : fz(x, 2);
+const tbUid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function tbHeute() { return tagKey(new Date()); }
+function tbAkt() { return tbTag || tbHeute(); }
+function tbSpeichern() { LS.set('tb', tb); }
+function foodsSpeichern() {
+  const ks = Object.keys(foods);
+  if (ks.length > 400) {
+    const wert = k => (foods[k].fav ? 1e15 : 0) + (foods[k].last || 0);
+    ks.sort((a, b) => wert(b) - wert(a)).slice(400).forEach(k => { delete foods[k]; });
+  }
+  LS.set('foods', foods);
+}
+function tbMarkiere(id) { tbFrisch = id; tbFrischT = Date.now(); }
+function mahlJetzt() { const d = new Date(); const h = d.getHours() + d.getMinutes() / 60; return h < 10 ? 'morgen' : h < 14.5 ? 'mittag' : h < 17 ? 'snack' : h < 22 ? 'abend' : 'snack'; }
+function zahlEin(v) { const s = String(v == null ? '' : v).replace(',', '.').replace(/[^\d.]/g, ''); if (!s) return null; const n = parseFloat(s); return isFinite(n) ? n : null; }
+function tagName(key) {
+  if (key === tbHeute()) return 'Heute';
+  const g = new Date(); g.setDate(g.getDate() - 1);
+  if (key === tagKey(g)) return 'Gestern';
+  return keyDatum(key).toLocaleDateString('de-CH', { weekday: 'long' });
+}
+function tagDatum(key) { return keyDatum(key).toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'long' }); }
+function tagVerschoben(key, n) { const d = keyDatum(key); d.setDate(d.getDate() + n); return tagKey(d); }
+
+/* ---------- Nährwerte */
+function nwMal(n, x) { const o = {}; NWK.forEach(k => { o[k] = n && n[k] != null && isFinite(n[k]) ? n[k] * x : null; }); if (n && n.khs) o.khs = 1; return o; }
+/* Fehlen nur die Kohlenhydrate, ergeben sie sich aus den Kalorien: 4 kcal pro g Protein und Kohlenhydrat, 9 pro g Fett. Wird als berechnet markiert. */
+function khAusKcal(n) {
+  if (!n || n.kh != null || n.k == null || n.pr == null || n.f == null) return n;
+  return Object.assign({}, n, { kh: Math.max(0, (n.k - 4 * n.pr - 9 * n.f) / 4), khs: 1 });
+}
+/* Offensichtlich falsche Daten nicht zählen: über 950 kcal (reines Fett hat 900), mehr als 100 g Protein,
+   oder viel weniger Kalorien als Protein und Fett allein ergeben (zum Beispiel 0 kcal bei 79 g Protein) */
+function plausibel(n) {
+  if (!n || n.k == null) return n;
+  const m = 4 * (n.pr || 0) + 9 * (n.f || 0);
+  if (n.k > 950 || (n.pr || 0) > 100 || (n.f || 0) > 100 || (n.k === 0 && m > 5) || (m > 0 && n.k < m * 0.75 - 10)) return Object.assign({}, n, { k: null, kaputt: 1 });
+  return n;
+}
+function tagSumme(key) {
+  const s = { k: 0, pr: 0, kh: 0, f: 0, fehlt: { k: 0, pr: 0, kh: 0, f: 0 }, khs: 0, n: 0 };
+  (tb[key] || []).forEach(e => {
+    s.n++; const n = nwMal(e.pu, e.x);
+    NWK.forEach(k => { if (n[k] == null) s.fehlt[k]++; else s[k] += n[k]; });
+    if (e.pu && e.pu.khs) s.khs++;
+  });
+  return s;
+}
+
+/* ---------- Lebensmittel aus den verschiedenen Quellen */
+function basisVon(s) { return /\d\s*(ml|cl|dl|l)\b/i.test(s || '') ? 'ml' : 'g'; }
+function stueckVon(s) {
+  const m = /(\d+)\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*(g|ml|cl|dl)\b/i.exec(s || '');
+  if (!m) return null;
+  let g = parseFloat(m[2].replace(',', '.')); const e = m[3].toLowerCase();
+  if (e === 'cl') g *= 10; if (e === 'dl') g *= 100;
+  return (g > 0 && g < 2000) ? { l: 'Stück', g: Math.round(g * 10) / 10 } : null;
+}
+function markeKurz(b) { return String(b || '').split(',')[0].trim(); }
+function foodAusProdukt(p, laden) {
+  const st = stueckVon(p.s);
+  return { key: (laden === 'coop' ? 'k:' : 'm:') + p.id, n: p.n, b: markeKurz(p.b), img: p.img || '', src: laden === 'coop' ? 'coop' : 'migros',
+    code: (p.bc || [])[0] || '', p100: khAusKcal(plausibel({ k: p.k, pr: p.pr, kh: null, f: p.f })), base: basisVon(p.s), port: st ? [st] : [], pack: p.g > 0 ? p.g : null };
+}
+function foodAusOff(p, code) {
+  const n = p.nutriments || {};
+  let k = zahl(n['energy-kcal_100g']);
+  if (k == null && zahl(n.energy_100g) != null) k = zahl(n.energy_100g) / 4.184;
+  const sq = zahl(p.serving_quantity), pq = zahl(p.product_quantity);
+  const ml = /^(ml|cl|dl|l)$/i.test(p.product_quantity_unit || '') || /\d\s*(ml|cl|dl|l)\b/i.test(p.quantity || '');
+  return { key: 'o:' + code, n: p.product_name_de || p.product_name || code, b: markeKurz(p.brands), img: p.image_front_small_url || '', src: 'off', code,
+    p100: khAusKcal(plausibel({ k, pr: zahl(n.proteins_100g), kh: zahl(n.carbohydrates_100g), f: zahl(n.fat_100g) })), base: ml ? 'ml' : 'g',
+    port: sq > 0 && sq < 2000 ? [{ l: 'Portion', g: Math.round(sq * 10) / 10 }] : [], pack: pq > 0 && pq < 10000 ? pq : null };
+}
+function foodAusRezept(r) {
+  return { key: 'r:' + r.u, n: r.n, b: QUELLE_NAME[r.q] || r.q || 'Rezept', img: r.img || '', src: 'rezept',
+    pp: { k: r.kc != null ? r.kc : null, pr: r.pr != null ? r.pr : null, kh: null, f: null } };
+}
+function einheiten(f) {
+  if (f.fix) return [f.fix.e];
+  if (f.pp) return [{ l: 'Portion', g: null }];
+  const bs = f.base || 'g';
+  const u = (f.port || []).map(p => ({ l: p.l, g: p.g, bs }));
+  if (f.pack && !u.some(x => Math.abs(x.g - f.pack) < .5)) u.push({ l: 'Packung', g: f.pack, bs });
+  u.push({ l: bs, g: 1, basis: true, bs });
+  return u;
+}
+function einheitLabel(u) { return u.basis ? u.l : u.l + (u.g ? ' · ' + fz(u.g, 1) + ' ' + (u.bs || 'g') : ''); }
+function puVon(f, u) {
+  if (f.fix) return f.fix.pu;
+  if (f.pp) return nwMal(f.pp, 1);
+  return nwMal(f.p100, (u.g || 0) / 100);
+}
+function kalorienBekannt(f) { return f.fix ? f.fix.pu && f.fix.pu.k != null : f.pp ? f.pp.k != null : !!(f.p100 && f.p100.k != null); }
+function standardMenge(f) {
+  const us = einheiten(f); const alt = foods[f.key];
+  if (alt && alt.le) { const i = us.findIndex(u => u.l === alt.le.l && u.g === alt.le.g); if (i >= 0) return { ui: i, x: alt.lx || 1 }; }
+  const i = us.findIndex(u => !u.basis);
+  return i >= 0 ? { ui: i, x: 1 } : { ui: us.length - 1, x: 100 };
+}
+function mengeText(u, x) {
+  if (u.basis) return fz(x, 1) + ' ' + u.l;
+  return (x === 1 ? '' : fx(x) + ' × ') + u.l + (u.g ? ' · ' + fz(u.g * x) + ' ' + (u.bs || 'g') : '');
+}
+function infoText(f) {
+  if (f.pp) return f.pp.k == null ? 'Kalorien ' + KA : `${fz(f.pp.k)} kcal · ${fz(f.pp.pr)} g Protein / Portion`;
+  if (f.p100 && f.p100.kaputt) return 'Werte fehlerhaft, bitte selbst eintragen';
+  if (!f.p100 || f.p100.k == null) return 'Kalorien ' + KA;
+  return `${fz(f.p100.k)} kcal · ${fz(f.p100.pr, 1)} g Protein / 100 ${f.base || 'g'}`;
+}
+function tbBild(img, n) {
+  const ini = esc(String(n || '?').trim().charAt(0).toUpperCase() || '?');
+  return sicherUrl(img)
+    ? `<span class="tb-img" data-i="${ini}"><img src="${esc(img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="var s=this.parentNode;s.classList.add('leer');s.textContent=s.dataset.i"></span>`
+    : `<span class="tb-img leer">${ini}</span>`;
+}
+
+/* ---------- Eintragen */
+function tbEintragen(f, u, x, m, tag) {
+  tag = tag || tbAkt();
+  const liste = tb[tag] || (tb[tag] = []);
+  const pu = puVon(f, u);
+  /* Gleiches Lebensmittel in gleicher Einheit und Mahlzeit: Menge zusammenzählen statt doppelte Zeile */
+  const gleich = f.key ? liste.find(z => z.fk === f.key && z.m === m && z.e.l === u.l && z.e.g === u.g) : null;
+  let ein;
+  if (gleich) { gleich.x = Math.round((gleich.x + x) * 100) / 100; gleich.t = Date.now(); gleich.pu = pu; ein = gleich; }
+  else { ein = { id: tbUid(), t: Date.now(), m, fk: f.key || '', n: f.n || 'Eintrag', b: f.b || '', img: f.img || '', e: { l: u.l, g: u.g, basis: !!u.basis, bs: u.bs || '' }, x, pu }; liste.push(ein); }
+  if (f.key && !f.fix) {
+    const alt = foods[f.key] || {};
+    const kopie = Object.assign({}, f); delete kopie.fix;
+    foods[f.key] = Object.assign(kopie, { last: Date.now(), cnt: (alt.cnt || 0) + 1, fav: !!alt.fav, le: { l: u.l, g: u.g }, lx: x });
+    foodsSpeichern();
+  }
+  tbSpeichern(); tbMarkiere(ein.id);
+  return ein;
+}
+function tbEntfernen(tag, id) {
+  const l = tb[tag] || []; const i = l.findIndex(e => e.id === id); if (i < 0) return null;
+  const [e] = l.splice(i, 1); if (!l.length) delete tb[tag]; tbSpeichern();
+  return { e, i };
+}
+function tbZurueckLegen(tag, r) { const l = tb[tag] || (tb[tag] = []); l.splice(Math.min(r.i, l.length), 0, r.e); tbSpeichern(); tbMarkiere(r.e.id); }
+function nachEintrag() { if (tab === 'tagebuch') renderTagebuch(); else if (tab === 'plan') renderPlan(); }
+
+/* ---------- Animierte Ringe, Balken und Säulen: starten beim letzten Stand, nicht jedes Mal bei null */
+function anim(ak, typ, ziel) {
+  const v = tbAnim[ak] != null ? tbAnim[ak] : 0; const z = Math.round(ziel * 10) / 10;
+  const st = typ === 'ring' ? `stroke-dasharray:${v} 100` : typ === 'h' ? `height:${v}%` : `width:${v}%`;
+  return `data-ak="${ak}" data-typ="${typ}" data-ziel="${z}" style="${st}"`;
+}
+function tbAnimieren() {
+  const els = $$('[data-ak]'); if (!els.length) return;
+  const ruhig = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const setz = () => els.forEach(el => {
+    const z = +el.dataset.ziel, t = el.dataset.typ;
+    if (t === 'ring') el.style.strokeDasharray = z + ' 100'; else if (t === 'h') el.style.height = z + '%'; else el.style.width = z + '%';
+    tbAnim[el.dataset.ak] = z;
+  });
+  if (ruhig) setz(); else requestAnimationFrame(() => requestAnimationFrame(setz));
+}
+function ringSvg(ak, p) {
+  return `<svg viewBox="0 0 120 120" aria-hidden="true"><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg${p <= 0 ? ' null' : ''}" cx="60" cy="60" r="52" pathLength="100" ${anim(ak, 'ring', Math.max(0, Math.min(100, p)))}/></svg>`;
+}
+
+/* ---------- Tagebuch Seite */
+function makZeile(k, s) {
+  const z = ziele[k] || 0; const p = z ? Math.min(100, s[k] / z * 100) : 0;
+  const rest = z - s[k];
+  const zusatz = k === 'pr' ? (rest > 0.5 ? `noch ${fz(rest)} g` : 'Ziel erreicht') : '';
+  return `<div class="tb-mk${k === 'pr' ? ' haupt' : ''}"><div class="kopf"><span>${NW_NAME[k]}</span><span class="num"><b>${fz(s[k])}</b><small> / ${fz(z)} g</small></span></div>
+    <div class="tb-bar"><i ${anim('tb-' + k, 'w', p)}></i></div>${zusatz ? `<div class="tb-unter">${zusatz}</div>` : ''}</div>`;
+}
+function renderTagebuch() {
+  if (tbFrisch && Date.now() - tbFrischT > 1500) tbFrisch = null;
+  const tag = tbAkt(), heute = tag === tbHeute();
+  const s = tagSumme(tag);
+  const sams = keyDatum(tag).getDay() === 6;
+  const rest = ziele.k - s.k;
+  const p = ziele.k > 0 ? s.k / ziele.k * 100 : 0;
+  let h = `<div class="tb-datum"><button class="iconbtn" data-tbd="-1" aria-label="Einen Tag zurück">${I_LINKS}</button>
+    <div><b>${esc(tagName(tag))}</b><span class="small muted">${esc(tagDatum(tag))}</span></div>
+    <button class="iconbtn" data-tbd="1" aria-label="Einen Tag vor"${heute ? ' disabled' : ''}>${I_RECHTS}</button></div>`;
+  if (sams) h += '<div class="note"><b>Cheat Day.</b> Heute zählst du nicht. Eintragen kannst du trotzdem, der Samstag fliesst nicht in deinen Wochenschnitt.</div>';
+  const fehlt = Math.max(s.fehlt.kh, s.fehlt.f);
+  const hinweis = [fehlt ? `Bei ${fehlt} ${fehlt === 1 ? 'Eintrag fehlen' : 'Einträgen fehlen'} Kohlenhydrate oder Fett, dort sind die Summen zu tief.` : '',
+    s.khs ? 'Kohlenhydrate teils aus den Kalorien berechnet.' : ''].filter(Boolean).join(' ');
+  h += `<div class="card tb-sum">
+    <div class="tb-ring" role="img" aria-label="${fz(s.k)} von ${fz(ziele.k)} kcal">${ringSvg('tbr', p)}
+      <div class="mitte">${rest >= 0 ? `<b class="num">${fz(rest)}</b><span>kcal übrig</span>` : `<b class="num">${fz(-rest)}</b><span>kcal drüber</span>`}</div></div>
+    <div class="tb-mak">${makZeile('pr', s)}${makZeile('kh', s)}${makZeile('f', s)}</div>
+    <div class="tb-sum-unten"><span><b class="num">${fz(s.k)}</b> von ${fz(ziele.k)} kcal</span><button class="linkbtn" data-tbziele>Ziele</button></div>
+    ${hinweis ? `<p class="tb-hw">${esc(hinweis)}</p>` : ''}</div>`;
+  h += `<div class="tb-akt"><button class="btn primary" data-tbscan>${I_SCAN}Scannen</button><button class="btn" data-tbadd="${mahlJetzt()}">${I_SUCHE}Suchen</button></div>`;
+  const liste = tb[tag] || [];
+  const gestern = tb[tagVerschoben(tag, -1)] || [];
+  MAHL.forEach(([m, name]) => {
+    const es = liste.filter(e => e.m === m).sort((a, b) => a.t - b.t);
+    let k = 0, pr = 0; es.forEach(e => { const n = nwMal(e.pu, e.x); k += n.k || 0; pr += n.pr || 0; });
+    h += `<div class="card tb-mahl"><div class="tb-mahl-kopf"><h3>${name}</h3>${es.length ? `<span class="num">${fz(k)} kcal · ${fz(pr)} g Protein</span>` : ''}
+      <button class="tb-plus-k" data-tbadd="${m}" aria-label="Zu ${name} hinzufügen">${I_PLUS}</button></div>`;
+    if (es.length) h += es.map(eintragZeile).join('');
+    else {
+      const gm = gestern.filter(e => e.m === m);
+      h += `<div class="tb-leer"><button class="tbtn" data-tbadd="${m}">${I_PLUS}Hinzufügen</button>${gm.length ? `<button class="tbtn" data-tbwie="${m}">${I_KOPIE}Wie ${tag === tbHeute() ? 'gestern' : 'am Vortag'} · ${gm.length}</button>` : ''}</div>`;
+    }
+    h += '</div>';
+  });
+  h += wocheKarte() + gewichtKarte(tag);
+  $('#main').innerHTML = h;
+  tbAnimieren();
+}
+function eintragZeile(e) {
+  const n = nwMal(e.pu, e.x);
+  return `<div class="tb-e${e.id === tbFrisch ? ' neu' : ''}" data-eid="${esc(e.id)}" role="button" tabindex="0" aria-label="${esc(e.n)} bearbeiten">
+    ${tbBild(e.img, e.n)}
+    <div class="t"><b>${esc(e.n)}</b><span>${esc(mengeText(e.e, e.x))}${e.b ? ' · ' + esc(e.b) : ''}</span></div>
+    <div class="tb-w num"><b>${fz(n.k)}<small> kcal</small></b><span>${n.pr == null ? 'Protein ' + KA : fz(n.pr, n.pr < 10 ? 1 : 0) + ' g Protein'}</span></div>
+    ${e.e.basis ? '' : `<button class="tb-p1" data-p1 aria-label="Noch ${esc(e.e.l)} dazu">+1</button>`}
+  </div>`;
+}
+function wocheKarte() {
+  const heute = tbHeute(); const tage = [];
+  for (let i = 6; i >= 0; i--) { const k = tagVerschoben(heute, -i); const d = keyDatum(k); tage.push({ k, d, s: tagSumme(k), sams: d.getDay() === 6 }); }
+  const max = Math.max(ziele.k * 1.3, ...tage.map(t => t.s.k)) || 1;
+  const zaehlt = tage.filter(t => t.s.n && !t.sams);
+  const akt = tbAkt();
+  let h = `<div class="card tb-wo"><div class="spread"><h3>Letzte 7 Tage</h3><span class="small muted">Samstag zählt nicht</span></div>
+    <div class="tb-chart"><div class="tb-ziel" style="bottom:${Math.round(ziele.k / max * 1000) / 10}%"></div>
+    ${tage.map((t, i) => `<button class="tb-tag${t.k === akt ? ' akt' : ''}${t.sams ? ' cheat' : ''}" data-tbtag="${t.k}" aria-label="${esc(tagDatum(t.k))}: ${fz(t.s.k)} kcal"><i ${anim('tbw' + i, 'h', t.s.n ? Math.max(3, t.s.k / max * 100) : 0)}></i></button>`).join('')}</div>
+    <div class="tb-tage">${tage.map(t => `<span class="${t.k === akt ? 'akt' : ''}"><i class="${t.s.n && t.s.pr >= ziele.pr ? 'an' : ''}"></i>${WT[t.d.getDay()]}</span>`).join('')}</div>`;
+  if (zaehlt.length) {
+    const ak = zaehlt.reduce((a, t) => a + t.s.k, 0) / zaehlt.length, ap = zaehlt.reduce((a, t) => a + t.s.pr, 0) / zaehlt.length;
+    const ok = zaehlt.filter(t => t.s.pr >= ziele.pr).length;
+    h += `<div class="tb-stat"><div><b class="num">${fz(ak)}</b><span>kcal im Schnitt</span></div><div><b class="num">${fz(ap)} g</b><span>Protein im Schnitt</span></div><div><b class="num">${ok} von ${zaehlt.length}</b><span>Tage Protein Ziel</span></div></div>
+      <p class="tb-hw" style="margin-top:10px">Strichlinie: dein Ziel von ${fz(ziele.k)} kcal. Punkt unter dem Tag: Protein Ziel erreicht.</p>`;
+  } else h += '<p class="tb-hw" style="margin-top:12px">Sobald du ein paar Tage eingetragen hast, siehst du hier deinen Schnitt.</p>';
+  return h + '</div>';
+}
+function gewichtTrend() {
+  const jetzt = keyDatum(tbHeute()).getTime();
+  const pts = Object.entries(gewicht).map(([d, kg]) => [keyDatum(d).getTime(), kg]).filter(p => jetzt - p[0] <= 42 * 864e5).sort((a, b) => a[0] - b[0]);
+  if (pts.length < 3 || pts[pts.length - 1][0] - pts[0][0] < 13 * 864e5) return null;
+  const n = pts.length, mx = pts.reduce((a, p) => a + p[0], 0) / n, my = pts.reduce((a, p) => a + p[1], 0) / n;
+  let o = 0, u = 0; pts.forEach(p => { o += (p[0] - mx) * (p[1] - my); u += (p[0] - mx) * (p[0] - mx); });
+  return u ? { proWoche: o / u * 7 * 864e5, n } : null;
+}
+function trendRat(r) {
+  if (r > 0.15) return 'Du nimmst zu. Senk dein Kalorienziel um 200 kcal.';
+  if (r > -0.15) return 'Kaum Veränderung. Bleibt das noch zwei Wochen so, senk dein Kalorienziel um 150 kcal.';
+  if (r < -0.8) return 'Schneller als gut ist. Erhöh dein Kalorienziel um 150 kcal, sonst verlierst du Kraft und Muskeln.';
+  return 'Gutes Tempo: Fett geht weg, die Kraft bleibt. Bleib dabei.';
+}
+function gewichtKarte(tag) {
+  const ein = Object.entries(gewicht).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  const letzte = ein[ein.length - 1];
+  const tr = gewichtTrend();
+  let h = `<div class="card tb-gew"><div class="spread" style="align-items:flex-start"><div><div class="lab">Gewicht</div>
+    <div class="tb-kg">${letzte ? `<b class="num">${fz(letzte[1], 1)}</b> kg` : '<span class="muted">Noch nichts eingetragen</span>'}</div>
+    ${letzte ? `<div class="small muted">${esc(tagDatum(letzte[0]))}${tr ? ' · Trend ' + (tr.proWoche > 0 ? '+' : '') + fz(tr.proWoche, 2) + ' kg pro Woche' : ''}</div>` : ''}</div>
+    <button class="btn sm" data-tbgew>${gewicht[tag] != null ? 'Ändern' : 'Eintragen'}</button></div>`;
+  if (ein.length >= 2) {
+    const pts = ein.slice(-16); const ys = pts.map(p => p[1]); const lo = Math.min(...ys) - .3, hi = Math.max(...ys) + .3;
+    const t0 = keyDatum(pts[0][0]).getTime(), t1 = keyDatum(pts[pts.length - 1][0]).getTime() || t0 + 1;
+    const xy = pts.map(p => [((keyDatum(p[0]).getTime() - t0) / Math.max(1, t1 - t0)) * 296 + 2, 44 - (p[1] - lo) / (hi - lo) * 40]);
+    const linie = xy.map(p => p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    h += `<svg class="tb-spark" viewBox="0 0 300 48" preserveAspectRatio="none" aria-hidden="true"><polygon points="2,48 ${linie} 298,48"/><polyline points="${linie}"/></svg>`;
+  }
+  h += `<p class="small" style="margin:10px 0 0">${tr ? esc(trendRat(tr.proWoche)) : 'Wieg dich jeden Montag am Morgen, nach dem WC und vor dem Essen. Ab drei Messungen über zwei Wochen sage ich dir, ob dein Kalorienziel passt.'}</p>
+    ${tr ? '<button class="linkbtn" data-tbziele style="margin-top:4px">Ziele anpassen</button>' : ''}</div>`;
+  return h;
+}
+function tbHeuteKarte() {
+  const s = tagSumme(tbHeute()); const sams = new Date().getDay() === 6;
+  const p = ziele.k > 0 ? s.k / ziele.k * 100 : 0;
+  return `<button class="card tb-mini" data-goto="tagebuch"><span class="tb-ring klein">${ringSvg('tbmini', p)}</span>
+    <span class="t"><span class="lab">Essen heute${sams ? ' · Cheat Day' : ''}</span><b class="num">${fz(s.k)} <small>von ${fz(ziele.k)} kcal</small></b><span class="small muted">Protein ${fz(s.pr)} von ${fz(ziele.pr)} g</span></span>${I_RECHTS}</button>`;
+}
+
+$('#main').addEventListener('click', e => {
+  if (tab !== 'tagebuch') return;
+  const t = e.target;
+  const d = t.closest('[data-tbd]');
+  if (d) { if (d.disabled) return; const neu = tagVerschoben(tbAkt(), +d.dataset.tbd); tbTag = neu >= tbHeute() ? null : neu; renderTagebuch(); return; }
+  const tg = t.closest('[data-tbtag]'); if (tg) { tbTag = tg.dataset.tbtag === tbHeute() ? null : tg.dataset.tbtag; renderTagebuch(); return; }
+  if (t.closest('[data-tbscan]')) { tbScannen(mahlJetzt(), tbAkt()); return; }
+  if (t.closest('[data-tbziele]')) { openZiele(); return; }
+  if (t.closest('[data-tbgew]')) { openGewicht(tbAkt()); return; }
+  const wie = t.closest('[data-tbwie]');
+  if (wie) {
+    const m = wie.dataset.tbwie, tag = tbAkt();
+    const neu = (tb[tagVerschoben(tag, -1)] || []).filter(x => x.m === m).map(x => Object.assign(clone(x), { id: tbUid(), t: Date.now() }));
+    (tb[tag] || (tb[tag] = [])).push(...neu); tbSpeichern(); renderTagebuch();
+    const ids = neu.map(x => x.id);
+    toastAktion(MAHL_NAME[m] + ' von gestern übernommen', 'Rückgängig', () => { tb[tag] = (tb[tag] || []).filter(x => ids.indexOf(x.id) < 0); if (!tb[tag].length) delete tb[tag]; tbSpeichern(); renderTagebuch(); });
+    return;
+  }
+  const add = t.closest('[data-tbadd]'); if (add) { openSuche(add.dataset.tbadd, tbAkt()); return; }
+  const row = t.closest('[data-eid]'); if (!row) return;
+  const tag = tbAkt(); const ein = (tb[tag] || []).find(x => x.id === row.dataset.eid); if (!ein) return;
+  if (t.closest('[data-p1]')) {
+    ein.x = Math.round((ein.x + 1) * 100) / 100; tbSpeichern(); tbMarkiere(ein.id); renderTagebuch();
+    toastAktion(`${kurzName(ein.n)} · jetzt ${fx(ein.x)} ×`, 'Rückgängig', () => { ein.x = Math.max(0.5, Math.round((ein.x - 1) * 100) / 100); tbSpeichern(); renderTagebuch(); });
+    return;
+  }
+  openMenge(tbFoodFuer(ein), { eintrag: ein, tag });
+});
+$('#main').addEventListener('keydown', e => {
+  if (tab !== 'tagebuch' || (e.key !== 'Enter' && e.key !== ' ')) return;
+  const row = e.target.closest && e.target.closest('[data-eid]'); if (!row || e.target !== row) return;
+  e.preventDefault(); row.click();
+});
+const kurzName = n => { const s = String(n || ''); return s.length > 28 ? s.slice(0, 26).trim() + '…' : s; };
+/* Zum Bearbeiten: das gespeicherte Lebensmittel, sonst genau die Werte, mit denen eingetragen wurde */
+function tbFoodFuer(ein) {
+  const f = ein.fk && foods[ein.fk];
+  if (f && einheiten(f).some(u => u.l === ein.e.l && u.g === ein.e.g)) return f;
+  return { key: ein.fk || '', n: ein.n, b: ein.b, img: ein.img, fix: { e: ein.e, pu: ein.pu } };
+}
+
+/* ---------- Toast mit Rückgängig */
+function toastAktion(msg, label, fn) {
+  const t = $('#toast');
+  t.innerHTML = `<span>${esc(msg)}</span><button type="button">${esc(label)}</button>`;
+  toastOrt(); t.classList.add('show', 'mit');
+  t.querySelector('button').onclick = () => { t.classList.remove('show'); try { fn(); } catch (e) {} };
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 5000);
+}
+
+/* ---------- Suchen und Hinzufügen */
+function tbIndex() {
+  if (!tbDatenIdx) {
+    tbDatenIdx = [];
+    const add = (key, n, b, img, src, mk, ohne) => tbDatenIdx.push({ key, n, b, img, src, nf: falt(n + ' ' + b), mk, ohne: !!ohne });
+    ((DATA && DATA.migros) || []).forEach(p => { if (p.n) add('m:' + p.id, p.n, markeKurz(p.b), p.img, 'migros', () => foodAusProdukt(p, 'migros'), plausibel({ k: p.k, pr: p.pr, f: p.f }).k == null); });
+    ((DATA && DATA.coop) || []).forEach(p => { if (p.n) add('k:' + p.id, p.n, markeKurz(p.b), p.img, 'coop', () => foodAusProdukt(p, 'coop'), plausibel({ k: p.k, pr: p.pr, f: p.f }).k == null); });
+    ((DATA && DATA.rezepte) || []).forEach(r => { if (r.kc != null) add('r:' + r.u, r.n, QUELLE_NAME[r.q] || r.q || '', r.img, 'rezept', () => foodAusRezept(r)); });
+    tbDatenIdx.keys = new Set(tbDatenIdx.map(x => x.key));
+  }
+  const eigene = Object.values(foods).filter(f => !tbDatenIdx.keys.has(f.key))
+    .map(f => ({ key: f.key, n: f.n, b: f.b || '', img: f.img, src: f.src, nf: falt(f.n + ' ' + (f.b || '')), mk: () => foods[f.key] }));
+  return eigene.concat(tbDatenIdx);
+}
+function tbSuchen(q) {
+  const ws = falt(q).split(' ').filter(Boolean); if (!ws.length) return [];
+  const res = [];
+  tbIndex().forEach(it => {
+    let sc = 0;
+    for (const w of ws) { const i = it.nf.indexOf(w); if (i < 0) return; sc += (i === 0 || it.nf[i - 1] === ' ') ? 3 : 1; }
+    if (it.nf.indexOf(ws[0]) === 0) sc += 2;
+    const f = foods[it.key]; if (f) sc += 4 + Math.min(6, f.cnt || 0) + (f.fav ? 4 : 0);
+    if (it.src === 'rezept') sc -= 1;
+    if (it.ohne) sc -= 3;
+    res.push([sc, it]);
+  });
+  res.sort((a, b) => b[0] - a[0] || a[1].n.length - b[1].n.length);
+  return res.slice(0, 40).map(x => x[1]);
+}
+function tbScannen(m, tag) { scan.ziel = { m, tag }; openScanner(); }
+function openSuche(m, tag) {
+  tag = tag || tbAkt();
+  let liste = [];
+  openSheet('Zu ' + MAHL_NAME[m] + ' hinzufügen', `<div class="tb-q"><input type="search" id="tbQ" placeholder="Lebensmittel, Marke oder Gericht" autocomplete="off" enterkeyhint="search" aria-label="Suchen" value="${esc(tbSuchQ)}"></div>
+    <div class="tb-schnell"><button data-tbs="scan">${I_SCAN}<span>Scannen</span></button><button data-tbs="schnell">${I_BLITZ}<span>Nur Kalorien</span></button><button data-tbs="eigen">${I_STIFT}<span>Eigenes</span></button></div>
+    <div id="tbRes"></div>`);
+  $('#sheet .panel').classList.add('hoch');
+  const anz = key => { const z = (tb[tag] || []).filter(e => e.fk === key && e.m === m); if (!z.length) return ''; return z.length === 1 && !z[0].e.basis ? fx(z[0].x) + '×' : '✓'; };
+  const zeile = (it, i) => {
+    const f = it.mk(); const a = f ? anz(f.key) : '';
+    return `<div class="tb-li" data-i="${i}" role="button" tabindex="0">${tbBild(it.img, it.n)}<div class="t"><b>${esc(it.n)}</b>
+      <span>${esc(f ? infoText(f) : '')}</span><span class="q">${esc([SRC_NAME[it.src], it.b && it.b !== it.n ? it.b : '', f && foods[f.key] && foods[f.key].fav ? 'Favorit' : ''].filter(Boolean).join(' · '))}</span></div>
+      <button class="tb-plus${a ? ' hat' : ''}" data-plus aria-label="${esc(it.n)} direkt eintragen">${a ? `<span>${esc(a)}</span>` : I_PLUS}</button></div>`;
+  };
+  const zeichne = () => {
+    const box = $('#tbRes'); if (!box) return;
+    const q = tbSuchQ;
+    let h = '';
+    if (falt(q)) {
+      liste = tbSuchen(q);
+      h += liste.length ? `<div class="lab tb-lab">${liste.length >= 40 ? 'Beste 40 Treffer' : liste.length + ' Treffer'}</div>` + liste.map(zeile).join('')
+        : `<div class="empty">Nichts gefunden für „${esc(q.trim())}“.</div>`;
+      h += `<button class="btn wide" data-tbs="eigen" style="margin-top:12px">„${esc(q.trim())}“ selbst anlegen</button>`;
+    } else {
+      const alle = Object.values(foods);
+      const fav = alle.filter(f => f.fav).sort((a, b) => (b.cnt || 0) - (a.cnt || 0));
+      const zul = alle.filter(f => f.last).sort((a, b) => b.last - a.last).slice(0, 30);
+      const zeig = tbSuchAnsicht === 'fav' ? fav : zul;
+      liste = zeig.map(f => ({ key: f.key, n: f.n, b: f.b || '', img: f.img, src: f.src, mk: () => foods[f.key] }));
+      h += `<div class="seg"><button data-tba="zuletzt" aria-pressed="${tbSuchAnsicht !== 'fav'}">Zuletzt</button><button data-tba="fav" aria-pressed="${tbSuchAnsicht === 'fav'}">Favoriten${fav.length ? ' · ' + fav.length : ''}</button></div>`;
+      h += liste.length ? liste.map(zeile).join('') : `<div class="empty">${tbSuchAnsicht === 'fav' ? 'Noch keine Favoriten. Tippe beim Eintragen auf den Stern.' : 'Noch nichts eingetragen. Scann ein Produkt oder such oben, dann erscheint es hier für das nächste Mal.'}</div>`;
+    }
+    box.innerHTML = h;
+  };
+  zeichne();
+  let tm = 0;
+  const body = $('#sheetBody');
+  body.oninput = ev => { if (ev.target.id !== 'tbQ') return; tbSuchQ = ev.target.value; clearTimeout(tm); tm = setTimeout(zeichne, 140); };
+  body.onkeydown = ev => {
+    if (ev.target.id === 'tbQ' && ev.key === 'Enter') { ev.preventDefault(); ev.target.blur(); return; }
+    if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('tb-li')) { ev.preventDefault(); ev.target.click(); }
+  };
+  body.onclick = ev => {
+    const t = ev.target;
+    const s = t.closest('[data-tbs]');
+    if (s) {
+      const was = s.dataset.tbs;
+      if (was === 'scan') { tbScannen(m, tag); return; }
+      if (was === 'schnell') { openSchnell(m, tag); return; }
+      openEigen({ m, tag, n: falt(tbSuchQ) ? tbSuchQ.trim() : '' }); return;
+    }
+    const a = t.closest('[data-tba]'); if (a) { tbSuchAnsicht = a.dataset.tba; zeichne(); return; }
+    const row = t.closest('[data-i]'); if (!row) return;
+    const it = liste[+row.dataset.i]; const f = it && it.mk(); if (!f) return;
+    const zurueck = { label: 'Suche', fn: () => openSuche(m, tag) };
+    if (t.closest('[data-plus]')) {
+      if (!kalorienBekannt(f)) { openMenge(f, { m, tag, zurueck }); return; }
+      const st = standardMenge(f); const u = einheiten(f)[st.ui];
+      const ein = tbEintragen(f, u, st.x, m, tag);
+      const neu = row.querySelector('[data-plus]'); const a2 = anz(f.key);
+      if (neu) { neu.classList.add('hat'); neu.innerHTML = `<span>${esc(a2)}</span>`; neu.classList.remove('pop'); void neu.offsetWidth; neu.classList.add('pop'); }
+      try { if (navigator.vibrate) navigator.vibrate(12); } catch (er) {}
+      toastAktion(`${kurzName(f.n)} · ${mengeText(ein.e, ein.x)}`, 'Rückgängig', () => {
+        if (ein.x > st.x + 1e-9) { ein.x = Math.round((ein.x - st.x) * 100) / 100; tbSpeichern(); } else tbEntfernen(tag, ein.id);
+        zeichne();
+      });
+      return;
+    }
+    openMenge(f, { m, tag, zurueck });
+  };
+}
+
+/* ---------- Menge wählen: Einheit, Anzahl, Mahlzeit */
+function openMenge(f, opt) {
+  opt = opt || {};
+  const tag = opt.tag || tbAkt();
+  const e0 = opt.eintrag || null;
+  if (!kalorienBekannt(f)) { openFehlend(f, opt); return; }
+  const us = einheiten(f);
+  const st = e0 ? { ui: Math.max(0, us.findIndex(u => u.l === e0.e.l && u.g === e0.e.g)), x: e0.x, m: e0.m } : Object.assign(standardMenge(f), { m: opt.m || mahlJetzt() });
+  const istFav = () => !!(foods[f.key] && foods[f.key].fav);
+  openSheet(e0 ? 'Eintrag bearbeiten' : 'Wie viel?', '');
+  const body = $('#sheetBody');
+  const groesse = i => { i.style.width = Math.max(2, String(i.value).length) + 0.6 + 'ch'; };
+  const upd = vomFeld => {
+    const u = us[st.ui]; const pu = puVon(f, u); const n = nwMal(pu, st.x);
+    const ka = v => v == null ? '<b class="ka">k. A.</b>' : `<b class="num">${fz(v, v < 10 && v > 0 ? 1 : 0)}<small> g</small></b>`;
+    $('#mgNw').innerHTML = `<div class="haupt"><b class="num">${fz(n.k)}</b><span>kcal</span></div><div>${ka(n.pr)}<span>Protein</span></div><div>${ka(n.kh)}<span>Kohlenh.${pu.khs ? ' *' : ''}</span></div><div>${ka(n.f)}<span>Fett</span></div>`;
+    const s = tagSumme(tag); let k = s.k + (n.k || 0), p = s.pr + (n.pr || 0);
+    if (e0) { const alt = nwMal(e0.pu, e0.x); k -= alt.k || 0; p -= alt.pr || 0; }
+    const rk = ziele.k - k, rp = ziele.pr - p;
+    $('#mgRest').innerHTML = `Danach ${rk >= 0 ? `noch <b>${fz(rk)} kcal</b>` : `<b>${fz(-rk)} kcal</b> über dem Ziel`}${rp > 0.5 ? ` und <b>${fz(rp)} g Protein</b> offen` : ', Protein Ziel erreicht'}.${pu.khs ? ' <span class="faint">* aus den Kalorien berechnet</span>' : ''}`;
+    const werte = u.basis ? [50, 100, 150, 200, 250, 300] : [0.5, 1, 2, 3, 4, 5];
+    $('#mgSchnell').innerHTML = werte.map(v => `<button class="chip" data-mgx="${v}" aria-pressed="${Math.abs(v - st.x) < 1e-9}">${u.basis ? v + ' ' + esc(u.l) : (v === 0.5 ? '½' : v + ' ×')}</button>`).join('');
+    const i = $('#mgX'); if (!vomFeld) i.value = fz(st.x, 1); groesse(i);
+    $('#mgU').textContent = u.basis ? u.l : '× ' + u.l;
+    $('#mgOk').textContent = (e0 ? 'Speichern · ' : 'Eintragen · ') + mengeText(u, st.x);
+  };
+  const zeichne = () => {
+    body.innerHTML = `<div class="mg">
+      ${opt.zurueck ? `<button class="tbtn mg-zur" data-mg="zurueck">${I_LINKS}${esc(opt.zurueck.label)}</button>` : ''}
+      <div class="mg-kopf">${tbBild(f.img, f.n)}<div class="t"><h3>${esc(f.n)}</h3><div class="small muted">${esc([f.b, f.fix ? '' : infoText(f)].filter(Boolean).join(' · '))}</div></div>
+        ${f.key && !f.fix ? `<button class="iconbtn mg-fav" data-mg="fav" aria-pressed="${istFav()}" aria-label="${istFav() ? 'Favorit entfernen' : 'Als Favorit merken'}">${istFav() ? I_STERN_V : I_STERN}</button>` : ''}</div>
+      <div class="mg-nw" id="mgNw"></div>
+      <p class="mg-rest" id="mgRest"></p>
+      ${us.length > 1 ? `<div class="lab mg-lab">Einheit</div><div class="mg-einh">${us.map((x, i) => `<button class="chip" data-mgu="${i}" aria-pressed="${i === st.ui}">${esc(einheitLabel(x))}</button>`).join('')}</div>` : ''}
+      <div class="lab mg-lab">Menge</div>
+      <div class="mg-step"><button data-mg="minus" aria-label="Weniger">−</button>
+        <label class="feld"><input id="mgX" inputmode="decimal" autocomplete="off" aria-label="Menge"><span id="mgU"></span></label>
+        <button data-mg="plus" aria-label="Mehr">+</button></div>
+      <div class="mg-schnell" id="mgSchnell"></div>
+      <div class="lab mg-lab">Mahlzeit</div>
+      <div class="seg vier mg-mahl">${MAHL.map(([k, n]) => `<button data-mgm="${k}" aria-pressed="${k === st.m}">${n}</button>`).join('')}</div>
+      <button class="btn primary wide mg-ok" id="mgOk"></button>
+      ${e0 ? '<button class="btn danger wide" data-mg="del" style="margin-top:10px">Entfernen</button>' : ''}
+      ${f.code && !opt.ausProdukt ? '<button class="linkbtn mg-det" data-mg="details">Nutri-Score, Zusatzstoffe und Konzern ansehen</button>' : ''}
+    </div>`;
+    upd(false);
+  };
+  const speichern = () => {
+    const u = us[st.ui];
+    const v = zahlEin($('#mgX').value);
+    if (v != null) st.x = v;
+    if (!(st.x > 0) || st.x > 10000) { toast('Gib eine Menge zwischen 0 und 10000 ein'); return; }
+    if (e0) {
+      e0.e = { l: u.l, g: u.g, basis: !!u.basis, bs: u.bs || '' }; e0.x = st.x; e0.m = st.m; e0.pu = puVon(f, u);
+      if (f.key && foods[f.key] && !f.fix) { foods[f.key].le = { l: u.l, g: u.g }; foods[f.key].lx = st.x; foodsSpeichern(); }
+      tbSpeichern(); tbMarkiere(e0.id);
+    }
+    const ein = e0 ? null : tbEintragen(f, u, st.x, st.m, tag);
+    if (opt.nachScan) { scan.ziel = null; tbTag = tag === tbHeute() ? null : tag; $('#sheet').hidden = true; setTab('tagebuch'); }
+    else closeSheet();
+    if (e0) { toast('Gespeichert'); return; }
+    const zus = ein.x !== st.x;
+    try { if (navigator.vibrate) navigator.vibrate(15); } catch (er) {}
+    toastAktion(`${kurzName(f.n)} eingetragen${zus ? ' · jetzt ' + fx(ein.x) + ' ×' : ''}`, 'Rückgängig', () => {
+      if (zus) { ein.x = Math.round((ein.x - st.x) * 100) / 100; tbSpeichern(); } else tbEntfernen(tag, ein.id);
+      nachEintrag();
+    });
+  };
+  zeichne();
+  body.onclick = ev => {
+    const t = ev.target;
+    const ub = t.closest('[data-mgu]');
+    if (ub) { const neu = +ub.dataset.mgu; const alt = us[st.ui], nu = us[neu]; if (neu === st.ui) return; st.x = nu.basis ? (alt.g ? Math.round(alt.g * st.x) : 100) : 1; st.ui = neu; zeichne(); return; }
+    const xb = t.closest('[data-mgx]'); if (xb) { st.x = +xb.dataset.mgx; upd(false); return; }
+    const mb = t.closest('[data-mgm]'); if (mb) { st.m = mb.dataset.mgm; $$('[data-mgm]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mgm === st.m))); return; }
+    if (t.closest('#mgOk')) { speichern(); return; }
+    const a = t.closest('[data-mg]'); if (!a) return;
+    const act = a.dataset.mg, u = us[st.ui];
+    if (act === 'minus' || act === 'plus') {
+      const v = zahlEin($('#mgX').value); if (v != null) st.x = v;
+      if (u.basis) st.x = act === 'plus' ? Math.floor(st.x / 10) * 10 + 10 : Math.max(5, Math.ceil(st.x / 10) * 10 - 10);
+      else st.x = act === 'plus' ? (st.x < 1 ? 1 : Math.floor(st.x) + 1) : (st.x > 1 ? Math.ceil(st.x) - 1 : 0.5);
+      upd(false); try { if (navigator.vibrate) navigator.vibrate(8); } catch (er) {}
+      return;
+    }
+    if (act === 'fav') {
+      const alt = foods[f.key];
+      if (alt) alt.fav = !alt.fav; else { const k = Object.assign({}, f); delete k.fix; foods[f.key] = Object.assign(k, { fav: true, cnt: 0, last: 0 }); }
+      foodsSpeichern(); a.setAttribute('aria-pressed', String(istFav())); a.innerHTML = istFav() ? I_STERN_V : I_STERN;
+      a.classList.remove('pop'); void a.offsetWidth; a.classList.add('pop');
+      toast(istFav() ? 'Als Favorit gemerkt' : 'Kein Favorit mehr'); return;
+    }
+    if (act === 'del') {
+      const r = tbEntfernen(tag, e0.id); closeSheet();
+      if (r) toastAktion(kurzName(e0.n) + ' entfernt', 'Rückgängig', () => { tbZurueckLegen(tag, r); nachEintrag(); });
+      return;
+    }
+    if (act === 'zurueck') { opt.zurueck.fn(); return; }
+    if (act === 'details') { zeigeProdukt(f.code, { details: true }); }
+  };
+  body.oninput = ev => { if (ev.target.id !== 'mgX') return; const v = zahlEin(ev.target.value); if (v != null && v > 0) { st.x = v; upd(true); } else groesse(ev.target); };
+  body.onkeydown = ev => { if (ev.target.id === 'mgX' && ev.key === 'Enter') { ev.preventDefault(); speichern(); } };
+}
+function openFehlend(f, opt) {
+  const kaputt = f.p100 && f.p100.kaputt;
+  openSheet(kaputt ? 'Werte fehlerhaft' : 'Werte fehlen', `<p style="margin-top:0">${kaputt ? `Die gespeicherten Kalorien für <b>${esc(f.n)}</b> sind offensichtlich falsch. Ich zähle sie lieber nicht, als dir eine falsche Zahl einzutragen.` : `Für <b>${esc(f.n)}</b> fehlen die Kalorien${f.src === 'rezept' ? ' im Rezept' : ''}.`}</p>
+    <p class="small muted">Trag die Werte von der Packung einmal ein. Danach findest du das Produkt unter Zuletzt${f.code ? ', und beim nächsten Scan erkennt die App es sofort' : ''}.</p>
+    <button class="btn primary wide" data-x="eigen">Werte eintragen</button>
+    ${opt.nachScan ? '<button class="btn wide" style="margin-top:10px" data-x="neu">Anderes Produkt scannen</button>' : ''}`);
+  $('#sheetBody').onclick = ev => {
+    const x = ev.target.closest('[data-x]'); if (!x) return;
+    if (x.dataset.x === 'neu') closeSheet();
+    else openEigen({ n: f.n, b: f.b, code: f.code, img: f.img, m: opt.m, tag: opt.tag, nachScan: opt.nachScan });
+  };
+}
+function mahlSeg(m) { return `<div class="seg vier mg-mahl">${MAHL.map(([k, n]) => `<button data-mgm="${k}" aria-pressed="${k === m}">${n}</button>`).join('')}</div>`; }
+function mahlKlick(ev, st) { const mb = ev.target.closest('[data-mgm]'); if (!mb) return false; st.m = mb.dataset.mgm; $$('[data-mgm]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mgm === st.m))); return true; }
+function openSchnell(m, tag) {
+  const st = { m: m || mahlJetzt() };
+  openSheet('Nur Kalorien', `<p class="small muted" style="margin-top:0">Für alles ohne Strichcode, zum Beispiel das Menü in der Kantine. Die Kalorien reichen, Protein hilft dir am meisten.</p>
+    <label class="field"><span>Name, freiwillig</span><input type="text" id="qN" maxlength="60" placeholder="z.B. Kantine Menü 1" autocomplete="off"></label>
+    <div class="edit-grid"><label class="field"><span>Kalorien kcal</span><input id="qK" inputmode="decimal" autocomplete="off"></label><label class="field"><span>Protein g</span><input id="qP" inputmode="decimal" autocomplete="off"></label>
+    <label class="field"><span>Kohlenhydrate g</span><input id="qKh" inputmode="decimal" autocomplete="off"></label><label class="field"><span>Fett g</span><input id="qF" inputmode="decimal" autocomplete="off"></label></div>
+    <label class="field check"><input type="checkbox" id="qMerk"><span>Merken, damit es nächstes Mal unter Zuletzt steht</span></label>
+    <div class="lab mg-lab">Mahlzeit</div>${mahlSeg(st.m)}
+    <button class="btn primary wide mg-ok" id="qOk">Eintragen</button>`);
+  $('#sheetBody').onclick = ev => {
+    if (mahlKlick(ev, st)) return;
+    if (!ev.target.closest('#qOk')) return;
+    const k = zahlEin($('#qK').value);
+    if (k == null || k <= 0 || k > 10000) { toast('Gib die Kalorien ein'); $('#qK').focus(); return; }
+    const nw = { k, pr: zahlEin($('#qP').value), kh: zahlEin($('#qKh').value), f: zahlEin($('#qF').value) };
+    const name = $('#qN').value.trim();
+    if ($('#qMerk').checked && !name) { toast('Gib einen Namen ein, damit ich es merken kann'); $('#qN').focus(); return; }
+    let f;
+    if ($('#qMerk').checked) { f = { key: 'e:' + tbUid(), n: name, b: 'Eigenes', src: 'eigen', pp: nw }; foods[f.key] = Object.assign({}, f, { last: Date.now(), cnt: 0 }); }
+    else f = { key: '', n: name || 'Schnell eingetragen', b: '', fix: { e: { l: 'Portion', g: null, basis: false }, pu: nw } };
+    const ein = tbEintragen(f, einheiten(f)[0], 1, st.m, tag);
+    closeSheet();
+    toastAktion(kurzName(ein.n) + ' eingetragen', 'Rückgängig', () => { tbEntfernen(tag, ein.id); nachEintrag(); });
+  };
+}
+function openEigen(opt) {
+  opt = opt || {};
+  const st = { m: opt.m || mahlJetzt(), pro: 'g' };
+  const feld = (id, label, v) => `<label class="field"><span>${label}</span><input id="${id}" inputmode="decimal" autocomplete="off" value="${v == null ? '' : esc(v)}"></label>`;
+  openSheet('Eigenes Lebensmittel', `<p class="small muted" style="margin-top:0">Die Werte stehen auf der Packung in der Nährwerttabelle.</p>
+    <label class="field"><span>Name</span><input type="text" id="eN" maxlength="70" value="${esc(opt.n || '')}" autocomplete="off"></label>
+    <div class="edit-grid"><label class="field"><span>Marke, freiwillig</span><input type="text" id="eB" maxlength="40" value="${esc(opt.b || '')}" autocomplete="off"></label>
+    <label class="field"><span>Strichcode, freiwillig</span><input id="eC" inputmode="numeric" maxlength="14" value="${esc(opt.code || '')}" autocomplete="off"></label></div>
+    <div class="lab mg-lab">Werte gelten pro</div>
+    <div class="seg"><button data-pro="g" aria-pressed="true">100 g oder ml</button><button data-pro="p" aria-pressed="false">Portion</button></div>
+    <div class="edit-grid">${feld('eK', 'Kalorien kcal')}${feld('eP', 'Protein g')}${feld('eKh', 'Kohlenhydrate g')}${feld('eF', 'Fett g')}</div>
+    <label class="field" id="ePortF"><span>Eine Portion wiegt g, freiwillig</span><input id="ePort" inputmode="decimal" autocomplete="off" placeholder="z.B. 50 für einen Riegel"></label>
+    <div class="lab mg-lab">Mahlzeit</div>${mahlSeg(st.m)}
+    <button class="btn primary wide mg-ok" id="eOk">Speichern und Menge wählen</button>`);
+  $('#sheetBody').onclick = ev => {
+    if (mahlKlick(ev, st)) return;
+    const pb = ev.target.closest('[data-pro]');
+    if (pb) { st.pro = pb.dataset.pro; $$('[data-pro]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.pro === st.pro))); $('#ePortF').hidden = st.pro === 'p'; return; }
+    if (!ev.target.closest('#eOk')) return;
+    const n = $('#eN').value.trim(); const k = zahlEin($('#eK').value);
+    if (!n) { toast('Gib einen Namen ein'); $('#eN').focus(); return; }
+    if (k == null || k < 0 || k > 2000) { toast(st.pro === 'g' ? 'Gib die Kalorien pro 100 g ein' : 'Gib die Kalorien pro Portion ein'); $('#eK').focus(); return; }
+    const code = String($('#eC').value || '').replace(/\D/g, '');
+    const nw = { k, pr: zahlEin($('#eP').value), kh: zahlEin($('#eKh').value), f: zahlEin($('#eF').value) };
+    const pg = zahlEin($('#ePort').value);
+    const key = code.length >= 8 ? 'c:' + code : 'e:' + tbUid();
+    const f = st.pro === 'g'
+      ? { key, n, b: $('#eB').value.trim(), img: opt.img || '', src: 'eigen', code: code.length >= 8 ? code : '', p100: khAusKcal(nw), base: 'g', port: pg > 0 && pg < 2000 ? [{ l: 'Portion', g: pg }] : [], pack: null }
+      : { key, n, b: $('#eB').value.trim(), img: opt.img || '', src: 'eigen', code: code.length >= 8 ? code : '', pp: nw };
+    foods[key] = Object.assign({}, f, { last: Date.now(), cnt: 0, fav: !!(foods[key] && foods[key].fav) }); foodsSpeichern();
+    openMenge(foods[key], { m: st.m, tag: opt.tag, nachScan: opt.nachScan });
+  };
+}
+function openZiele() {
+  const feld = (k, label) => `<label class="field"><span>${label}</span><input id="z_${k}" inputmode="numeric" autocomplete="off" value="${esc(ziele[k])}"></label>`;
+  openSheet('Deine Ziele', `<p class="small" style="margin-top:0">Eingestellt auf deine Ziele: Muskeln und Kraft aufbauen, gleichzeitig Fett verlieren. Ändern kannst du alles.</p>
+    <div class="edit-grid">${feld('k', 'Kalorien kcal')}${feld('pr', 'Protein g')}${feld('kh', 'Kohlenhydrate g')}${feld('f', 'Fett g')}</div>
+    <p class="small" id="zInfo"></p>
+    <button class="btn primary wide" id="zOk">Speichern</button>
+    <button class="btn wide" id="zStd" style="margin-top:10px">Empfehlung: ${ZIELE_START.k} kcal, ${ZIELE_START.pr} g Protein</button>
+    <details class="how" style="margin-top:14px"><summary>Warum diese Zahlen?</summary>
+      <p><b>${ZIELE_START.k} kcal.</b> Bei 180 cm, rund 79 kg, Training an fünf Tagen und 7000 Schritten verbrauchst du geschätzt 2600 bis 2800 kcal. Mit ${ZIELE_START.k} isst du leicht darunter: Fett geht weg, Kraft und Wachstum leiden nicht. Das ist eine Schätzung. Die Gewichtskarte sagt dir nach zwei bis drei Wochen, ob du anpassen musst.</p>
+      <p><b>${ZIELE_START.pr} g Protein.</b> Knapp 2 g pro kg Körpergewicht. Das schützt deine Muskeln, während du Fett verlierst, und baut neue auf.</p>
+      <p><b>${ZIELE_START.f} g Fett.</b> Genug für deine Hormone. Nicht darunter gehen.</p>
+      <p><b>${ZIELE_START.kh} g Kohlenhydrate.</b> Der Rest. Treibstoff fürs Training am Morgen.</p>
+      <p>Fett an der Brust und am Bauch verschwindet nicht gezielt dort, sondern mit deinem gesamten Körperfett. Genau dafür ist das leichte Minus da.</p></details>`);
+  const pruefe = () => {
+    const v = {}; ['k', 'pr', 'kh', 'f'].forEach(k => { v[k] = zahlEin($('#z_' + k).value); });
+    const rechn = v.pr != null && v.kh != null && v.f != null ? v.pr * 4 + v.kh * 4 + v.f * 9 : null;
+    const w = [];
+    if (v.k != null && v.k < 2000) w.push('<b>Unter 2000 kcal ist für dich zu wenig.</b> Mit 16 oder 17 wächst du noch und trainierst fast täglich. Kraft, Schlaf und Haut leiden.');
+    if (v.f != null && v.f < 50) w.push('<b>Unter 50 g Fett</b> leidet dein Hormonhaushalt.');
+    if (v.pr != null && v.pr < 110) w.push('<b>Unter 110 g Protein</b> verlierst du im Defizit eher Muskeln.');
+    if (rechn != null && v.k != null) w.push(`Protein, Kohlenhydrate und Fett ergeben zusammen <b>${fz(rechn)} kcal</b>${Math.abs(rechn - v.k) > 100 ? ', das weicht von deinem Kalorienziel ab' : ''}.`);
+    $('#zInfo').innerHTML = w.join(' ');
+    return v;
+  };
+  pruefe();
+  $('#sheetBody').oninput = pruefe;
+  $('#sheetBody').onclick = ev => {
+    if (ev.target.closest('#zStd')) { NWK.forEach(k => { $('#z_' + k).value = ZIELE_START[k]; }); pruefe(); return; }
+    if (!ev.target.closest('#zOk')) return;
+    const v = pruefe();
+    if (NWK.some(k => v[k] == null || v[k] <= 0) || v.k > 6000) { toast('Bitte alle vier Werte eingeben'); return; }
+    ziele = { k: Math.round(v.k), pr: Math.round(v.pr), kh: Math.round(v.kh), f: Math.round(v.f) }; LS.set('ziele', ziele);
+    closeSheet(); toast('Ziele gespeichert');
+  };
+}
+function openGewicht(tag) {
+  const alt = gewicht[tag];
+  const vorher = Object.entries(gewicht).sort((a, b) => a[0] < b[0] ? 1 : -1)[0];
+  openSheet('Gewicht', `<p class="small muted" style="margin-top:0">${esc(tagName(tag))}, ${esc(tagDatum(tag))}</p>
+    <div class="mg-step"><label class="feld" style="flex:1"><input id="gKg" inputmode="decimal" autocomplete="off" value="${alt != null ? fz(alt, 1) : vorher ? fz(vorher[1], 1) : ''}" aria-label="Gewicht in kg"><span>kg</span></label></div>
+    <p class="small muted">Am besten montags am Morgen, nach dem WC, vor dem Essen und Trinken. Nie am Sonntag nach dem Cheat Day: dann zeigt die Waage Wasser und Salz, nicht Fett.</p>
+    <button class="btn primary wide mg-ok" id="gOk">Speichern</button>
+    ${alt != null ? '<button class="btn danger wide" id="gDel" style="margin-top:10px">Löschen</button>' : ''}`);
+  const i = $('#gKg'); i.style.width = '5ch';
+  $('#sheetBody').onclick = ev => {
+    if (ev.target.closest('#gDel')) { delete gewicht[tag]; LS.set('gewicht', gewicht); closeSheet(); toast('Gelöscht'); return; }
+    if (!ev.target.closest('#gOk')) return;
+    const v = zahlEin(i.value);
+    if (v == null || v < 30 || v > 250) { toast('Gib dein Gewicht in kg ein, zum Beispiel 78,4'); i.focus(); return; }
+    gewicht[tag] = Math.round(v * 10) / 10; LS.set('gewicht', gewicht); closeSheet(); toast('Gewicht gespeichert');
+  };
+  $('#sheetBody').onkeydown = ev => { if (ev.target.id === 'gKg' && ev.key === 'Enter') { ev.preventDefault(); $('#gOk').click(); } };
+}
+
+/* ---------- Strichcode zu Lebensmittel: zuerst eigene Daten (offline), dann Open Food Facts */
+function tbCodeIndex() {
+  if (!tbCodes) {
+    tbCodes = new Map();
+    [['migros', (DATA && DATA.migros) || []], ['coop', (DATA && DATA.coop) || []]].forEach(([laden, l]) => l.forEach(p => (p.bc || []).forEach(c => { if (!tbCodes.has(String(c))) tbCodes.set(String(c), () => foodAusProdukt(p, laden)); })));
+  }
+  return tbCodes;
+}
+function codeVarianten(c) { const s = String(c); return Array.from(new Set([s, s.replace(/^0+/, ''), s.length === 12 ? '0' + s : '', s.length === 13 && s[0] === '0' ? s.slice(1) : ''].filter(x => x && x.length >= 8))); }
+function tbFoodLokal(code) {
+  const vs = codeVarianten(code);
+  const eig = Object.values(foods).filter(f => f.code && vs.indexOf(f.code) >= 0).sort((a, b) => (a.src === 'eigen' ? 0 : 1) - (b.src === 'eigen' ? 0 : 1))[0];
+  if (eig && kalorienBekannt(eig)) return eig;
+  const idx = tbCodeIndex();
+  for (const v of vs) { const mk = idx.get(v); if (mk) return mk(); }
+  return eig || null;
+}
+async function offProdukt(code) {
+  const r = await fetch('https://world.openfoodfacts.org/api/v2/product/' + code + '.json?fields=' + OFF_FELDER);
+  const j = await r.json();
+  return j && j.status === 1 && j.product ? j.product : null;
+}
+async function tbCode(code) {
+  scan.ansicht = 'produkt';
+  const z = scan.ziel || { m: mahlJetzt(), tag: tbHeute() };
+  let f = tbFoodLokal(code), fehler = false;
+  if (!f) {
+    openSheet('Produkt', '<div class="prod-laden" role="status"><span class="spin" aria-hidden="true"></span>Suche bei Open Food Facts</div>');
+    try { const p = await offProdukt(code); if (p) f = foodAusOff(p, code); } catch (e) { fehler = true; }
+  }
+  if (f) { openMenge(f, { m: z.m, tag: z.tag, nachScan: true }); return; }
+  openSheet('Nicht gefunden', `<p style="margin-top:0">${fehler ? 'Keine Verbindung zu Open Food Facts.' : `<b>${esc(code)}</b> steht weder in deinen Migros und Coop Daten noch bei Open Food Facts.`}</p>
+    <p class="small muted">Trag die Werte von der Packung einmal ein. Beim nächsten Scan erkennt die App das Produkt sofort, auch ohne Internet.</p>
+    <button class="btn primary wide" data-x="eigen">Werte von der Packung eintragen</button>
+    <button class="btn wide" style="margin-top:10px" data-x="neu">Nochmals scannen</button>`);
+  $('#sheetBody').onclick = ev => {
+    const x = ev.target.closest('[data-x]'); if (!x) return;
+    if (x.dataset.x === 'neu') closeSheet(); else openEigen({ code, m: z.m, tag: z.tag, nachScan: true });
+  };
+}
+
 /* ======================================================= Sheet */
 
 /* ======================================================= Barcode Scanner
@@ -2216,8 +3110,8 @@ $('#btnListe').addEventListener('click', openLists);
 const ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
 /* sha384 der offiziellen npm Datei @zxing/library 0.21.3, umd/index.min.js */
 const ZXING_SRI = 'sha384-BzBxP10ZE72aitqj5UMmUsbKFliP/DZqA8Wq+BNNhlIJDGoEd1tpkMYXOg9+n6sB';
-const OFF_FELDER = 'code,product_name,product_name_de,brands,brand_owner,quantity,image_front_small_url,nutriscore_grade,nova_group,ecoscore_grade,additives_tags,nutriments,labels_tags';
-const scan = { stream: null, reader: null, timer: 0, aktiv: false, ansicht: null };
+const OFF_FELDER = 'code,product_name,product_name_de,brands,brand_owner,quantity,product_quantity,product_quantity_unit,serving_size,serving_quantity,image_front_small_url,nutriscore_grade,nova_group,ecoscore_grade,additives_tags,nutriments,labels_tags';
+const scan = { stream: null, reader: null, timer: 0, aktiv: false, ansicht: null, ziel: null };
 function ladeSkript(url, sri) {
   return new Promise((ok, nein) => {
     if (window.ZXing) { ok(); return; }
@@ -2242,6 +3136,7 @@ function renderScan() {
   if (scan.aktiv && $('#scanCam') && scan.ansicht === 'kamera') return;
   const v = scanVerlauf();
   $('#main').innerHTML = `<div class="scan">
+    ${scan.ziel ? `<div class="scan-ziel"><span>Für dein Tagebuch · <b>${esc(MAHL_NAME[scan.ziel.m] || '')}</b>${scan.ziel.tag !== tbHeute() ? ' · ' + esc(tagDatum(scan.ziel.tag)) : ''}</span><button class="tbtn" data-scanzurueck>Zurück</button></div>` : ''}
     <div class="scan-cam" id="scanCam"><video id="scanVid" playsinline muted autoplay disablepictureinpicture poster="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"></video>
       <div class="scan-load" id="scanLoad"><span class="spin" aria-hidden="true"></span></div>
       <div class="scan-rahmen" id="scanRahmen"><i class="scan-linie"></i></div>
@@ -2249,7 +3144,7 @@ function renderScan() {
     </div>
     <p id="scanStatus" class="scan-status" role="status">Kamera startet</p>
     <div class="scan-hand"><input id="scanCode" inputmode="numeric" autocomplete="off" placeholder="Strichcode Nummer" aria-label="Strichcode Nummer eintippen"><button class="btn" id="scanGo">Suchen</button></div>
-    <p class="small faint" style="margin:10px 2px 0">Du siehst Nutri-Score, Verarbeitung, Nährwerte, Zusatzstoffe, ob es zu deiner Snack Regel passt und wem die Marke gehört.</p>
+    <p class="small faint" style="margin:10px 2px 0">${scan.ziel ? 'Nach dem Scan wählst du direkt die Menge. Deine Migros und Coop Produkte erkennt die App auch ohne Internet.' : 'Du siehst Nutri-Score, Verarbeitung, Nährwerte, Zusatzstoffe, ob es zu deiner Snack Regel passt und wem die Marke gehört.'}</p>
     ${v.length ? `<div class="lab" style="margin-top:20px">Zuletzt gescannt</div><div class="scan-alt-liste">${v.map(x => `<button class="scan-alt" data-code="${esc(x.code)}">${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'ph'}))">` : '<span class="ph"></span>'}<span><b>${esc(x.n || x.code)}</b><span class="small muted">${esc(x.b || '')}${x.ns && /^[a-e]$/.test(x.ns) ? ' · Nutri-Score ' + x.ns.toUpperCase() : ''}</span></span></button>`).join('')}</div>` : ''}
   </div>`;
   scan.ansicht = 'kamera';
@@ -2257,6 +3152,7 @@ function renderScan() {
 }
 $('#main').addEventListener('click', e => {
   if (tab !== 'scan') return;
+  if (e.target.closest('[data-scanzurueck]')) { setTab('tagebuch'); return; }
   if (e.target.closest('#scanLicht')) { lichtUmschalten(); return; }
   if (e.target.closest('#scanGo')) { const c = $('#scanCode').value; scanStopp(); zeigeProdukt(c); return; }
   const alt = e.target.closest('[data-code]'); if (alt) { scanStopp(); zeigeProdukt(alt.dataset.code); }
@@ -2333,9 +3229,11 @@ function scoreKachel(titel, wert, text) {
   return `<div class="score"><span class="lab">${titel}</span><span class="scn n-${esc(String(wert).toLowerCase())}">${esc(String(wert).toUpperCase())}</span><span class="small muted">${text}</span></div>`;
 }
 const NOVA_TEXT = { 1: 'kaum verarbeitet', 2: 'verarbeitete Zutat', 3: 'verarbeitet', 4: 'stark verarbeitet' };
-async function zeigeProdukt(roh) {
+async function zeigeProdukt(roh, opt) {
   const code = String(roh || '').replace(/\D/g, '');
   if (code.length < 8) { toast('Die Nummer ist zu kurz. Sie hat meist 8 oder 13 Ziffern.'); if (tab === 'scan' && $('#scanVid')) starteKamera(); return; }
+  /* Aus dem Tagebuch gestartet: direkt zur Menge, Details gibt es dort per Knopf */
+  if (scan.ziel && !(opt && opt.details)) { tbCode(code); return; }
   scan.ansicht = 'produkt';
   openSheet('Produkt', '<div class="prod-laden" role="status"><span class="spin" aria-hidden="true"></span>Suche bei Open Food Facts</div>');
   let p = null;
@@ -2382,6 +3280,7 @@ async function zeigeProdukt(roh) {
   $('#sheetBody').innerHTML = `<div class="prod">
     <div class="prod-kopf">${p.image_front_small_url ? `<img src="${esc(p.image_front_small_url)}" alt="">` : ''}
       <div><h3>${esc(name)}</h3><div class="small muted">${esc([marke, p.quantity].filter(Boolean).join(' · '))}</div><div class="small faint">${esc(code)}</div></div></div>
+    <button class="btn primary wide" id="prodLog" style="margin-top:14px">Ins Tagebuch</button>
     <div class="card urteil ${isGood(w) ? 'gut' : ''}" style="margin-top:14px"><b>${urteil}</b>${grund.length ? `<ul class="small">${grund.map(g => `<li>${esc(g)}</li>`).join('')}</ul>` : ''}</div>
     ${scores.length ? `<div class="scores">${scores.join('')}</div>` : '<p class="small muted">Für dieses Produkt gibt es noch keinen Nutri-Score.</p>'}
     <div class="lab" style="margin-top:16px">Pro 100 g</div>
@@ -2398,7 +3297,15 @@ async function zeigeProdukt(roh) {
     <button class="btn wide" style="margin-top:10px" data-neu>Nächstes Produkt scannen</button>
     <p class="muted small" style="margin-top:12px">Daten: Open Food Facts (ODbL) und Wikidata. Von Freiwilligen erfasst, kann unvollständig sein.</p>
   </div>`;
-  $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-neu]')) closeSheet(); };
+  $('#sheetBody').onclick = ev => {
+    if (ev.target.closest('[data-neu]')) { closeSheet(); return; }
+    if (ev.target.closest('#prodLog')) {
+      const lok = tbFoodLokal(code);
+      const f = lok && kalorienBekannt(lok) ? lok : foodAusOff(p, code);
+      const z = scan.ziel || { m: mahlJetzt(), tag: tbHeute() };
+      openMenge(f, { m: z.m, tag: z.tag, ausProdukt: true, nachScan: !!scan.ziel, zurueck: { label: 'Produkt', fn: () => zeigeProdukt(code, { details: true }) } });
+    }
+  };
   const suchname = besitzer || marke;
   if (!suchname) { $('#konzern').innerHTML = 'Keine Marke angegeben.'; return; }
   try {
@@ -2448,8 +3355,11 @@ async function wikidataKonzern(name) {
 
 function openSheet(title, body) {
   clearTimeout(blattZu); $('#sheet').classList.remove('zu');
+  /* Ein neues Blatt heisst: weiter. Ein offener Rückgängig Hinweis darf dann nichts mehr verdecken. */
+  const ts = $('#toast'); if (ts.classList.contains('mit')) ts.classList.remove('show');
   $('#sheetTitle').textContent = title; $('#sheetBody').innerHTML = body;
   $('#sheetBody').onclick = null; $('#sheetBody').onkeydown = null; $('#sheetBody').onchange = null;
+  $('#sheet .panel').classList.remove('hoch');
   $('#sheet').hidden = false;
 }
 let blattZu = 0;
@@ -2481,7 +3391,7 @@ function openSettings() {
     <button class="btn primary wide" id="sSave">Speichern und Daten laden</button>
     <p class="muted small" id="sMsg">${LS.get('syncAt', 0) ? 'Zuletzt geladen: ' + datumZeit(new Date(LS.get('syncAt', 0)).toISOString()) : ''}</p>
     <h3>Deine Daten sichern</h3>
-    <p class="muted small">Training, Plan, Zutaten, Favoriten und Listen. Mach das ab und zu, und vor einem Handywechsel.</p>
+    <p class="muted small">Training, Plan, Tagebuch, Gewicht, Zutaten, Favoriten und Listen. Mach das ab und zu, und vor einem Handywechsel.</p>
     <div class="edit-grid"><button class="btn" id="sExport">Export</button><button class="btn" id="sImport">Import</button></div>
     <h3>Trainingsplan</h3>
     <button class="btn danger wide" id="sResetPlan">Plan auf Standard zurücksetzen</button>
@@ -2558,7 +3468,7 @@ $('#importFile').addEventListener('change', async e => {
     Object.entries(d.daten).forEach(([k, v]) => { if (k.indexOf('fit.') === 0 && typeof v === 'string') { try { localStorage.setItem(k, v); n++; } catch (er) {} } });
     plan = loadPlan(); sessions = LS.get('sess', {}); history = LS.get('history', []); curDay = todayDayId();
     zutaten = ladeZutaten(); nogo = LS.get('nogo', NOGO_DEFAULT); favs = LS.get('fav', {}); listen = LS.get('listen', { coop: [], migros: [] });
-    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf);
+    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf); tbLaden();
     toast(n + ' Einträge importiert'); closeSheet();
   } catch (er) { toast('Import fehlgeschlagen: ' + er.message); }
 });
