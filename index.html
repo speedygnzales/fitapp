@@ -589,7 +589,8 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 .st-kacheln { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
 .st-kacheln.innen { margin: 16px 0 0; }
 .st-kacheln > div { border: 1px solid var(--line); border-radius: 12px; padding: 12px 11px 11px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.st-kacheln b { font-size: 1.22rem; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+.st-kacheln b { font-size: 1.22rem; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-kacheln .leer b { font-size: .95rem; font-weight: 500; color: var(--muted); letter-spacing: 0; padding: 4px 0 3px; }
 .st-kacheln b small { font-size: .74rem; color: var(--muted); font-weight: 500; letter-spacing: 0; }
 .st-kacheln span { font-size: .7rem; color: var(--muted); line-height: 1.3; }
 /* Kalender */
@@ -1040,7 +1041,7 @@ function sicherUrl(u) {
   try { const x = new URL(String(u == null ? '' : u)); return x.protocol === 'https:' ? x.href : ''; } catch (e) { return ''; }
 }
 const lnk = u => esc(sicherUrl(u) || '#');
-const KA = 'keine Angabe';
+const KA = 'unbekannt';
 const n1 = v => (v == null || isNaN(v)) ? KA : String(Math.round(v * 10) / 10);
 const n0 = v => (v == null || isNaN(v)) ? KA : String(Math.round(v));
 const chf = v => (v == null || isNaN(v)) ? KA : 'CHF ' + Number(v).toFixed(2);
@@ -3702,7 +3703,9 @@ function stapel(teile, ak) {
   }).join('')}</div>
   <div class="st-leg">${teile.map(t => `<span><i class="${t.c}"></i>${esc(t.l)} <b class="num">${pct(t.v, sum)} %</b></span>`).join('')}</div>`;
 }
-function kachel(wert, label) { return `<div><b>${wert}</b><span>${esc(label)}</span></div>`; }
+/* Leere Kachel: ruhiger Text statt Platzhalter, damit nichts überläuft */
+function kachel(wert, label) { const leer = wert == null || wert === 'offen' || String(wert).indexOf(KA) >= 0;
+  return `<div${leer ? ' class="leer"' : ''}><b>${leer ? 'noch offen' : wert}</b><span>${esc(label)}</span></div>`; }
 function leer(text) { return `<div class="st-leer">${esc(text)}</div>`; }
 
 function renderStats() {
@@ -4361,6 +4364,7 @@ function openBauch(tag) {
   };
   $('#sheetBody').onkeydown = ev => { if (ev.target.id === 'bKm' && ev.key === 'Enter') { ev.preventDefault(); $('#bOk').click(); } };
 }
+function bauchNaechster() { const m = montagVon(tbHeute()); return bauchDieseWoche() || tbHeute() > m ? tagVerschoben(m, 7) : m; }
 function bauchDieseWoche() { const m = montagVon(tbHeute()); return Object.keys(bauch).some(k => k >= m); }
 function statBauch(tage) {
   const alle = Object.entries(bauch).sort((a, b) => a[0] < b[0] ? -1 : 1);
@@ -4373,8 +4377,8 @@ function statBauch(tage) {
   let chart = '';
   if (ein.length >= 2) chart = linieChart(ein.map(([k, v]) => ({ k, v })), v => fz(v, 1) + ' cm') + chartInfo('Tippe auf einen Punkt.');
   return karte('Bauchumfang', `<div class="st-kopfzahl"><b>${fz(letzt[1], 1)}<small> cm</small></b><span>${esc(tagDatum(letzt[0]))}${diff != null ? ` · ${diff > 0 ? '+' : diff < 0 ? '−' : '±'}${fz(Math.abs(diff), 1)} cm im Zeitraum` : ''}</span></div>
-    ${chart}<div class="st-kacheln innen" style="margin:12px 0 14px">${kachel(tr ? (tr.proWoche > 0 ? '+' : tr.proWoche < 0 ? '−' : '') + fz(Math.abs(tr.proWoche), 2) + '<small> cm</small>' : KA, 'pro Woche')}${kachel(String(alle.length), 'Messungen')}${kachel(fz(ziele.k) + '<small> kcal</small>', 'dein Ziel')}</div>
-    ${tr ? '' : '<p class="st-hw" style="margin:0 0 12px">Ab drei Messungen über zwei Wochen siehst du hier den Trend.</p>'}${inhalt}`);
+    ${chart}<div class="st-kacheln innen" style="margin:12px 0 14px">${tr ? kachel((tr.proWoche > 0 ? '+' : tr.proWoche < 0 ? '−' : '±') + fz(Math.abs(tr.proWoche), 2) + '<small> cm</small>', 'pro Woche') : kachel(`${Math.min(alle.length, 3)}<small> von 3</small>`, 'Messungen bis zum Trend')}${alle.length > 1 ? kachel((letzt[1] - alle[0][1] > 0 ? '+' : letzt[1] - alle[0][1] < 0 ? '−' : '±') + fz(Math.abs(letzt[1] - alle[0][1]), 1) + '<small> cm</small>', 'seit der ersten Messung') : kachel(fz(alle[0][1], 1) + '<small> cm</small>', 'dein Startwert')}${kachel(fz(ziele.k) + '<small> kcal</small>', 'dein Ziel')}</div>
+    ${tr ? '' : `<p class="st-hw" style="margin:0 0 12px">${alle.length >= 3 ? 'Der Trend kommt, sobald zwischen erster und letzter Messung zwei Wochen liegen.' : 'Ab drei Messungen über zwei Wochen siehst du hier den Trend.'} Nächste Messung: ${esc(tagDatum(bauchNaechster()))}.</p>`}${inhalt}`);
 }
 
 /* ======================================================= Wochenbericht: eine Note, ein Satz, eine Ampel, ein nächster Schritt */
