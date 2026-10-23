@@ -79,6 +79,7 @@ label.field span { display: block; font-size: .8rem; color: var(--muted); margin
 .empty { text-align: center; padding: 28px 12px; color: var(--muted); }
 
 /* Training */
+.abschluss { margin: -2px 0 12px; }
 .steig { display: flex; gap: 9px; align-items: flex-start; margin: 12px 0 2px; padding: 10px 12px; border-radius: 11px; background: var(--fill); font-size: .84rem; line-height: 1.4; color: var(--ink); }
 .steig svg { flex: 0 0 auto; margin-top: 2px; color: var(--muted); }
 .steig.s-kg, .steig.s-stufe { background: var(--ink); color: var(--inv); font-weight: 500; }
@@ -476,6 +477,11 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 .tb-spark { display: block; width: 100%; height: 48px; margin-top: 12px; }
 .tb-spark polyline { fill: none; stroke: var(--ink); stroke-width: 1.8; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
 .tb-spark polygon { fill: rgba(250,250,250,.06); }
+.tb-statlink { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; color: var(--ink); font: inherit; }
+.tb-statlink .t { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.tb-statlink b { font-weight: 600; }
+.tb-statlink .t span { font-size: .8rem; color: var(--muted); }
+.tb-statlink > svg { color: var(--faint); }
 .tb-mini { width: 100%; display: flex; align-items: center; gap: 14px; text-align: left; color: var(--ink); font: inherit; }
 .tb-ring.klein { width: 52px; }
 .tb-ring.klein circle { stroke-width: 13; }
@@ -662,6 +668,49 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 .st-line .dot { fill: var(--ink); stroke: var(--bg); stroke-width: 2; transition: r .15s ease; }
 .st-line .hit { fill: transparent; cursor: pointer; }
 .st-line .pt.sel .dot { r: 6.5; }
+.st-line .pt.still .dot { opacity: 0; }
+.st-line .pt.still.sel .dot { opacity: 1; }
+.st-ansicht { margin-bottom: 10px; }
+.st-s.laeuft i, .st-dv.laeuft i { background: transparent !important; box-shadow: inset 0 0 0 1.5px var(--ink); }
+.st-leg i.laeuft { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.st-woche { border: 1px solid var(--line); border-radius: var(--r); margin-bottom: 12px; overflow: hidden; }
+.st-wk { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 14px 16px 4px; }
+.st-wk b { font-size: 1rem; font-weight: 600; }
+.st-wk span { font-size: .78rem; color: var(--muted); }
+.st-ws { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 2px 16px 12px; font-size: .76rem; color: var(--muted); border-bottom: 1px solid var(--line); }
+.st-tag { border-top: 1px solid var(--hair); }
+.st-tag:first-of-type { border-top: 0; }
+.st-tag > summary { display: flex; align-items: center; gap: 12px; padding: 11px 16px; cursor: pointer; list-style: none; min-height: 54px; }
+.st-tag > summary::-webkit-details-marker { display: none; }
+.st-tag > summary::after { content: "+"; margin-left: auto; color: var(--faint); flex: 0 0 auto; padding-left: 6px; }
+.st-tag[open] > summary::after { content: "−"; }
+.st-tag[open] > summary { background: var(--fill); }
+.st-tag.heute .st-dat b { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line2); }
+.st-dat { display: flex; flex-direction: column; width: 44px; flex: 0 0 auto; line-height: 1.2; }
+.st-dat b { font-weight: 600; font-size: .92rem; }
+.st-dat small { font-size: .72rem; color: var(--faint); font-variant-numeric: tabular-nums; }
+.st-bs { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; }
+.st-b { font-size: .72rem; padding: 3px 7px; border-radius: 6px; box-shadow: inset 0 0 0 1px var(--line2); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.st-b.komplett { background: var(--ink); color: var(--inv); box-shadow: none; font-weight: 600; }
+.st-b.teil { box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
+.st-b.verpasst { background: repeating-linear-gradient(135deg, #3A3A3A 0 2px, transparent 2px 5px); color: var(--ink); }
+.st-b.leer { box-shadow: none; color: var(--faint); padding-left: 0; }
+.st-inh { padding: 4px 16px 14px; background: var(--fill); }
+.st-det { padding-top: 12px; }
+.st-det .lab { margin-bottom: 6px; }
+.st-dz { display: flex; flex-direction: column; gap: 2px; margin: 8px 0 2px; }
+.st-dz b { font-weight: 600; font-size: .88rem; }
+.st-dz span { font-size: .76rem; color: var(--muted); }
+.st-dr { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-top: 1px solid var(--line); font-size: .82rem; }
+.st-dr > span:first-child { min-width: 0; }
+.st-dr > span:first-child small { color: var(--faint); }
+.st-dr > span:last-child { text-align: right; color: var(--muted); }
+.st-dr.fehlt > span:last-child { color: var(--ink); }
+.st-dp { margin: 4px 0 0; font-size: .82rem; color: var(--muted); line-height: 1.45; }
+.st-dn { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 2px 0 6px; }
+.st-dn div { display: flex; flex-direction: column; gap: 1px; }
+.st-dn b { font-size: 1rem; font-weight: 600; }
+.st-dn span { font-size: .66rem; color: var(--muted); line-height: 1.25; }
 .st-tab { margin-top: 10px; }
 .st-tab summary { cursor: pointer; font-size: .8rem; color: var(--muted); min-height: 36px; display: flex; align-items: center; list-style: none; }
 .st-tab summary::-webkit-details-marker { display: none; }
@@ -984,7 +1033,7 @@ let curDay = todayDayId();
 let curDayDate = new Date().toDateString();
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible' || curDayDate === new Date().toDateString()) return;
-  curDayDate = new Date().toDateString(); curDay = todayDayId();
+  curDayDate = new Date().toDateString(); alteTrainingsSichern(); curDay = todayDayId();
   if (tab === 'training' && !editMode) renderTraining();
   if (tab === 'plan') renderPlan();
   streakMeldung();
@@ -1478,7 +1527,7 @@ function renderPlan() {
         ${trainingBald ? '<button class="btn primary" data-goto="training">Training öffnen</button>' : ''}
         ${g && g !== 'training' ? `<button class="btn ${gewHeute()[g] ? 'ok' : ''}" data-gew="${g}">${gewHeute()[g] ? 'Erledigt' : 'Abhaken'}</button>` : ''}</div>` : ''}
     </div>`;
-    h += tbHeuteKarte();
+    h += tbHeuteKarte() + koerperHeuteKarte();
     /* Gewohnheiten von heute */
     const keys = []; d.items.forEach(it => { const k = gewohnheitVon(it); if (k && keys.indexOf(k) < 0) keys.push(k); });
     if (keys.length) {
@@ -1543,7 +1592,7 @@ $('#main').addEventListener('click', e => {
     const neu = $('.gew .gew-bar i'); if (neu && vorher != null) { const ziel = neu.style.width; neu.style.width = vorher; requestAnimationFrame(() => requestAnimationFrame(() => { neu.style.width = ziel; })); }
     return;
   }
-  const go = e.target.closest('[data-goto]'); if (go) { curDay = todayDayId(); setTab(go.dataset.goto); }
+  const go = e.target.closest('[data-goto]'); if (go) { curDay = todayDayId(); if (go.dataset.stk) zeigeStats(go.dataset.stk); else setTab(go.dataset.goto); }
 });
 setInterval(() => { if (tab === 'plan' && document.visibilityState === 'visible' && $('#sheet').hidden) renderPlan(); }, 60000);
 
@@ -1565,7 +1614,8 @@ function renderTraining() {
   if (!editMode) h += streakKarte(true);
   h += `<div class="card daycard"><div class="ring" style="--p:${pct}" role="img" aria-label="${done} von ${total} Sätzen erledigt"><span>${done}/${total}</span></div>
     <div><div class="lab">${heuteHinweis(day)}</div><h2>${esc(day.name)}: ${esc(day.title)}</h2>
-    <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="history">Verlauf</button> · <button data-act="stats">Statistik</button></div></div></div>`;
+    <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="stats">Verlauf und Statistik</button></div></div></div>`;
+  if (!editMode && done) h += `<button class="btn wide abschluss ${done >= total ? 'primary' : ''}" data-act="finish">${done >= total ? 'Training abschliessen' : `Abschliessen · ${done} von ${total} Sätzen`}</button>`;
   const aktivIdx = done ? day.ex.findIndex(x => s.sets[x.id].some(st => !st.d)) : 0;
   day.ex.forEach((ex, xi) => {
     const sets = s.sets[ex.id];
@@ -1652,9 +1702,9 @@ $('#main').addEventListener('click', e => {
     renderTraining(); Timer.markiere();
     if (st.d) { const nb = $(`[data-ex="${ex.id}"] [data-act="toggle"][data-i="${b.dataset.i}"]`); if (nb) nb.classList.add('pop'); }
   } else if (act === 'detail' && ex) openUebung(ex);
-  else if (act === 'finish') finishTraining();
+  else if (act === 'finish') abschliessenFragen();
   else if (act === 'history') openHistory();
-  else if (act === 'stats') { stf.b = 'training'; LS.set('statf', stf); setTab('stats'); }
+  else if (act === 'stats') zeigeStats('training');
   else if (act === 'edit') { editMode = true; renderTraining(); }
   else if (act === 'editdone') { editMode = false; savePlan(); renderTraining(); toast('Plan gespeichert'); }
   else if (act === 'addex') {
@@ -1756,19 +1806,64 @@ function videoLink(ex) {
   return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
 }
 
+/* Ein Training speichern, auch wenn nicht alle Sätze gemacht sind. Gespeichert wird das Soll pro Übung,
+   damit die Statistik genau weiss, was ausgelassen wurde. */
+function trainingSpeichern(day, s, opt) {
+  opt = opt || {};
+  const saetze = x => s.sets[x.id] || [];
+  const ex = day.ex.map(x => ({ id: x.id, name: x.name, einheit: x.einheit,
+    sets: saetze(x).filter(st => st.d).map(st => ({ w: x.kg ? st.w : '', r: st.r })) })).filter(x => x.sets.length);
+  if (!ex.length) return null;
+  const soll = day.ex.reduce((a, x) => a + x.sets, 0);
+  const fertig = day.ex.reduce((a, x) => a + saetze(x).filter(st => st.d).length, 0);
+  const min = !opt.auto && s.t0 ? Math.round((Date.now() - s.t0) / 60000) : null;
+  const e = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: new Date(opt.datum || Date.now()).toISOString(), start: s.start, dayId: day.id, dayName: day.name + ': ' + day.title, ex, voll: fertig >= soll, soll, fertig,
+    plan: day.ex.map(x => ({ id: x.id, name: x.name, sets: x.sets, einheit: x.einheit })), min: min != null && min > 0 && min < 180 ? min : null, auto: !!opt.auto };
+  history.push(e);
+  if (!LS.set('history', history)) { history.pop(); return null; }
+  delete sessions[day.id]; saveSessions();
+  return e;
+}
+/* Nicht abgeschlossene Trainings von früheren Tagen werden nicht vergessen: mit mindestens einem Satz automatisch gespeichert */
+function alteTrainingsSichern() {
+  const heute = tagKey(new Date()); const gesichert = [];
+  Object.keys(sessions).forEach(id => {
+    const s = sessions[id]; const day = plan.days.find(d => d.id === id);
+    const t = s.t0 || (s.start ? new Date(s.start).getTime() : Date.now());
+    if (tagKey(new Date(t)) >= heute) return;
+    const hatSatz = day && Object.values(s.sets || {}).some(a => (a || []).some(x => x.d));
+    const e = hatSatz ? trainingSpeichern(day, s, { datum: t, auto: true }) : null;
+    if (e) gesichert.push(e); else { delete sessions[id]; saveSessions(); }
+  });
+  if (gesichert.length) {
+    const e = gesichert[gesichert.length - 1];
+    toast(`Training vom ${new Date(e.date).toLocaleDateString('de-CH', { weekday: 'long' })} gespeichert: ${e.fertig} von ${e.soll} Sätzen`);
+    try { streakAnsWidget(); } catch (er) {}
+  }
+  return gesichert.length;
+}
+/* Abschliessen geht jederzeit. Fehlt noch etwas, zeigt die App vorher genau was. */
+function abschliessenFragen() {
+  const day = dayById(curDay); const s = sessionFor(day);
+  const soll = day.ex.reduce((a, x) => a + x.sets, 0);
+  const fertig = day.ex.reduce((a, x) => a + (s.sets[x.id] || []).filter(st => st.d).length, 0);
+  if (!fertig) { toast('Hake zuerst mindestens einen Satz ab.'); return; }
+  if (fertig >= soll) { finishTraining(); return; }
+  const offen = day.ex.map(x => { const n = (s.sets[x.id] || []).filter(st => !st.d).length; return n ? { n: x.name, t: n >= x.sets ? 'ganz offen' : n + ' von ' + x.sets + ' Sätzen offen' } : null; }).filter(Boolean);
+  openSheet('Training abschliessen?', `<p style="margin-top:0">Du hast <b>${fertig} von ${soll} Sätzen</b> gemacht.</p>
+    <div class="lab" style="margin-top:14px">Noch offen</div>
+    ${offen.map(o => `<div class="st-li"><div class="t"><b>${esc(o.n)}</b></div><span class="small muted">${esc(o.t)}</span></div>`).join('')}
+    <p class="small muted" style="margin:14px 0 0">Das Training wird gespeichert und in der Statistik als teilweise gezählt, mit genau diesen offenen Teilen. Für die Streak zählt nur ein komplettes Training.</p>
+    <button class="btn primary wide mg-ok" data-x="ja">Abschliessen mit ${fertig} von ${soll}</button>
+    <button class="btn wide" data-x="nein" style="margin-top:10px">Weiter trainieren</button>`);
+  $('#sheetBody').onclick = ev => { const x = ev.target.closest('[data-x]'); if (!x) return; closeSheet(); if (x.dataset.x === 'ja') finishTraining(); };
+}
 function finishTraining() {
   const day = dayById(curDay); const s = sessionFor(day);
-  const ex = day.ex.map(x => ({ id: x.id, name: x.name, einheit: x.einheit,
-    sets: s.sets[x.id].filter(st => st.d).map(st => ({ w: x.kg ? st.w : '', r: st.r })) })).filter(x => x.sets.length);
-  if (!ex.length) { toast('Noch kein Satz abgehakt'); return; }
-  const soll = day.ex.reduce((a, x) => a + x.sets, 0);
-  const fertig = day.ex.reduce((a, x) => a + s.sets[x.id].filter(st => st.d).length, 0);
   const vorher = streakInfo();
-  const min = s.t0 ? Math.round((Date.now() - s.t0) / 60000) : null;
-  history.push({ id: Date.now().toString(36), date: new Date().toISOString(), start: s.start, dayId: day.id, dayName: day.name + ': ' + day.title, ex, voll: fertig >= soll, soll, fertig,
-    plan: day.ex.map(x => ({ id: x.id, name: x.name, sets: x.sets, einheit: x.einheit })), min: min != null && min > 0 && min < 180 ? min : null });
-  if (!LS.set('history', history)) { history.pop(); return; }
-  delete sessions[day.id]; saveSessions();
+  const neu = trainingSpeichern(day, s);
+  if (!neu) { toast('Noch kein Satz abgehakt'); return; }
+  const soll = neu.soll, fertig = neu.fertig;
   Timer.ende(); releaseWake();
   renderTraining();
   const nachher = streakInfo();
@@ -2821,7 +2916,7 @@ function renderTagebuch() {
     }
     h += '</div>';
   });
-  h += wocheKarte() + gewichtKarte(tag);
+  h += `<button class="card tb-statlink" data-tbstat="tag"><span class="t"><b>Statistik</b><span>Jeder Tag mit allen Details, Wochen, Qualität, Verlauf</span></span>${I_RECHTS}</button>` + gewichtKarte(tag);
   $('#main').innerHTML = h;
   tbAnimieren();
 }
@@ -2887,7 +2982,7 @@ function gewichtKarte(tag) {
     <div class="tb-kg">${letzte ? `<b class="num">${fz(letzte[1], 1)}</b> kg` : '<span class="muted">Noch nichts eingetragen</span>'}</div>
     ${letzte ? `<div class="small muted">${esc(tagDatum(letzte[0]))}${tr ? ' · Trend ' + (tr.proWoche > 0 ? '+' : '') + fz(tr.proWoche, 2) + ' kg pro Woche' : ''}</div>` : ''}</div>
     <button class="btn sm" data-tbgew>${gewicht[tag] != null ? 'Ändern' : 'Eintragen'}</button></div>`;
-  if (ein.length >= 2) {
+  if (false) {
     const pts = ein.slice(-16); const ys = pts.map(p => p[1]); const lo = Math.min(...ys) - .3, hi = Math.max(...ys) + .3;
     const t0 = keyDatum(pts[0][0]).getTime(), t1 = keyDatum(pts[pts.length - 1][0]).getTime() || t0 + 1;
     const xy = pts.map(p => [((keyDatum(p[0]).getTime() - t0) / Math.max(1, t1 - t0)) * 296 + 2, 44 - (p[1] - lo) / (hi - lo) * 40]);
@@ -2915,7 +3010,7 @@ $('#main').addEventListener('click', e => {
   const tg = t.closest('[data-tbtag]'); if (tg) { tbTag = tg.dataset.tbtag === tbHeute() ? null : tg.dataset.tbtag; renderTagebuch(); return; }
   if (t.closest('[data-tbscan]')) { tbScannen(mahlJetzt(), tbAkt()); return; }
   if (t.closest('[data-tbziele]')) { openZiele(); return; }
-  if (t.closest('[data-tbstat]')) { stf.b = 'essen'; LS.set('statf', stf); setTab('stats'); return; }
+  if (t.closest('[data-tbstat]')) { zeigeStats('essen', t.closest('[data-tbstat]').dataset.tbstat === 'tag' ? 'tag' : 'grob'); return; }
   const ap = t.closest('[data-tbanpass]');
   if (ap) {
     const alt = Object.assign({}, ziele), altH = LS.get('zielHist', []);
@@ -3342,7 +3437,8 @@ async function tbCode(code) {
 /* ======================================================= Modul 6: Statistik
    Training, Essen und Gewicht über einen wählbaren Zeitraum. Ein Filter oben gilt für alles.
    Jede Grafik: Antippen zeigt den genauen Wert, darunter gibt es die Tabelle. Samstag (Cheat Day) zählt beim Essen nicht. */
-let stf = Object.assign({ b: 'training', z: 30 }, LS.get('statf', {}));
+let stf = Object.assign({ b: 'training', z: 30, v: 'grob', f: 'alles' }, LS.get('statf', {}));
+if (stf.b === 'gewicht') stf.b = 'koerper';
 const ZEITEN = [[7, '7 Tage'], [30, '30 Tage'], [90, '3 Monate'], [0, 'Alles']];
 const kurzDatum = k => keyDatum(k).toLocaleDateString('de-CH', { day: 'numeric', month: 'numeric' });
 const tagLang = k => keyDatum(k).toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'numeric' });
@@ -3388,14 +3484,30 @@ function leer(text) { return `<div class="st-leer">${esc(text)}</div>`; }
 
 function renderStats() {
   const tage = statTage();
-  let h = `<div class="seg drei st-seg" role="tablist">${[['training', 'Training'], ['essen', 'Essen'], ['gewicht', 'Gewicht']].map(([k, l]) => `<button data-stb="${k}" aria-pressed="${stf.b === k}">${l}</button>`).join('')}</div>
-    <div class="chips st-zeit">${ZEITEN.map(([z, l]) => `<button class="chip" data-stz="${z}" aria-pressed="${stf.z === z}">${l}</button>`).join('')}</div>`;
-  h += stf.b === 'essen' ? statEssen(tage) : stf.b === 'gewicht' ? statGewicht(tage) : statTraining(tage);
+  let h = `<div class="seg st-ansicht" role="tablist"><button data-stv="grob" aria-pressed="${stf.v !== 'tag'}">Übersicht</button><button data-stv="tag" aria-pressed="${stf.v === 'tag'}">Jeder Tag</button></div>`;
+  if (stf.v === 'tag') h += statJederTag();
+  else {
+    h += `<div class="seg drei st-seg" role="tablist">${[['training', 'Training'], ['essen', 'Essen'], ['koerper', 'Körper']].map(([k, l]) => `<button data-stb="${k}" aria-pressed="${stf.b === k}">${l}</button>`).join('')}</div>
+      <div class="chips st-zeit">${ZEITEN.map(([z, l]) => `<button class="chip" data-stz="${z}" aria-pressed="${stf.z === z}">${l}</button>`).join('')}</div>`;
+    h += stf.b === 'essen' ? statEssen(tage) : stf.b === 'koerper' ? statKoerper(tage) : statTraining(tage) + uebungDetail(tage);
+  }
   $('#main').innerHTML = h;
   tbAnimieren();
 }
+function zeigeStats(b, v) { if (b) stf.b = b; stf.v = v || 'grob'; LS.set('statf', stf); setTab('stats'); }
+/* Tagesdetails erst beim Aufklappen bauen, so bleibt auch ein Jahr voller Tage schnell */
+$('#main').addEventListener('toggle', e => {
+  if (tab !== 'stats' || !e.target.classList || !e.target.classList.contains('st-tag') || !e.target.open) return;
+  const inh = e.target.querySelector('.st-inh'); if (inh && !inh.dataset.voll) { inh.innerHTML = tagDetail(e.target.dataset.k); inh.dataset.voll = '1'; }
+}, true);
+$('#main').addEventListener('change', e => {
+  if (tab === 'stats' && e.target.id === 'stUeb') { LS.set('histEx', e.target.value); renderStats(); }
+});
 $('#main').addEventListener('click', e => {
   if (tab !== 'stats') return;
+  const v = e.target.closest('[data-stv]'); if (v) { stf.v = v.dataset.stv; LS.set('statf', stf); renderStats(); window.scrollTo(0, 0); return; }
+  const fi = e.target.closest('[data-stf]'); if (fi) { stf.f = fi.dataset.stf; LS.set('statf', stf); renderStats(); return; }
+  if (e.target.closest('[data-stset]')) { openSettings(); return; }
   const b = e.target.closest('[data-stb]'); if (b) { stf.b = b.dataset.stb; LS.set('statf', stf); renderStats(); return; }
   const z = e.target.closest('[data-stz]'); if (z) { stf.z = +z.dataset.stz; LS.set('statf', stf); renderStats(); return; }
   const go = e.target.closest('[data-stgo]'); if (go) { if (go.dataset.stgo === 'tagebuch') tbTag = null; setTab(go.dataset.stgo); return; }
@@ -3549,9 +3661,9 @@ function qualStufe(q) {
 function qualVon(e) { return qualStufe(e.q || (e.fk && foods[e.fk] ? qualDaten(foods[e.fk]) : null)); }
 function gramm(e) { return e.e && e.e.g ? e.e.g * e.x : null; }
 function statEssen(tage) {
-  const rows = tage.filter(k => (tb[k] || []).length).map(k => { const s = tagSumme(k); const z = zielFuer(k); return { k, s, z, sams: keyDatum(k).getDay() === 6, dev: s.k - z.k }; });
+  const rows = tage.filter(k => (tb[k] || []).length).map(k => { const s = tagSumme(k); const z = zielFuer(k); return { k, s, z, sams: keyDatum(k).getDay() === 6, dev: s.k - z.k, laeuft: k === tbHeute() }; });
   if (!rows.length) return karte('', leer('In diesem Zeitraum hast du noch nichts eingetragen.') + `<button class="btn primary wide" data-stgo="tagebuch">Zum Tagebuch</button>`);
-  const zl = rows.filter(r => !r.sams);
+  const zl = rows.filter(r => !r.sams && !r.laeuft);
   const avg = (l, f) => l.length ? l.reduce((a, r) => a + f(r), 0) / l.length : null;
   const ak = avg(zl, r => r.s.k), ap = avg(zl, r => r.s.pr), az = avg(zl, r => r.z.k);
   const imZiel = zl.filter(r => Math.abs(r.dev) <= r.z.k * 0.1).length, drueber = zl.filter(r => r.dev > r.z.k * 0.1).length, drunter = zl.length - imZiel - drueber;
@@ -3559,7 +3671,7 @@ function statEssen(tage) {
   let h = '';
   const diff = ak != null ? ak - az : null;
   h += karte('', `<div class="lab">Kalorien im Schnitt</div><div class="st-hero">${ak != null ? fz(ak) : KA}<small> kcal</small></div>
-    <p class="st-sub">${diff == null ? 'Nur Samstage erfasst, die zählen nicht.' : `${fz(Math.abs(diff))} kcal ${diff > 0 ? 'über' : 'unter'} deinem Ziel${zl.every(r => r.z.k === zl[0].z.k) ? ' von ' + fz(az) + ' kcal' : ', das im Zeitraum im Schnitt ' + fz(az) + ' kcal war'}`}</p>
+    <p class="st-sub">${diff == null ? (rows.some(r => r.laeuft) ? 'Bisher nur heute erfasst. Der Tag läuft noch und zählt ab morgen.' : 'Nur Samstage erfasst, die zählen nicht.') : `${fz(Math.abs(diff))} kcal ${diff > 0 ? 'über' : 'unter'} deinem Ziel${zl.every(r => r.z.k === zl[0].z.k) ? ' von ' + fz(az) + ' kcal' : ', das im Zeitraum im Schnitt ' + fz(az) + ' kcal war'}`}</p>
     <div class="st-kacheln innen">${kachel(`${imZiel}<small> von ${zl.length}</small>`, 'Tage im Ziel ±10 %')}${kachel(`${protOk}<small> von ${zl.length}</small>`, 'Tage Protein Ziel')}${kachel(ap != null ? fz(ap) + '<small> g</small>' : KA, 'Protein im Schnitt')}</div>
     ${zl.length ? stapel([{ l: 'Im Ziel', v: imZiel, c: 'c1' }, { l: 'Darüber', v: drueber, c: 'c2' }, { l: 'Darunter', v: drunter, c: 'c3' }], 'ste') : ''}
     ${chartInfo('Tippe auf einen Teil des Balkens.')}`);
@@ -3567,21 +3679,22 @@ function statEssen(tage) {
   const woche = tage.length > 31;
   const punkte = woche
     ? Object.values(tage.reduce((m, k) => { const w = montagVon(k); (m[w] || (m[w] = { k: w, l: [] })).l.push(rows.find(r => r.k === k)); return m; }, {}))
-      .map(w => { const l = w.l.filter(r => r && !r.sams); return { k: w.k, dev: l.length ? avg(l, r => r.dev) : null, n: l.length, k2: l.length ? avg(l, r => r.s.k) : null, pr: l.length ? avg(l, r => r.s.pr) : null, z: l.length ? avg(l, r => r.z.k) : null }; })
-    : tage.map(k => { const r = rows.find(x => x.k === k); return { k, dev: r ? r.dev : null, sams: keyDatum(k).getDay() === 6, k2: r ? r.s.k : null, pr: r ? r.s.pr : null, z: r ? r.z.k : null }; });
+      .map(w => { const l = w.l.filter(r => r && !r.sams && !r.laeuft); return { k: w.k, dev: l.length ? avg(l, r => r.dev) : null, n: l.length, k2: l.length ? avg(l, r => r.s.k) : null, pr: l.length ? avg(l, r => r.s.pr) : null, z: l.length ? avg(l, r => r.z.k) : null }; })
+    : tage.map(k => { const r = rows.find(x => x.k === k); return { k, dev: r ? r.dev : null, sams: keyDatum(k).getDay() === 6, laeuft: k === tbHeute(), k2: r ? r.s.k : null, pr: r ? r.s.pr : null, z: r ? r.z.k : null }; });
   while (punkte.length > 7 && punkte[0].dev == null) punkte.shift();
   const mx = Math.max(250, Math.ceil(Math.max(0, ...punkte.map(p => Math.abs(p.dev || 0))) / 250) * 250);
   const band = Math.min(100, (az || ziele.k) * 0.1 / mx * 100);
   h += karte('Wie nah am Ziel', `<div class="st-div" style="--band:${band}%"><div class="st-band"></div><div class="st-null"></div>
       <span class="st-y o">+${fz(mx)}</span><span class="st-y m">Ziel</span><span class="st-y u">−${fz(mx)}</span>
       <div class="st-dv-cols">${punkte.map((p, i) => {
-        const tip = p.dev == null ? `${woche ? 'Woche ab ' : ''}${tagLang(p.k)}: ${p.sams ? 'Samstag, Cheat Day' : 'nicht erfasst'}`
+        const tip = p.dev == null ? `${woche ? 'Woche ab ' : ''}${tagLang(p.k)}: ${p.laeuft ? 'heute, noch nichts eingetragen' : p.sams ? 'Samstag, Cheat Day' : 'nicht erfasst'}`
+          : p.laeuft ? `Heute bisher ${fz(p.k2)} kcal. Der Tag läuft noch, noch ${fz(Math.max(0, -p.dev))} kcal offen.`
           : `${woche ? 'Woche ab ' + kurzDatum(p.k) + ', Schnitt' : tagLang(p.k)}: ${fz(p.k2)} kcal, ${vz(p.dev)} zum Ziel ${fz(p.z)}${p.sams ? ', Cheat Day' : ''}`;
         const o = p.dev > 0 ? p.dev / mx * 100 : 0, u = p.dev < 0 ? -p.dev / mx * 100 : 0;
-        return `<button class="st-dv${p.sams ? ' cheat' : ''}${p.dev == null ? ' ohne' : ''}" data-tip="${esc(tip)}" aria-label="${esc(tip)}"><span class="ob"><i ${anim('stdo' + i, 'h', o)}></i></span><span class="un"><i ${anim('stdu' + i, 'h', u)}></i></span></button>`;
+        return `<button class="st-dv${p.sams ? ' cheat' : ''}${p.laeuft ? ' laeuft' : ''}${p.dev == null ? ' ohne' : ''}" data-tip="${esc(tip)}" aria-label="${esc(tip)}"><span class="ob"><i ${anim('stdo' + i, 'h', o)}></i></span><span class="un"><i ${anim('stdu' + i, 'h', u)}></i></span></button>`;
       }).join('')}</div></div>
     <div class="st-achse"><span>${esc(kurzDatum(punkte[0].k))}</span><span>${esc(kurzDatum(punkte[punkte.length - 1].k))}</span></div>
-    <div class="st-leg"><span><i class="c1"></i>über dem Ziel</span><span><i class="c2"></i>darunter</span><span><i class="band"></i>im Ziel ±10 %</span>${woche ? '' : '<span><i class="cx"></i>Samstag</span>'}</div>
+    <div class="st-leg"><span><i class="c1"></i>über dem Ziel</span><span><i class="c2"></i>darunter</span><span><i class="band"></i>im Ziel ±10 %</span>${woche ? '' : '<span><i class="cx"></i>Samstag</span><span><i class="laeuft"></i>heute, läuft noch</span>'}</div>
     ${chartInfo(woche ? 'Pro Woche der Schnitt ohne Samstag. Tippe auf einen Balken.' : 'Tippe auf einen Tag.')}
     ${tabelle(['Tag', 'kcal', 'Ziel', 'Abweichung'], rows.slice().reverse().map(r => [tagLang(r.k) + (r.sams ? ' (Sa)' : ''), fz(r.s.k), fz(r.z.k), vz(r.dev)]))}`,
     `<span class="small muted">${woche ? 'pro Woche' : 'pro Tag'}</span>`);
@@ -3590,7 +3703,7 @@ function statEssen(tage) {
   const pmx = Math.max((zielFuer(tbHeute()).pr || 150) * 1.3, ...pp.map(p => p.pr || 0));
   const pz = (zielFuer(tbHeute()).pr || 150) / pmx * 100;
   h += karte('Protein', `<div class="st-chart"><div class="st-ziellinie" style="bottom:${pz}%"></div>
-      <div class="st-saeulen eng">${pp.map((p, i) => `<button class="st-s${p.pr != null && p.pr >= (zielFuer(p.k).pr) ? ' ok' : ''}${p.sams ? ' cheat' : ''}" data-tip="${esc((woche ? 'Woche ab ' + kurzDatum(p.k) + ', Schnitt' : tagLang(p.k)) + ': ' + (p.pr == null ? 'nicht erfasst' : fz(p.pr) + ' g von ' + zielFuer(p.k).pr + ' g'))}"><i ${anim('stp' + i, 'h', p.pr ? p.pr / pmx * 100 : 0)}></i></button>`).join('')}</div></div>
+      <div class="st-saeulen eng">${pp.map((p, i) => `<button class="st-s${p.pr != null && p.pr >= (zielFuer(p.k).pr) ? ' ok' : ''}${p.sams ? ' cheat' : ''}${p.laeuft ? ' laeuft' : ''}" data-tip="${esc((woche ? 'Woche ab ' + kurzDatum(p.k) + ', Schnitt' : tagLang(p.k)) + ': ' + (p.pr == null ? 'nicht erfasst' : fz(p.pr) + ' g von ' + zielFuer(p.k).pr + ' g'))}"><i ${anim('stp' + i, 'h', p.pr ? p.pr / pmx * 100 : 0)}></i></button>`).join('')}</div></div>
     <div class="st-achse"><span>${esc(kurzDatum(pp[0].k))}</span><span>${esc(kurzDatum(pp[pp.length - 1].k))}</span></div>
     <div class="st-leg"><span><i class="c1"></i>Ziel erreicht</span><span><i class="c2"></i>darunter</span><span><i class="linie"></i>${zielFuer(tbHeute()).pr} g Ziel</span></div>${chartInfo('Tippe auf einen Balken.')}`);
   /* Makros: Anteil an den Kalorien, du gegen Ziel */
@@ -3603,11 +3716,11 @@ function statEssen(tage) {
   const qs = { gut: 0, mittel: 0, schwach: 0, unbekannt: 0 }; const proFood = {}; let zuck = 0, zuckBekannt = 0, eintr = 0;
   rows.forEach(r => (tb[r.k] || []).forEach(e => {
     const n = nwMal(e.pu, e.x); const k = n.k || 0; eintr++;
-    const q = qualVon(e); if (!r.sams) qs[q] += k;
+    const q = qualVon(e); if (!r.sams && !r.laeuft) qs[q] += k;
     const id = e.fk || 'n:' + e.n; const p = proFood[id] || (proFood[id] = { n: e.n, img: e.img, k: 0, pr: 0, mal: 0, q });
     p.k += k; p.pr += n.pr || 0; p.mal++;
     const qd = e.q || (e.fk && foods[e.fk] ? qualDaten(foods[e.fk]) : null); const g = gramm(e);
-    if (!r.sams && qd && qd.z != null && g) { zuck += qd.z * g / 100; zuckBekannt++; }
+    if (!r.sams && !r.laeuft && qd && qd.z != null && g) { zuck += qd.z * g / 100; zuckBekannt++; }
   }));
   const qsum = qs.gut + qs.mittel + qs.schwach + qs.unbekannt;
   const schwachTop = Object.values(proFood).filter(p => p.q === 'schwach').sort((a, b) => b.k - a.k).slice(0, 3);
@@ -3620,7 +3733,7 @@ function statEssen(tage) {
       <p><b>Schwach:</b> Nutri-Score D oder E, mehr als 15 g Zucker pro 100 g, oder über 400 kcal pro 100 g bei weniger als 3 g Protein pro 100 kcal. Typisch: Schokoriegel, Chips, Gebäck.</p>
       <p><b>Mittel:</b> alles dazwischen. Stark verarbeitete Produkte (NOVA 4) sind höchstens mittel, ausser sie liefern sehr viel Protein.</p>
       <p><b>Unbekannt:</b> Einträge mit nur Kalorien, zum Beispiel das Kantinen Menü. Rezepte zählen nach Protein pro Kalorie.</p>
-      <p>Gewichtet nach Kalorien, Samstag zählt nicht. Das ist eine grobe Einordnung, keine medizinische Bewertung.</p></details>`);
+      <p>Gewichtet nach Kalorien, Samstag und der laufende Tag zählen nicht. Das ist eine grobe Einordnung, keine medizinische Bewertung.</p></details>`);
   /* Top Quellen */
   const alleFood = Object.values(proFood);
   const topK = alleFood.slice().sort((a, b) => b.k - a.k).slice(0, 5), topP = alleFood.filter(p => p.pr > 0).sort((a, b) => b.pr - a.pr).slice(0, 5);
@@ -3633,7 +3746,7 @@ function statEssen(tage) {
   const msum = Object.values(mz).reduce((a, b) => a + b, 0) || 1; const mmax = Math.max(1, ...Object.values(mz));
   h += karte('Wann du isst', MAHL.map(([m, l], i) => balkenZeile(l, pct(mz[m], msum) + ' %', mz[m] / mmax * 100, 'stmh' + i, `${fz(mz[m] / Math.max(1, zl.length))} kcal pro Tag`)).join('')
     + (mz.snack / msum > 0.3 ? `<p class="st-sub" style="margin-top:10px"><b>${pct(mz.snack, msum)} % deiner Kalorien sind Snacks.</b> Dort lässt sich am leichtesten sparen, ohne zu hungern.</p>` : ''));
-  h += `<p class="st-hw" style="margin:0 2px 14px">${rows.length} Tage mit Einträgen, ${eintr} Einträge. Samstage (Cheat Day) zählen beim Schnitt, beim Ziel und bei der Qualität nicht.</p>`;
+  h += `<p class="st-hw" style="margin:0 2px 14px">${rows.length} Tage mit Einträgen, ${eintr} Einträge. Samstage (Cheat Day) und der laufende Tag zählen beim Schnitt, beim Ziel und bei der Qualität nicht.</p>`;
   return h;
 }
 
@@ -3687,6 +3800,262 @@ function statGewicht(tage) {
   h += karte('Was dein Körper verbraucht', erk);
   const zh = LS.get('zielHist', []);
   if (zh.length) h += karte('Kalorienziel', zh.slice().reverse().slice(0, 6).map(z => `<div class="st-li"><div class="t"><b>${fz(z.k)} kcal</b><span>${esc(tagDatum(z.d))}</span></div><span class="num st-wert">${z.pr} g Protein</span></div>`).join(''));
+  return h;
+}
+
+/* ======================================================= Gesundheitsdaten aus Samsung Health (über Health Connect)
+   Die Android App liest Schritte, Schlaf, Puls, aktive Kalorien und Trainings und gibt sie als JSON an die Seite.
+   Alles wird hier pro Tag gespeichert, so wächst die Geschichte mit, auch über die 30 Tage von Health Connect hinaus. */
+let health = LS.get('health', {});
+let hcStatus = null, hcFehler = '';
+const SCHRITT_ZIEL = 7000, SCHLAF_ZIEL = 480;
+const hcBruecke = () => !!(NATIVE && typeof NATIVE.healthRead === 'function');
+function saubereHealth(v) {
+  const z = x => (typeof x === 'number' && isFinite(x) && x >= 0 && x < 1e6) ? Math.round(x * 10) / 10 : null;
+  const uhr = x => typeof x === 'string' && /^\d{2}:\d{2}$/.test(x) ? x : null;
+  const o = {};
+  ['st', 'sm', 'sd', 'sr', 'sl', 'sw', 'pa', 'pm', 'px', 'pr', 'ak'].forEach(k => { const w = z(v[k]); if (w != null) o[k] = w; });
+  ['sv', 'sb'].forEach(k => { const w = uhr(v[k]); if (w) o[k] = w; });
+  if (Array.isArray(v.sp)) o.sp = v.sp.slice(0, 12).map(x => ({ n: String(x && x.n || 'Sport').slice(0, 40), min: z(x && x.min) || 0, von: uhr(x && x.von) || '' }));
+  return o;
+}
+window.fitHealthStatus = json => {
+  try { hcStatus = JSON.parse(json); } catch (e) { hcStatus = null; }
+  if (hcStatus && hcStatus.anzahl > 0) { LS.set('hcAn', true); healthLesen(true); }
+  hcUiNeu();
+};
+window.fitHealthDaten = json => {
+  let d = null; try { d = JSON.parse(json); } catch (e) { return; }
+  if (!d || typeof d !== 'object') return;
+  hcFehler = d.fehler ? String(d.fehler).slice(0, 200) : '';
+  Object.entries(d.tage || {}).forEach(([k, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(k) && v && typeof v === 'object') health[k] = saubereHealth(v); });
+  LS.set('health', health); LS.set('hcZuletzt', Date.now());
+  hcUiNeu();
+  if ($('#sheet').hidden) { if (tab === 'stats') renderStats(); else if (tab === 'plan') renderPlan(); }
+};
+function healthLesen(sofort) {
+  if (!hcBruecke() || !LS.get('hcAn', false)) return;
+  if (!sofort && Date.now() - LS.get('hcZuletzt', 0) < 10 * 60000) return;
+  try { NATIVE.healthRead(Object.keys(health).length ? 5 : 30); } catch (e) {}
+}
+function hcUiNeu() { const el = $('#hcBox'); if (el) el.innerHTML = hcBoxHtml(); }
+function hcBoxHtml() {
+  if (!NATIVE) return '<p class="muted small">Samsung Health geht nur in der FitApp für Android, nicht im Browser.</p>';
+  if (!hcBruecke()) return '<p class="muted small">Dafür brauchst du die neue FitApp Version. Lade die neueste APK herunter und installiere sie über die alte.</p><a class="btn wide vidbtn" href="https://github.com/speedygnzales/fitapp/releases/latest/download/FitApp.apk">Neueste APK laden</a>';
+  const st = hcStatus;
+  let t = '';
+  if (!st) t = '<p class="muted small">Prüfe Health Connect …</p>';
+  else if (st.sdk === 'fehlt') t = '<p class="small"><b>Health Connect fehlt auf diesem Handy.</b> Ab Android 14 ist es eingebaut, auf älteren Handys installierst du die App Health Connect aus dem Play Store.</p>';
+  else if (st.sdk === 'update') t = '<p class="small"><b>Health Connect braucht ein Update.</b></p><button class="btn wide" data-hc="verbinden">Health Connect aktualisieren</button>';
+  else if (st.anzahl > 0) {
+    const z = LS.get('hcZuletzt', 0); const tage = Object.keys(health).length;
+    t = `<p class="small"><b>Verbunden.</b> ${st.anzahl} von ${st.von} Datenarten erlaubt${tage ? ` · ${tage} Tage gespeichert` : ''}${z ? ` · zuletzt ${datumZeit(new Date(z).toISOString())}` : ''}.</p>
+      <div class="edit-grid"><button class="btn" data-hc="lesen">Jetzt laden</button><button class="btn" data-hc="einstellungen">Zugriff ändern</button></div>
+      ${st.anzahl < st.von ? '<button class="btn wide" data-hc="verbinden" style="margin-top:8px">Fehlende Datenarten erlauben</button>' : ''}`;
+  } else t = `<ol class="small schritte" style="margin-top:0">
+      <li>In Samsung Health: Einstellungen, Health Connect, und alles erlauben, was Samsung Health dort schreiben darf.</li>
+      <li>Hier auf Verbinden tippen und Schritte, Schlaf, Puls, Kalorien und Training erlauben.</li></ol>
+      <button class="btn primary wide" data-hc="verbinden">Mit Samsung Health verbinden</button>`;
+  return t + (hcFehler ? `<p class="small" style="color:#FF8A8A">Fehler beim Lesen: ${esc(hcFehler)}</p>` : '');
+}
+function hcKlick(was) {
+  if (!hcBruecke()) return;
+  try {
+    if (was === 'verbinden') NATIVE.healthConnect();
+    else if (was === 'lesen') { healthLesen(true); toast('Lade Daten aus Samsung Health'); }
+    else if (was === 'einstellungen') NATIVE.healthSettings();
+  } catch (e) { toast('Ging nicht: ' + e.message); }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { if (hcBruecke()) { try { NATIVE.healthCheck(); } catch (e) {} } } });
+const dauerHM = m => m == null ? KA : Math.floor(m / 60) + ' h ' + String(Math.round(m % 60)).padStart(2, '0');
+function koerperHeuteKarte() {
+  const h0 = health[tbHeute()] || {};
+  if (h0.st == null && h0.sm == null) return '';
+  return `<button class="card tb-mini" data-goto="stats" data-stk="koerper">
+    <span class="tb-ring klein">${ringSvg('kmini', h0.st != null ? h0.st / SCHRITT_ZIEL * 100 : 0)}</span>
+    <span class="t"><span class="lab">Körper heute</span><b class="num">${h0.st != null ? fz(h0.st) : KA} <small>von ${fz(SCHRITT_ZIEL)} Schritten</small></b>
+      <span class="small muted">${h0.sm != null ? `Schlaf ${dauerHM(h0.sm)}${h0.sv && h0.sb ? ', ' + h0.sv + ' bis ' + h0.sb : ''}` : 'Kein Schlaf erfasst'}</span></span>${I_RECHTS}</button>`;
+}
+
+/* ======================================================= Statistik: Hilfen für Reihen */
+/* Werte pro Tag, bei mehr als 31 Tagen als Wochenschnitt. f liefert eine Zahl oder null. */
+function reihe(tage, f) {
+  if (tage.length <= 31) return tage.map(k => ({ k, v: f(k), woche: false }));
+  const m = {}; tage.forEach(k => { const w = montagVon(k); (m[w] || (m[w] = [])).push(f(k)); });
+  return Object.keys(m).sort().map(w => { const l = m[w].filter(v => v != null); return { k: w, v: l.length ? l.reduce((a, b) => a + b, 0) / l.length : null, woche: true, n: l.length }; });
+}
+function saeulen(pts, o) {
+  const mx = Math.max(o.ziel ? o.ziel * 1.25 : 1, ...pts.map(p => p.v || 0)) || 1;
+  const zz = o.ziel ? o.ziel / mx * 100 : null;
+  return `<div class="st-chart">${zz != null ? `<div class="st-ziellinie" style="bottom:${zz}%"></div>` : ''}
+    <div class="st-saeulen eng">${pts.map((p, i) => `<button class="st-s${p.v != null && o.ziel && p.v >= o.ziel ? ' ok' : ''}${p.k === tbHeute() && !p.woche ? ' laeuft' : ''}" data-tip="${esc((p.woche ? 'Woche ab ' + kurzDatum(p.k) + ', Schnitt' : tagLang(p.k)) + ': ' + (p.v == null ? 'keine Daten' : o.fmt(p.v)))}"><i ${anim(o.ak + i, 'h', p.v ? p.v / mx * 100 : 0)}></i></button>`).join('')}</div></div>
+    <div class="st-achse"><span>${esc(kurzDatum(pts[0].k))}</span><span>${esc(kurzDatum(pts[pts.length - 1].k))}</span></div>`;
+}
+/* Linie für Werte, die nicht bei null beginnen (Puls): eigener Bereich, Punkte zum Antippen */
+function linieChart(pts, fmt) {
+  const ok = pts.filter(p => p.v != null); if (ok.length < 2) return '';
+  const W = 320, H = 130, L = 30, R = 8, T = 10, B = 20;
+  const ys = ok.map(p => p.v); let lo = Math.floor(Math.min(...ys) - 2), hi = Math.ceil(Math.max(...ys) + 2);
+  const X = i => L + i / Math.max(1, pts.length - 1) * (W - L - R), Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+  const ticks = [lo, Math.round((lo + hi) / 2), hi];
+  const idx = pts.map((p, i) => [p, i]).filter(x => x[0].v != null);
+  return `<svg class="st-line" viewBox="0 0 ${W} ${H}" role="img" aria-label="Verlauf">
+    ${ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text x="${L - 6}" y="${(Y(v) + 3.5).toFixed(1)}" text-anchor="end">${v}</text>`).join('')}
+    <polyline class="mess" points="${idx.map(([p, i]) => X(i).toFixed(1) + ',' + Y(p.v).toFixed(1)).join(' ')}"/>
+    ${idx.map(([p, i], j) => `<g class="pt${j === idx.length - 1 ? '' : ' still'}" data-tip="${esc((p.woche ? 'Woche ab ' + kurzDatum(p.k) + ', Schnitt' : tagLang(p.k)) + ': ' + fmt(p.v))}"><circle class="hit" cx="${X(i).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="11"/><circle class="dot" cx="${X(i).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="4.5"/></g>`).join('')}
+    <text x="${L}" y="${H - 4}" class="ax">${esc(kurzDatum(pts[0].k))}</text><text x="${W - R}" y="${H - 4}" class="ax" text-anchor="end">${esc(kurzDatum(pts[pts.length - 1].k))}</text></svg>`;
+}
+function isoWoche(k) { const d = keyDatum(k); const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); const tag = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - tag); const j = new Date(Date.UTC(t.getUTCFullYear(), 0, 1)); return Math.ceil(((t - j) / 864e5 + 1) / 7); }
+
+/* ======================================================= Statistik: Körper (Gewicht, Schritte, Schlaf, Puls) */
+function statKoerper(tage) {
+  let h = statGewicht(tage);
+  const hatH = tage.some(k => health[k]);
+  if (!hatH) {
+    h += karte('Schritte, Schlaf und Puls', `<p class="st-sub" style="margin:0">Kommt aus Samsung Health, sobald du die App verbindest. Dann siehst du hier jeden Tag deine Schritte, wann und wie lange du geschlafen hast, deinen Puls und deine Trainings von der Uhr.</p>
+      <button class="btn primary wide" data-stset style="margin-top:14px">In den Einstellungen verbinden</button>`);
+    return h;
+  }
+  const w = (k, f) => health[k] && health[k][f] != null ? health[k][f] : null;
+  const vergangen = tage.filter(k => k < tbHeute());
+  const schnitt = (l, f) => { const v = l.map(k => w(k, f)).filter(x => x != null); return v.length ? { v: v.reduce((a, b) => a + b, 0) / v.length, n: v.length } : null; };
+  /* Schritte */
+  const s = schnitt(vergangen, 'st'); const sOk = vergangen.filter(k => (w(k, 'st') || 0) >= SCHRITT_ZIEL).length;
+  const ps = reihe(tage, k => w(k, 'st'));
+  h += karte('Schritte', `<div class="st-kacheln innen" style="margin:0 0 14px">${kachel(s ? fz(s.v) : KA, 'pro Tag im Schnitt')}${kachel(`${sOk}<small> von ${s ? s.n : 0}</small>`, 'Tage ab ' + fz(SCHRITT_ZIEL))}${kachel(w(tbHeute(), 'st') != null ? fz(w(tbHeute(), 'st')) : KA, 'heute bisher')}</div>
+    ${saeulen(ps, { ziel: SCHRITT_ZIEL, fmt: v => fz(v) + ' Schritte', ak: 'sts' })}
+    <div class="st-leg"><span><i class="c1"></i>Ziel erreicht</span><span><i class="c2"></i>darunter</span><span><i class="linie"></i>${fz(SCHRITT_ZIEL)}</span></div>${chartInfo('Tippe auf einen Balken. Heute läuft noch und zählt nicht in den Schnitt.')}`);
+  /* Schlaf */
+  const sl = schnitt(tage, 'sm');
+  const uhrMin = (k, f) => { const t = health[k] && health[k][f]; if (!t) return null; let [a, b] = t.split(':').map(Number); let m = a * 60 + b; if (f === 'sv' && m < 12 * 60) m += 1440; return m; };
+  const mittelUhr = f => { const v = tage.map(k => uhrMin(k, f)).filter(x => x != null); if (!v.length) return KA; const m = Math.round(v.reduce((a, b) => a + b, 0) / v.length) % 1440; return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
+  const pl = reihe(tage, k => w(k, 'sm'));
+  h += karte('Schlaf', `<div class="st-kacheln innen" style="margin:0 0 14px">${kachel(sl ? dauerHM(sl.v) : KA, 'pro Nacht im Schnitt')}${kachel(mittelUhr('sv'), 'eingeschlafen im Schnitt')}${kachel(mittelUhr('sb'), 'aufgewacht im Schnitt')}</div>
+    ${saeulen(pl, { ziel: SCHLAF_ZIEL, fmt: v => dauerHM(v), ak: 'stsl' })}
+    <div class="st-leg"><span><i class="c1"></i>8 Stunden erreicht</span><span><i class="c2"></i>weniger</span><span><i class="linie"></i>8 h, dein Plan 20:30 bis 04:30</span></div>${chartInfo('Die Nacht zählt zum Tag, an dem du aufwachst.')}`);
+  /* Puls und Kalorien */
+  const pr = schnitt(tage, 'pr'), pm = schnitt(tage, 'pm'), ak = schnitt(vergangen, 'ak');
+  if (pr || pm || ak) {
+    const pp = reihe(tage, k => w(k, 'pr') != null ? w(k, 'pr') : w(k, 'pm'));
+    h += karte('Puls und Kalorien', `<div class="st-kacheln innen" style="margin:0 0 14px">${kachel(pr ? fz(pr.v) + '<small> bpm</small>' : KA, 'Ruhepuls im Schnitt')}${kachel(pm ? fz(pm.v) + '<small> bpm</small>' : KA, 'tiefster Puls im Schnitt')}${kachel(ak ? fz(ak.v) + '<small> kcal</small>' : KA, 'aktiv verbrannt pro Tag')}</div>
+      ${pp.filter(p => p.v != null).length >= 2 ? linieChart(pp, v => fz(v) + ' bpm') + chartInfo((pr ? 'Ruhepuls' : 'Tiefster Puls') + ' pro Tag in bpm. Sinkt er über Wochen, wird deine Ausdauer besser. Tippe auf einen Punkt.') : ''}`);
+  }
+  /* Trainings von der Uhr */
+  const sport = tage.flatMap(k => ((health[k] || {}).sp || []).map(x => Object.assign({ k }, x)));
+  if (sport.length) h += karte('Aktivitäten aus Samsung Health', sport.slice().reverse().slice(0, 12).map(x => `<div class="st-li"><div class="t"><b>${esc(x.n)}</b><span>${esc(tagLang(x.k))}${x.von ? ' · ' + esc(x.von) : ''}</span></div><span class="num st-wert">${fz(x.min)} Min</span></div>`).join(''), `<span class="small muted">${sport.length} im Zeitraum</span>`);
+  return h;
+}
+
+/* ======================================================= Statistik: Übung im Detail (früher Verlauf) */
+function uebungDetail(tage) {
+  const namen = Array.from(new Set(history.flatMap(h => (h.ex || []).map(e => e.name))));
+  if (!namen.length) return '';
+  let sel = LS.get('histEx', namen[0]); if (namen.indexOf(sel) < 0) sel = namen[0];
+  const rows = history.filter(h => tagKey(new Date(h.date)) >= tage[0]).map(h => ({ h, e: (h.ex || []).find(e => e.name === sel) })).filter(r => r.e);
+  const wert = e => e.sets.reduce((a, s) => a + (parseFloat(String(s.r).replace(',', '.')) || 0), 0);
+  const mx = Math.max(1, ...rows.map(r => wert(r.e)));
+  const satzTxt = e => e.sets.map(s => `${s.w ? String(s.w).replace('.', ',') + ' kg × ' : ''}${s.r || '?'}`).join(' · ');
+  return karte('Übung im Detail', `<label class="field"><span>Übung</span><select id="stUeb">${namen.map(n => `<option ${n === sel ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
+    ${rows.length ? `<div class="st-saeulen" style="height:96px">${rows.slice(-20).map((r, i) => `<button class="st-s" data-tip="${esc(tagLang(tagKey(new Date(r.h.date))) + ': ' + satzTxt(r.e) + ' ' + r.e.einheit)}"><i ${anim('stue' + i, 'h', wert(r.e) / mx * 100)}></i></button>`).join('')}</div>
+      <div class="st-achse"><span>${esc(kurzDatum(tagKey(new Date(rows[Math.max(0, rows.length - 20)].h.date))))}</span><span>${esc(kurzDatum(tagKey(new Date(rows[rows.length - 1].h.date))))}</span></div>
+      ${chartInfo('Summe aller Sätze pro Training. Tippe auf einen Balken.')}
+      ${rows.slice().reverse().map(r => `<div class="st-li"><div class="t"><b>${esc(tagLang(tagKey(new Date(r.h.date))))}</b><span class="num">${esc(satzTxt(r.e))} ${esc(r.e.einheit)}</span></div><span class="small muted">${esc((r.h.dayName || '').split(':')[0])}</span></div>`).join('')}`
+    : leer('In diesem Zeitraum nicht trainiert.')}`);
+}
+
+/* ======================================================= Statistik: Jeder Tag, über alles */
+const ST_BADGE = { komplett: 'Training komplett', teil: 'Training teilweise', verpasst: 'Training verpasst', frei: 'frei', heute: 'Training offen', vor: '' };
+function tagZeile(k, hm, start) {
+  const f = stf.f || 'alles'; const heute = k === tbHeute();
+  const ts = trainingStatus(k, hm, start); const s = (tb[k] || []).length ? tagSumme(k) : null; const z = zielFuer(k);
+  const hh = health[k] || {}; const kg = gewicht[k];
+  const b = [];
+  if (f === 'alles' || f === 'training') { if (ts !== 'vor' && ts !== 'frei') b.push(`<span class="st-b ${ts}">${ts === 'heute' && (hm[k] || []).length === 0 ? (sessions[planIdFuer(keyDatum(k))] ? 'Training läuft' : 'Training offen') : ST_BADGE[ts]}</span>`); }
+  if (f === 'alles' || f === 'essen') { if (s) b.push(`<span class="st-b">${fz(s.k)} kcal${heute ? ' bisher' : ` · ${vz(s.k - z.k)}`}</span>`, `<span class="st-b">${fz(s.pr)} g Protein</span>`); }
+  if (f === 'alles' || f === 'koerper') { if (kg != null) b.push(`<span class="st-b">${fz(kg, 1)} kg</span>`); if (hh.st != null) b.push(`<span class="st-b">${fz(hh.st)} Schritte</span>`); if (hh.sm != null) b.push(`<span class="st-b">Schlaf ${dauerHM(hh.sm)}</span>`); }
+  const d = keyDatum(k);
+  return `<details class="st-tag${heute ? ' heute' : ''}" data-k="${k}"><summary><span class="st-dat"><b>${heute ? 'Heute' : WT[d.getDay()]}</b><small>${d.getDate()}.${d.getMonth() + 1}.</small></span>
+    <span class="st-bs">${b.join('') || '<span class="st-b leer">keine Daten</span>'}</span></summary><div class="st-inh"></div></details>`;
+}
+function tagDetail(k) {
+  const f = stf.f || 'alles'; const heute = k === tbHeute(); const hm = histNachTag(); const ts = trainingStatus(k, hm, statStart());
+  let h = '';
+  const teil = (titel, inhalt) => { h += `<div class="st-det"><div class="lab">${titel}</div>${inhalt}</div>`; };
+  if (f === 'alles' || f === 'training') {
+    let t = '';
+    (hm[k] || []).forEach(x => {
+      const { pl } = planVon(x);
+      const fehlt = pl.map(p => { const g = ((x.ex || []).find(e => e.id === p.id) || { sets: [] }).sets.length; return p.sets - g > 0 ? p.name + (g ? ` (${p.sets - g} von ${p.sets} Sätzen)` : '') : ''; }).filter(Boolean);
+      t += `<div class="st-dz"><b>${esc((x.dayName || '').replace(':', ' ·'))}</b><span>${x.voll !== false ? 'komplett' : 'teilweise'}, ${x.fertig} von ${x.soll} Sätzen${x.min ? ', ' + x.min + ' Min' : ''}${x.auto ? ', automatisch gespeichert' : ''}, ${new Date(x.date).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}</span></div>
+        ${(x.ex || []).map(e => `<div class="st-dr"><span>${esc(e.name)}</span><span class="num">${esc(e.sets.map(s => (s.w ? String(s.w).replace('.', ',') + ' kg × ' : '') + (s.r || '?')).join(' · '))} ${esc(e.einheit || '')}</span></div>`).join('')}
+        ${fehlt.length ? `<div class="st-dr fehlt"><span>Ausgelassen</span><span>${esc(fehlt.join(', '))}</span></div>` : ''}`;
+    });
+    if (!(hm[k] || []).length) {
+      const id = planIdFuer(keyDatum(k)); const pd = id && plan.days.find(d => d.id === id);
+      if (heute) { const ses = id && sessions[id]; const n = ses ? Object.values(ses.sets || {}).reduce((a, l) => a + l.filter(x => x.d).length, 0) : 0;
+        t += `<p class="st-dp">${pd ? `Heute steht ${esc(pd.name)} an.` : 'Heute ist kein Training geplant.'}${n ? ` Angefangen: ${n} Sätze abgehakt.` : ''} Der Tag läuft noch, nichts ist verpasst.</p>`; }
+      else if (ts === 'verpasst') t += `<p class="st-dp">Geplant war ${esc(pd ? pd.name + ': ' + pd.title : 'ein Training')}. Nicht gemacht.</p>`;
+      else t += `<p class="st-dp">${pd ? esc(pd.name) + ', freiwillig.' : 'Kein Training geplant.'}</p>`;
+    }
+    ((health[k] || {}).sp || []).forEach(x => { t += `<div class="st-dr"><span>${esc(x.n)} (Samsung Health)</span><span class="num">${fz(x.min)} Min${x.von ? ' ab ' + esc(x.von) : ''}</span></div>`; });
+    teil('Training', t);
+  }
+  if (f === 'alles' || f === 'essen') {
+    const l = tb[k] || [];
+    if (!l.length) teil('Essen', `<p class="st-dp">${heute ? 'Noch nichts eingetragen.' : keyDatum(k).getDay() === 6 ? 'Cheat Day, nichts eingetragen.' : 'Nichts eingetragen.'}</p>`);
+    else {
+      const s = tagSumme(k); const z = zielFuer(k);
+      const qs = { gut: 0, mittel: 0, schwach: 0, unbekannt: 0 }; l.forEach(e => { qs[qualVon(e)] += nwMal(e.pu, e.x).k || 0; }); const qsum = Object.values(qs).reduce((a, b) => a + b, 0) || 1;
+      let t = `<div class="st-dn"><div><b>${fz(s.k)}</b><span>kcal von ${fz(z.k)}</span></div><div><b>${fz(s.pr)}</b><span>g Protein von ${z.pr}</span></div><div><b>${fz(s.kh)}</b><span>g Kohlenh.</span></div><div><b>${fz(s.f)}</b><span>g Fett</span></div></div>
+        <p class="st-dp">${heute ? 'Der Tag läuft noch. ' : ''}${heute ? `Bisher ${fz(s.k)} kcal, noch ${fz(Math.max(0, z.k - s.k))} offen.` : `${fz(Math.abs(s.k - z.k))} kcal ${s.k > z.k ? 'über' : 'unter'} dem Ziel${Math.abs(s.k - z.k) <= z.k * 0.1 ? ', also im Zielbereich ±10 %' : ''}.`} Qualität: ${pct(qs.gut, qsum)} % gut, ${pct(qs.mittel, qsum)} % mittel, ${pct(qs.schwach, qsum)} % schwach${qs.unbekannt ? ', ' + pct(qs.unbekannt, qsum) + ' % unbekannt' : ''}.</p>`;
+      MAHL.forEach(([m, name]) => { const es = l.filter(e => e.m === m); if (!es.length) return;
+        t += `<div class="st-dz"><b>${name}</b></div>` + es.map(e => { const n = nwMal(e.pu, e.x); return `<div class="st-dr"><span>${esc(e.n)} <small>${esc(mengeText(e.e, e.x))}</small></span><span class="num">${fz(n.k)} kcal · ${n.pr == null ? KA : fz(n.pr) + ' g P'}</span></div>`; }).join(''); });
+      teil('Essen', t);
+    }
+  }
+  if (f === 'alles' || f === 'koerper') {
+    const hh = health[k] || {}; let t = '';
+    if (gewicht[k] != null) t += `<div class="st-dr"><span>Gewicht</span><span class="num">${fz(gewicht[k], 1)} kg</span></div>`;
+    if (hh.st != null) t += `<div class="st-dr"><span>Schritte</span><span class="num">${fz(hh.st)} von ${fz(SCHRITT_ZIEL)}${heute ? ', bisher' : ''}</span></div>`;
+    if (hh.sm != null) t += `<div class="st-dr"><span>Schlaf in der Nacht davor</span><span class="num">${dauerHM(hh.sm)}${hh.sv && hh.sb ? ', ' + hh.sv + ' bis ' + hh.sb : ''}</span></div>`;
+    if (hh.sd != null || hh.sr != null || hh.sl != null) t += `<div class="st-dr"><span>Schlafphasen</span><span class="num">${[hh.sd != null ? 'Tief ' + dauerHM(hh.sd) : '', hh.sr != null ? 'REM ' + dauerHM(hh.sr) : '', hh.sl != null ? 'Leicht ' + dauerHM(hh.sl) : '', hh.sw != null ? 'Wach ' + fz(hh.sw) + ' Min' : ''].filter(Boolean).join(' · ')}</span></div>`;
+    if (hh.pr != null || hh.pa != null) t += `<div class="st-dr"><span>Puls</span><span class="num">${[hh.pr != null ? 'Ruhe ' + fz(hh.pr) : '', hh.pa != null ? 'Schnitt ' + fz(hh.pa) : '', hh.pm != null ? 'tiefster ' + fz(hh.pm) : '', hh.px != null ? 'höchster ' + fz(hh.px) : ''].filter(Boolean).join(' · ')} bpm</span></div>`;
+    if (hh.ak != null) t += `<div class="st-dr"><span>Aktiv verbrannt</span><span class="num">${fz(hh.ak)} kcal</span></div>`;
+    teil('Körper', t || '<p class="st-dp">Keine Werte für diesen Tag.</p>');
+  }
+  if (f === 'alles') {
+    const g = (LS.get('gew', {})[k]) || {}; const keys = Object.keys(GEW_NAMEN).filter(x => x !== 'training');
+    const an = keys.filter(x => g[x]);
+    teil('Gewohnheiten', `<p class="st-dp">${an.length ? an.map(x => '✓ ' + esc(GEW_NAMEN[x])).join(', ') : 'Nichts abgehakt.'}</p>`);
+  }
+  return h;
+}
+function statJederTag() {
+  const start = statStart(); const heute = tbHeute(); const hm = histNachTag();
+  const alle = []; for (let k = heute; k >= start; k = tagVerschoben(k, -1)) alle.push(k);
+  let h = `<div class="chips st-zeit">${[['alles', 'Alles'], ['training', 'Training'], ['essen', 'Essen'], ['koerper', 'Körper']].map(([k, l]) => `<button class="chip" data-stf="${k}" aria-pressed="${(stf.f || 'alles') === k}">${l}</button>`).join('')}</div>
+    <p class="st-hw" style="margin:0 2px 12px">Alle ${alle.length} Tage seit ${esc(tagDatum(start))}, neueste zuerst. Tippe auf einen Tag für jedes Detail.</p>`;
+  let woche = null;
+  alle.forEach(k => {
+    const m = montagVon(k);
+    if (m !== woche) {
+      if (woche) h += '</div>';
+      woche = m;
+      const wt = []; for (let i = 0; i < 7; i++) { const x = tagVerschoben(m, i); if (x >= start && x <= heute) wt.push(x); }
+      const st = wt.map(x => trainingStatus(x, hm, start)); const kompl = st.filter(x => x === 'komplett').length, gepl = st.filter(x => ['komplett', 'teil', 'verpasst'].indexOf(x) >= 0).length;
+      const ess = wt.filter(x => x < heute && (tb[x] || []).length && keyDatum(x).getDay() !== 6).map(tagSumme);
+      const avg = (l, f) => l.length ? l.reduce((a, b) => a + f(b), 0) / l.length : null;
+      const hs = wt.filter(x => x < heute).map(x => health[x] || {});
+      const stp = avg(hs.filter(x => x.st != null), x => x.st), slp = avg(hs.filter(x => x.sm != null), x => x.sm);
+      const kgW = wt.filter(x => gewicht[x] != null).pop();
+      const sum = [gepl ? `${kompl} von ${gepl} Trainings komplett` : '', ess.length ? `Ø ${fz(avg(ess, x => x.k))} kcal` : '', ess.length ? `Ø ${fz(avg(ess, x => x.pr))} g Protein` : '', stp != null ? `Ø ${fz(stp)} Schritte` : '', slp != null ? `Ø ${dauerHM(slp)} Schlaf` : '', kgW ? fz(gewicht[kgW], 1) + ' kg' : ''].filter(Boolean);
+      const ende = tagVerschoben(m, 6);
+      h += `<div class="st-woche"><div class="st-wk"><b>KW ${isoWoche(m)}</b><span>${esc(keyDatum(m).toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }))} bis ${esc(keyDatum(ende).toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }))}</span></div>
+        ${sum.length ? `<div class="st-ws">${sum.map(x => `<span>${esc(x)}</span>`).join('')}</div>` : ''}`;
+    }
+    h += tagZeile(k, hm, start);
+  });
+  if (woche) h += '</div>';
   return h;
 }
 
@@ -3978,8 +4347,11 @@ function openSettings() {
     <label class="field"><span>Token (nur Lesen)</span><input type="password" id="sToken" value="${esc(s.token)}" autocomplete="off"></label>
     <button class="btn primary wide" id="sSave">Speichern und Daten laden</button>
     <p class="muted small" id="sMsg">${LS.get('syncAt', 0) ? 'Zuletzt geladen: ' + datumZeit(new Date(LS.get('syncAt', 0)).toISOString()) : ''}</p>
+    <h3>Samsung Health</h3>
+    <p class="muted small">Schritte, Schlaf, Puls, aktive Kalorien und Trainings von Handy und Uhr. Gelesen über Health Connect, gespeichert nur auf diesem Handy.</p>
+    <div id="hcBox">${hcBoxHtml()}</div>
     <h3>Deine Daten sichern</h3>
-    <p class="muted small">Training, Plan, Tagebuch, Gewicht, Zutaten, Favoriten und Listen. Mach das ab und zu, und vor einem Handywechsel.</p>
+    <p class="muted small">Training, Plan, Tagebuch, Gewicht, Samsung Health Werte, Zutaten, Favoriten und Listen. Mach das ab und zu, und vor einem Handywechsel.</p>
     <div class="edit-grid"><button class="btn" id="sExport">Export</button><button class="btn" id="sImport">Import</button></div>
     <h3>Trainingsplan</h3>
     <button class="btn danger wide" id="sResetPlan">Plan auf Standard zurücksetzen</button>
@@ -3992,7 +4364,8 @@ function openSettings() {
       $('#sMsg').textContent = 'Lade Daten…';
       const r = await syncData(true);
       $('#sMsg').textContent = r.msg;
-    } else if (e.target.closest('#sExport')) exportData();
+    } else if (e.target.closest('[data-hc]')) hcKlick(e.target.closest('[data-hc]').dataset.hc);
+    else if (e.target.closest('#sExport')) exportData();
     else if (e.target.closest('#sImport')) $('#importFile').click();
     else if (e.target.closest('#sResetPlan')) {
       const b2 = e.target.closest('#sResetPlan');
@@ -4056,7 +4429,7 @@ $('#importFile').addEventListener('change', async e => {
     Object.entries(d.daten).forEach(([k, v]) => { if (k.indexOf('fit.') === 0 && typeof v === 'string') { try { localStorage.setItem(k, v); n++; } catch (er) {} } });
     plan = loadPlan(); sessions = LS.get('sess', {}); history = LS.get('history', []); curDay = todayDayId();
     zutaten = ladeZutaten(); nogo = LS.get('nogo', NOGO_DEFAULT); favs = LS.get('fav', {}); listen = LS.get('listen', { coop: [], migros: [] });
-    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf); tbLaden(); stf = Object.assign({ b: 'training', z: 30 }, LS.get('statf', {}));
+    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf); tbLaden(); stf = Object.assign({ b: 'training', z: 30, v: 'grob', f: 'alles' }, LS.get('statf', {})); health = LS.get('health', {});
     toast(n + ' Einträge importiert'); closeSheet();
   } catch (er) { toast('Import fehlgeschlagen: ' + er.message); }
 });
@@ -4068,7 +4441,9 @@ async function start() {
     if (raw && raw !== 'null' && raw.indexOf('__FITAPP') < 0) { DATA = JSON.parse(raw); EMBEDDED = true; }
   } catch (e) { DATA = null; }
   if (!DATA) DATA = await IDB.get('data');
+  if (alteTrainingsSichern()) curDay = todayDayId();
   setTab(tab);
+  if (hcBruecke()) { try { NATIVE.healthCheck(); } catch (e) {} }
   Timer.render();
   streakMeldung();
   const s = LS.get('sync', null);

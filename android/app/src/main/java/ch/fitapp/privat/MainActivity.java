@@ -50,6 +50,7 @@ public class MainActivity extends Activity {
     private WebView web;
     private ValueCallback<Uri[]> fileCallback;
     private PermissionRequest camRequest;
+    private HealthBridge health;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -68,6 +69,7 @@ public class MainActivity extends Activity {
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
 
+        health = new HealthBridge(this, web);
         web.addJavascriptInterface(new Bridge(), "FitNative");
 
         web.setWebViewClient(new WebViewClient() {
@@ -229,6 +231,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == HealthBridge.REQ) {
+            health.nachAnfrage();
+            return;
+        }
         if (requestCode == REQ_FILE && fileCallback != null) {
             Uri[] result = null;
             if (resultCode == RESULT_OK && data != null && data.getData() != null) {
@@ -339,6 +345,27 @@ public class MainActivity extends Activity {
         public void setPlanWoche(String plan) {
             getSharedPreferences(PREFS, MODE_PRIVATE).edit().putString("st_plan", plan == null ? "" : plan).apply();
             WidgetBau.updateAll(MainActivity.this);
+        }
+
+        /* Samsung Health über Health Connect: prüfen, verbinden, lesen, Einstellungen. Antworten kommen per JavaScript zurück. */
+        @JavascriptInterface
+        public void healthCheck() {
+            runOnUiThread(() -> health.pruefen());
+        }
+
+        @JavascriptInterface
+        public void healthConnect() {
+            runOnUiThread(() -> health.verbinden());
+        }
+
+        @JavascriptInterface
+        public void healthRead(int tage) {
+            runOnUiThread(() -> health.lesen(tage));
+        }
+
+        @JavascriptInterface
+        public void healthSettings() {
+            runOnUiThread(() -> health.einstellungen());
         }
 
         @JavascriptInterface

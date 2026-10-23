@@ -1,12 +1,13 @@
 plugins {
     id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
 }
 
 def env = { String name, String fallback -> System.getenv(name) ?: fallback }
 
 android {
     namespace 'ch.fitapp.privat'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId 'ch.fitapp.privat'
@@ -47,4 +48,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
+}
+
+dependencies {
+    /* Health Connect: liest Schritte, Schlaf, Puls und Trainings, die Samsung Health dort ablegt */
+    implementation 'androidx.health.connect:connect-client:1.1.0'
+    implementation 'androidx.activity:activity:1.9.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
 }
