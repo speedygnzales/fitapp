@@ -481,6 +481,11 @@ body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/* Links aus fremden Daten: nur https. Alles andere (javascript:, data:, intent: ...) wird zu '#' und unten blockiert. */
+function sicherUrl(u) {
+  try { const x = new URL(String(u == null ? '' : u)); return x.protocol === 'https:' ? x.href : ''; } catch (e) { return ''; }
+}
+const lnk = u => esc(sicherUrl(u) || '#');
 const KA = 'keine Angabe';
 const n1 = v => (v == null || isNaN(v)) ? KA : String(Math.round(v * 10) / 10);
 const n0 = v => (v == null || isNaN(v)) ? KA : String(Math.round(v));
@@ -954,6 +959,17 @@ function setTab(t) {
   window.scrollTo(0, 0);
 }
 $('nav.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) setTab(b.dataset.tab); });
+/* Zweite Sicherung für jeden Link in der App: nur https (und die eigene Sicherungsdatei als blob) darf öffnen */
+document.addEventListener('click', e => {
+  const a = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+  if (!a) return;
+  let prot = '';
+  try { prot = new URL(a.getAttribute('href'), location.href).protocol; } catch (err) {}
+  if (a.getAttribute('href') === '#' || (prot !== 'https:' && prot !== 'blob:')) {
+    e.preventDefault(); e.stopImmediatePropagation();
+    toast('Link blockiert, weil er keine sichere https Adresse ist');
+  }
+}, true);
 
 function render() {
   if (tab === 'plan') renderPlan();
@@ -1394,7 +1410,7 @@ function openUebung(ex) {
     ${ex.mus ? `<div class="lab" style="margin-top:14px">Trainiert</div><div class="chips" style="margin-top:6px">${ex.mus.split(',').map(m => `<span class="chip on">${esc(m.trim())}</span>`).join('')}</div>` : ''}
     ${schritte.length ? `<div class="lab" style="margin-top:14px">So geht's</div><ol class="schritte">${schritte.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
     ${ex.easy ? `<div class="card" style="margin-top:12px"><div class="lab">Zu schwer?</div><p style="margin:6px 0 0">${esc(ex.easy)}</p></div>` : ''}
-    ${ex.vid === '' ? '' : `<a class="btn wide vidbtn" href="${esc(videoLink(ex))}" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>Videos auf YouTube</a>`}
+    ${ex.vid === '' ? '' : `<a class="btn wide vidbtn" href="${lnk(videoLink(ex))}" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>Videos auf YouTube</a>`}
     ${ex.bild ? '<p class="muted small" style="margin-top:12px">Bilder: Free Exercise DB, gemeinfrei.</p>' : ex.figur ? '<p class="muted small" style="margin-top:12px">Zeichnung zeigt Start und Ende der Bewegung.</p>' : ''}
   </div>`;
   openSheet(ex.name, body);
@@ -1586,7 +1602,7 @@ function coopHtml() {
       const p = P[it.p]; if (!p) return;
       const k = p.k * it.g / 100, pr = p.pr * it.g / 100;
       sumP += it.preis; sumK += k; sumPr += pr;
-      rows += `<tr><td><a href="${esc(p.u)}" target="_blank" rel="noopener">${esc(p.n)}</a><br><span class="muted small">${esc(it.menge)}${p.statt ? ` · Aktion, sonst ${chf(p.statt)} pro Packung` : ''}</span></td>
+      rows += `<tr><td><a href="${lnk(p.u)}" target="_blank" rel="noopener">${esc(p.n)}</a><br><span class="muted small">${esc(it.menge)}${p.statt ? ` · Aktion, sonst ${chf(p.statt)} pro Packung` : ''}</span></td>
         <td class="r num">${chf(it.preis)}</td><td class="r num">${n0(k)} kcal</td><td class="r num">${n1(pr)} g</td></tr>`;
     });
     if (!m.wahl) rows += `<tr class="sum"><td>Total</td><td class="r num">${chf(sumP)}</td><td class="r num">${n0(sumK)} kcal</td><td class="r num">${n1(sumPr)} g</td></tr>`;
@@ -2000,7 +2016,7 @@ function recipeCard(x) {
         : `${x.hat.length ? `<div class="have"><b>Hast du:</b> ${esc(namen(x.hat).join(', '))}</div>` : ''}
            ${x.fehlt.length ? `<div class="miss"><b>Fehlt:</b> ${esc(namen(x.fehlt.slice(0, 6)).join(', '))}${x.fehlt.length > 6 ? ' und ' + (x.fehlt.length - 6) + ' mehr' : ''}</div>` : ''}`}
       </div>
-      <a href="${esc(r.u)}" target="_blank" rel="noopener" class="small" style="display:inline-block;margin-top:12px">Rezept öffnen</a>
+      <a href="${lnk(r.u)}" target="_blank" rel="noopener" class="small" style="display:inline-block;margin-top:12px">Rezept öffnen</a>
     </div></div>`;
 }
 function zutatDazu(id) {
@@ -2120,7 +2136,7 @@ function snackCard(p) {
     <div class="row" style="margin-top:8px">
       <button class="btn sm star" data-fav aria-pressed="${fav}" aria-label="${fav ? 'Favorit entfernen' : 'Als Favorit merken'}">${fav ? '★' : '☆'}</button>
       <button class="btn sm" data-addlist>+ Liste</button>
-      <a class="btn sm" style="display:inline-flex;align-items:center;text-decoration:none;color:inherit" href="${esc(p.u)}" target="_blank" rel="noopener">${sf.laden === 'coop' ? 'Bei Coop suchen' : 'Öffnen'}</a>
+      <a class="btn sm" style="display:inline-flex;align-items:center;text-decoration:none;color:inherit" href="${lnk(p.u)}" target="_blank" rel="noopener">${sf.laden === 'coop' ? 'Bei Coop suchen' : 'Öffnen'}</a>
     </div></div></div></div>`;
 }
 $('#main').addEventListener('click', e => {
@@ -2171,7 +2187,7 @@ function openLists() {
       <div class="row" style="flex-wrap:nowrap;margin-bottom:8px"><input type="text" id="lIn" placeholder="Eigenen Eintrag hinzufügen"><button class="btn primary" id="lAdd" style="flex:0 0 auto">Dazu</button></div>`;
     if (!l.length) b += '<div class="empty">Die Liste ist leer.</div>';
     b += l.map(x => `<div class="li ${x.d ? 'done' : ''}" data-lid="${x.id}"><button class="chk" data-lchk aria-pressed="${x.d}" aria-label="abhaken"></button>
-      <div class="t">${esc(x.n)}${x.u ? `<br><a class="small" href="${esc(x.u)}" target="_blank" rel="noopener">Produkt öffnen</a>` : ''}</div>
+      <div class="t">${esc(x.n)}${sicherUrl(x.u) ? `<br><a class="small" href="${lnk(x.u)}" target="_blank" rel="noopener">Produkt öffnen</a>` : ''}</div>
       <button class="iconbtn" data-ldel aria-label="löschen">✕</button></div>`).join('');
     if (l.some(x => x.d)) b += '<div style="height:12px"></div><button class="btn wide" id="lClear">Erledigte entfernen</button>';
     $('#sheetBody').innerHTML = b;
@@ -2198,12 +2214,16 @@ $('#btnListe').addEventListener('click', openLists);
    Daten: Open Food Facts (frei, ODbL). Yuka hat keine öffentliche Schnittstelle und verbietet automatisches Abfragen.
    Hersteller und Mutterkonzern: Wikidata. Für Firmenethik gibt es keine freie, verlässliche Quelle, darum nur Fakten und Links. */
 const ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.21.3/umd/index.min.js';
+/* sha384 der offiziellen npm Datei @zxing/library 0.21.3, umd/index.min.js */
+const ZXING_SRI = 'sha384-BzBxP10ZE72aitqj5UMmUsbKFliP/DZqA8Wq+BNNhlIJDGoEd1tpkMYXOg9+n6sB';
 const OFF_FELDER = 'code,product_name,product_name_de,brands,brand_owner,quantity,image_front_small_url,nutriscore_grade,nova_group,ecoscore_grade,additives_tags,nutriments,labels_tags';
 const scan = { stream: null, reader: null, timer: 0, aktiv: false, ansicht: null };
-function ladeSkript(url) {
+function ladeSkript(url, sri) {
   return new Promise((ok, nein) => {
     if (window.ZXing) { ok(); return; }
     const sc = document.createElement('script'); sc.src = url; sc.async = true;
+    /* Prüfsumme: der Browser führt die Datei nur aus, wenn sie Byte für Byte der geprüften Version entspricht */
+    if (sri) { sc.integrity = sri; sc.crossOrigin = 'anonymous'; }
     sc.onload = () => ok(); sc.onerror = () => nein(new Error('Skript nicht geladen'));
     document.head.appendChild(sc);
   });
@@ -2277,7 +2297,7 @@ async function starteKamera() {
       return;
     }
     /* ZXing hängt den Strom selbst an das Video und startet es. Vorher anhängen würde den Start blockieren. */
-    await ladeSkript(ZXING_URL);
+    await ladeSkript(ZXING_URL, ZXING_SRI);
     if (!scan.aktiv) return;
     const hints = new Map();
     hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8, ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.UPC_E]);
@@ -2387,8 +2407,8 @@ async function zeigeProdukt(roh) {
     let t = besitzer ? 'Markeninhaber laut Open Food Facts: <b>' + esc(besitzer) + '</b><br>' : '';
     if (!k) t += `Auf Wikidata nichts Eindeutiges zu „${esc(suchname)}“ gefunden.`;
     else {
-      t += `Gefunden: <a href="${esc(k.marke.url)}" target="_blank" rel="noopener">${esc(k.marke.label)}</a>${k.marke.desc ? ' <span class="muted">(' + esc(k.marke.desc) + ')</span>' : ''}`;
-      if (k.besitzer.length) t += '<br>Gehört zu: ' + k.besitzer.map(b => `<a href="${esc(b.url)}" target="_blank" rel="noopener"><b>${esc(b.label)}</b></a>`).join(', ');
+      t += `Gefunden: <a href="${lnk(k.marke.url)}" target="_blank" rel="noopener">${esc(k.marke.label)}</a>${k.marke.desc ? ' <span class="muted">(' + esc(k.marke.desc) + ')</span>' : ''}`;
+      if (k.besitzer.length) t += '<br>Gehört zu: ' + k.besitzer.map(b => `<a href="${lnk(b.url)}" target="_blank" rel="noopener"><b>${esc(b.label)}</b></a>`).join(', ');
       else t += '<br>Kein Mutterkonzern eingetragen.';
     }
     const recherche = (k && k.besitzer[0] && k.besitzer[0].label) || besitzer || marke;
