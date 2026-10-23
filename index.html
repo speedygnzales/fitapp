@@ -42,6 +42,7 @@ header.top h1 { flex: 1; margin: 0; font-size: 1.4rem; font-weight: 600; letter-
 .badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; border-radius: 6px; background: var(--ink); color: var(--inv);
   font-size: .72rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; padding: 0 5px; box-shadow: 0 0 0 2px var(--bg); }
 .badge:empty { display: none; }
+.iconbtn.an { background: var(--ink); border-color: var(--ink); color: var(--inv); }
 
 main { padding: 14px 20px 16px; max-width: 720px; margin: 0 auto; }
 .card { background: transparent; border: 1px solid var(--line); border-radius: var(--r); padding: 16px; margin-bottom: 12px; }
@@ -78,6 +79,10 @@ label.field span { display: block; font-size: .8rem; color: var(--muted); margin
 .empty { text-align: center; padding: 28px 12px; color: var(--muted); }
 
 /* Training */
+.steig { display: flex; gap: 9px; align-items: flex-start; margin: 12px 0 2px; padding: 10px 12px; border-radius: 11px; background: var(--fill); font-size: .84rem; line-height: 1.4; color: var(--ink); }
+.steig svg { flex: 0 0 auto; margin-top: 2px; color: var(--muted); }
+.steig.s-kg, .steig.s-stufe { background: var(--ink); color: var(--inv); font-weight: 500; }
+.steig.s-kg svg, .steig.s-stufe svg { color: var(--inv); }
 .daycard { display: flex; align-items: center; gap: 16px; }
 .ring { width: 58px; height: 58px; border-radius: 50%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; transition: --p .6s cubic-bezier(.2,.8,.2,1);
   background: conic-gradient(var(--ink) calc(var(--p) * 1%), var(--line) 0); }
@@ -535,6 +540,138 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 .tb-plus-k:active, .tb-p1:active, .tb-plus:active, .tb-schnell button:active, .tb-mini:active { transform: scale(.95); }
 @media (max-width: 360px) { .tb-sum { gap: 12px 14px; padding: 16px 14px; } .tb-ring .mitte b { font-size: 1.45rem; } .mg-nw b { font-size: 1.12rem; } }
 
+/* Statistik: ruhige Linien, schmale Marken, Daten sind das Einzige, was laut sein darf */
+.st-seg { margin-bottom: 10px; }
+.st-zeit { padding-bottom: 12px; }
+.st-k { padding: 18px 16px 14px; }
+.st-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.st-kopf h3 { margin: 0; font-size: 1.04rem; }
+.st-hero { font-size: 3.2rem; font-weight: 600; letter-spacing: -.035em; line-height: 1.05; margin-top: 6px; }
+.st-hero small { font-size: 1.1rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.st-sub { margin: 6px 0 0; font-size: .88rem; color: var(--muted); line-height: 1.45; }
+.st-sub b { color: var(--ink); font-weight: 600; }
+.st-info { margin: 12px 0 0; min-height: 1.3em; font-size: .8rem; color: var(--faint); line-height: 1.4; }
+.st-hw { margin: 10px 0 0; font-size: .76rem; color: var(--faint); line-height: 1.45; }
+.st-gut { margin: 0; font-size: .92rem; }
+.st-leer { padding: 24px 6px 18px; text-align: center; color: var(--muted); font-size: .92rem; line-height: 1.5; }
+.st-unterlab { margin: 18px 0 8px; }
+/* Farbstufen: eine geordnete Graustufen Skala, geprüft auf dunklem Grund, dazu Schraffur für fehlende Werte */
+.c1 { background: var(--ink); } .c2 { background: #A3A3A3; } .c3 { background: #5E5E5E; }
+.cx { background: repeating-linear-gradient(135deg, #5A5A5A 0 2px, transparent 2px 5px); box-shadow: inset 0 0 0 1px #4A4A4A; }
+.st-stapel { display: flex; gap: 2px; height: 30px; margin-top: 14px; }
+.st-stapel .sg { height: 100%; border-radius: 0; display: flex; align-items: center; justify-content: center; font-size: .74rem; font-weight: 600; color: var(--inv); white-space: nowrap; min-width: 4px; border: 0; padding: 0; transition: width .9s cubic-bezier(.2,.8,.2,1), opacity .2s ease; cursor: pointer; }
+.st-stapel .sg:first-child { border-radius: 4px 0 0 4px; }
+.st-stapel .sg:last-child { border-radius: 0 4px 4px 0; }
+.st-stapel .sg:only-child { border-radius: 4px; }
+.st-stapel .sg.c3 { color: var(--ink); }
+.st-stapel .sg.cx { color: var(--muted); }
+.st-stapel:has(.sel) .sg:not(.sel) { opacity: .45; }
+.st-leg { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: .76rem; color: var(--muted); }
+.st-leg span { display: inline-flex; align-items: center; gap: 6px; }
+.st-leg b { color: var(--ink); font-weight: 600; }
+.st-leg i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: 0 0 auto; }
+.st-leg i.rund { border-radius: 50%; }
+.st-leg i.leer { box-shadow: inset 0 0 0 1px var(--line2); }
+.st-leg i.spur { background: var(--fill2); box-shadow: inset 0 0 0 1px var(--line2); }
+.st-leg i.band { background: rgba(250,250,250,.08); box-shadow: inset 0 0 0 1px var(--line2); }
+.st-leg i.linie { height: 0; border-top: 1.5px dashed #8A8A8A; border-radius: 0; width: 14px; }
+.st-leg i.linie.hell { border-top: 2px solid #6A6A6A; }
+.st-leg i.halb { background: linear-gradient(to top, var(--ink) 50%, transparent 50%); box-shadow: inset 0 0 0 1px var(--ink); }
+.st-kacheln { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.st-kacheln.innen { margin: 16px 0 0; }
+.st-kacheln > div { border: 1px solid var(--line); border-radius: 12px; padding: 12px 11px 11px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.st-kacheln b { font-size: 1.22rem; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+.st-kacheln b small { font-size: .74rem; color: var(--muted); font-weight: 500; letter-spacing: 0; }
+.st-kacheln span { font-size: .7rem; color: var(--muted); line-height: 1.3; }
+/* Kalender */
+.st-kal { display: flex; flex-direction: column; gap: 4px; }
+.st-kw, .st-kr { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.st-kw span { text-align: center; font-size: .66rem; color: var(--faint); padding-bottom: 2px; }
+.st-c { aspect-ratio: 1; max-height: 34px; width: 100%; border-radius: 6px; border: 0; padding: 0; background: transparent; box-shadow: inset 0 0 0 1px var(--line); justify-self: center; transition: transform .12s ease; }
+.st-c.komplett { background: var(--ink); box-shadow: none; }
+.st-c.teil { background: linear-gradient(to top, var(--ink) 50%, transparent 50%); box-shadow: inset 0 0 0 1px var(--ink); }
+.st-c.verpasst { background: repeating-linear-gradient(135deg, #5A5A5A 0 2px, transparent 2px 5px); box-shadow: inset 0 0 0 1px #4A4A4A; }
+.st-c.vor, .st-c.zu { box-shadow: none; background: transparent; }
+.st-c.vor { background: var(--hair); }
+.st-c.heute { box-shadow: inset 0 0 0 1.5px var(--muted); }
+.st-c.jetzt { outline: 2px solid var(--ink); outline-offset: 2px; }
+.st-c.sel { transform: scale(1.12); }
+/* Zeilen mit Balken */
+.st-z { padding: 9px 0; border-top: 1px solid var(--hair); }
+.st-z:first-child, .st-unterlab + .st-z { border-top: 0; }
+.st-zk { display: flex; justify-content: space-between; gap: 10px; font-size: .9rem; }
+.st-zk span { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-zk b { font-weight: 600; white-space: nowrap; font-size: .86rem; }
+.st-z .tb-bar { margin-top: 8px; height: 5px; }
+.st-z .tb-bar i { background: var(--ink); }
+.st-zs { font-size: .74rem; color: var(--faint); margin-top: 6px; }
+.st-li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--hair); }
+.st-li .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.st-li .t b { font-weight: 500; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-li .t span { font-size: .78rem; color: var(--muted); line-height: 1.35; }
+.st-li .tb-img { width: 38px; height: 38px; border-radius: 10px; }
+.st-wert { font-weight: 600; font-size: .88rem; white-space: nowrap; }
+/* Kraft */
+.st-kr-z { display: grid; grid-template-columns: minmax(0, 1fr) 84px 58px; align-items: center; gap: 10px; padding: 11px 0; border-top: 1px solid var(--hair); cursor: pointer; }
+.st-kr-z:first-child { border-top: 0; }
+.st-kr-z .t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.st-kr-z .t b { font-weight: 500; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-kr-z .t span { font-size: .76rem; color: var(--muted); line-height: 1.35; }
+.st-spark { width: 84px; height: 28px; overflow: visible; }
+.st-spark polyline { fill: none; stroke: #8A8A8A; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.st-spark circle { fill: var(--ink); stroke: var(--bg); stroke-width: 2; }
+.st-delta { justify-self: end; font-size: .8rem; font-weight: 600; padding: 4px 8px; border-radius: 7px; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line2); white-space: nowrap; }
+.st-delta.hoch { background: var(--ink); color: var(--inv); box-shadow: none; }
+.st-kr-z.sel .t b { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line2); }
+/* Säulen */
+.st-chart { position: relative; }
+.st-saeulen { position: relative; display: flex; align-items: flex-end; gap: 6px; height: 120px; }
+.st-saeulen.eng { gap: 3px; }
+.st-s { position: relative; flex: 1; min-width: 0; height: 100%; display: flex; align-items: flex-end; justify-content: center; border: 0; background: transparent; padding: 0; }
+.st-s i { position: relative; display: block; width: 100%; max-width: 24px; border-radius: 4px 4px 0 0; background: #8A8A8A; transition: height .9s cubic-bezier(.2,.8,.2,1), opacity .2s ease; z-index: 1; }
+.st-saeulen:not(.eng) .st-s i { background: var(--ink); }
+.st-s.ok i { background: var(--ink); }
+.st-s.cheat i { background: repeating-linear-gradient(135deg, #6A6A6A 0 2px, transparent 2px 5px); box-shadow: inset 0 0 0 1px #6A6A6A; }
+.st-s .spur { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 24px; border-radius: 4px 4px 0 0; background: var(--fill2); }
+.st-saeulen:has(.sel) .st-s:not(.sel) i { opacity: .4; }
+.st-ziellinie { position: absolute; left: 0; right: 0; border-top: 1.5px dashed #8A8A8A; z-index: 2; pointer-events: none; }
+.st-achse { display: flex; justify-content: space-between; margin-top: 7px; font-size: .68rem; color: var(--faint); font-variant-numeric: tabular-nums; }
+/* Abweichung vom Ziel */
+.st-div { position: relative; height: 168px; padding-left: 42px; }
+.st-band { position: absolute; left: 42px; right: 0; top: calc(50% - var(--band) / 2); height: var(--band); background: rgba(250,250,250,.07); border-radius: 3px; }
+.st-null { position: absolute; left: 42px; right: 0; top: 50%; border-top: 1px solid var(--line2); }
+.st-y { position: absolute; left: 0; width: 36px; text-align: right; font-size: .66rem; color: var(--faint); transform: translateY(-50%); font-variant-numeric: tabular-nums; }
+.st-y.o { top: 4px; } .st-y.m { top: 50%; color: var(--muted); } .st-y.u { top: calc(100% - 4px); }
+.st-dv-cols { position: relative; display: flex; gap: 3px; height: 100%; }
+.st-dv { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; border: 0; padding: 0; background: transparent; }
+.st-dv .ob, .st-dv .un { flex: 1; display: flex; justify-content: center; }
+.st-dv .ob { align-items: flex-end; } .st-dv .un { align-items: flex-start; }
+.st-dv i { display: block; width: 100%; max-width: 24px; transition: height .9s cubic-bezier(.2,.8,.2,1), opacity .2s ease; }
+.st-dv .ob i { background: var(--ink); border-radius: 4px 4px 0 0; }
+.st-dv .un i { background: #A3A3A3; border-radius: 0 0 4px 4px; }
+.st-dv.cheat i { background: repeating-linear-gradient(135deg, #6A6A6A 0 2px, transparent 2px 5px) !important; box-shadow: inset 0 0 0 1px #6A6A6A; }
+.st-dv.ohne .ob { position: relative; }
+.st-dv.ohne .ob::after { content: ""; position: absolute; bottom: -2.5px; width: 5px; height: 5px; border-radius: 50%; box-shadow: inset 0 0 0 1px #5A5A5A; background: var(--bg); }
+.st-dv-cols:has(.sel) .st-dv:not(.sel) i { opacity: .4; }
+/* Gewicht */
+.st-line { display: block; width: 100%; height: auto; overflow: visible; }
+.st-line .grid { stroke: var(--hair); stroke-width: 1; }
+.st-line text { fill: var(--faint); font-size: 10px; font-family: inherit; font-variant-numeric: tabular-nums; }
+.st-line .mess { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.st-line .trend { stroke: #6A6A6A; stroke-width: 2; stroke-linecap: round; }
+.st-line .dot { fill: var(--ink); stroke: var(--bg); stroke-width: 2; transition: r .15s ease; }
+.st-line .hit { fill: transparent; cursor: pointer; }
+.st-line .pt.sel .dot { r: 6.5; }
+.st-tab { margin-top: 10px; }
+.st-tab summary { cursor: pointer; font-size: .8rem; color: var(--muted); min-height: 36px; display: flex; align-items: center; list-style: none; }
+.st-tab summary::-webkit-details-marker { display: none; }
+.st-tab summary::before { content: "+"; width: 16px; color: var(--faint); }
+.st-tab[open] summary::before { content: "−"; }
+.st-tab table { font-size: .82rem; }
+.st-tab th { text-align: left; font-weight: 500; color: var(--faint); font-size: .72rem; padding: 4px 0; }
+.st-tab th + th, .st-tab td + td { text-align: right; }
+.st-s, .st-dv, .st-c, .st-kr-z, .st-stapel .sg { -webkit-tap-highlight-color: transparent; }
+
 /* ======================================================= Bewegung
    Kurz, ruhig, mit Zweck: Eintritt beim Tab Wechsel, Blätter von unten, Druck Feedback, Haken, Fortschritt.
    Wer im System weniger Bewegung eingestellt hat, bekommt keine. */
@@ -572,6 +709,9 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 <body>
 <header class="top">
   <h1 id="title">Training</h1>
+  <button class="iconbtn" id="btnStat" aria-label="Statistik">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V12M10 20V5M15 20v-6M20 20V9"/></svg>
+  </button>
   <button class="iconbtn" id="btnListe" aria-label="Einkaufslisten">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h2l2.2 10.5a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.2L20 8H6.2"/><circle cx="9.5" cy="19.5" r="1.2"/><circle cx="17" cy="19.5" r="1.2"/></svg>
     <span class="badge" id="listBadge"></span>
@@ -722,13 +862,14 @@ const COOP_MEALS = [
 const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
 
 /* ======================================================= Trainingsplan */
-const PLAN_V = 7;
+const PLAN_V = 8;
 const DEFAULT_PLAN = { v: PLAN_V, days: [
   { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wds: [1], ex: [
     { id: 'a0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups', bild: 'Arm_Circles', mus: 'Schultern, ganzer Körper' },
     { id: 'a1', name: 'Liegestütze', sets: 3, ziel: '8 bis 12, Satz 1 und 2 nicht bis zum Anschlag', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss. Weniger Wiederholungen in Satz 2 und 3 sind normal. Schaffst du 3 Mal 12, machst du alle Sätze mit den Füssen auf dem Bett.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps, Schultern vorne' },
     { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.', vid: 'pike push up tutorial', bild: '', mus: 'Schultern, Trizeps', figur: 'pike' },
     { id: 'a4', name: 'Enge Liegestütze', sets: 2, ziel: 'max, Knie am Boden ist ok', pause: 60, einheit: 'Wdh', soll: 6, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper. Sobald es auf den Füssen nicht mehr geht, auf den Knien weitermachen.', easy: 'Auf den Knien.', vid: 'close grip push up form', bild: 'Push-Ups_-_Close_Triceps_Position', mus: 'Trizeps, Brust' },
+    { id: 'a8', name: 'Rucksack Rudern', sets: 2, ziel: '10 bis 12', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Gegengewicht zum vielen Drücken: zieht die Schultern zurück, gut gegen die Gaming Haltung. Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', mus: 'Rücken Mitte, Latissimus, Bizeps', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack mit beiden Händen.' },
     { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.', vid: 'forearm plank and hollow body hold', bild: 'Plank', mus: 'Bauch, Rumpf', bildHinweis: 'Bild zeigt den Stütz, der Hollow kommt direkt danach in Rückenlage.', teile: [{ n: 'Unterarmstütz', s: 40 }, { n: 'Hollow', s: 25 }] },
     { id: 'a6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
     { id: 'a7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] }
@@ -746,7 +887,7 @@ const DEFAULT_PLAN = { v: PLAN_V, days: [
     { id: 'c0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups', bild: 'Arm_Circles', mus: 'Schultern, ganzer Körper' },
     { id: 'c1', name: 'Rucksack Kniebeugen', sets: 3, ziel: '12 bis 15', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind. Satz 1 und 2 mit 1 bis 2 Wiederholungen Reserve.', easy: 'Ohne Rucksack.', vid: 'goblet squat form', bild: 'Goblet_Squat', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Kettlebell, du hältst den Rucksack vor der Brust.' },
     { id: 'c2', name: 'Liegestütze', sets: 3, ziel: '8 bis 12', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps, Schultern vorne' },
-    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 2, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand. Beine abwechseln.', easy: 'Kleinerer Schritt, nicht so tief.', vid: 'reverse lunge form', bild: 'Dumbbell_Rear_Lunge', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Hanteln, du machst es ohne Gewicht.' },
+    { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 2, ziel: '10 bis 12 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand. Beine abwechseln.', easy: 'Kleinerer Schritt, nicht so tief.', vid: 'reverse lunge form', bild: 'Dumbbell_Rear_Lunge', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Hanteln, du machst es ohne Gewicht.' },
     { id: 'c4', name: 'Rucksack Rudern', sets: 2, ziel: '10 bis 12', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', mus: 'Rücken Mitte, Latissimus, Bizeps', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack.' },
     { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 2, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.', vid: 'lying leg raise side plank dead bug', bild: 'Dead_Bug', mus: 'Bauch, Rumpf', bildHinweis: 'Bild zeigt den Dead Bug.' },
     { id: 'c6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
@@ -800,6 +941,12 @@ function migratePlan(p) {
   if ((p.v || 1) < 7) ['A', 'B', 'C', 'J', 'L', 'M'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
   /* Version 4: Tag B, Tag C und Joggen ebenfalls auf unter 30 Minuten gebracht */
   if ((p.v || 1) < 4) ['B', 'C', 'J'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
+  /* Version 8: Rudern an Tag A (Gleichgewicht Drücken und Ziehen), Ausfallschritte mit Spanne für die Steigerung */
+  if ((p.v || 1) < 8) {
+    const a = p.days.find(x => x.id === 'A');
+    if (a && !a.ex.some(x => x.id === 'a8')) { const i = a.ex.findIndex(x => x.id === 'a5'); a.ex.splice(i >= 0 ? i : a.ex.length, 0, clone(DEFAULT_PLAN.days[0].ex.find(x => x.id === 'a8'))); }
+    const c = p.days.find(x => x.id === 'C'); const c3 = c && c.ex.find(x => x.id === 'c3'); if (c3 && c3.ziel === '10 pro Bein') c3.ziel = '10 bis 12 pro Bein';
+  }
   p.v = PLAN_V;
   return p;
 }
@@ -853,10 +1000,40 @@ function lastValues(exId, i) {
   }
   return { w: '', r: '' };
 }
-/* Vorschlag für einen Satz: letzter Wert aus dem Verlauf, sonst das Soll aus dem Plan */
+/* Steigerung (doppelte Progression): erst Wiederholungen bis zum oberen Ende der Spanne, dann mehr Gewicht
+   oder die schwerere Variante und wieder unten anfangen. Ohne steigende Last wächst kein Muskel. */
+const STEIG = {
+  a1: { rmin: 8, rmax: 12, stufe: 'Füsse aufs Bett legen' }, c2: { rmin: 8, rmax: 12, stufe: 'Füsse aufs Bett legen' },
+  a3: { rmin: 5, rmax: 8, stufe: 'Füsse aufs Bett, Hüfte höher' }, a4: { rmin: 6, rmax: 12, stufe: 'alle Wiederholungen auf den Füssen, ohne Knie' },
+  a8: { rmin: 10, rmax: 12, kg: 1 }, b2: { rmin: 10, rmax: 12, kg: 1 }, b3: { rmin: 10, rmax: 12, kg: 1 }, c4: { rmin: 10, rmax: 12, kg: 1 }, c1: { rmin: 12, rmax: 15, kg: 1 },
+  b1: { rmin: 8, rmax: 10, stufe: 'Rucksack auf den Rücken' }, b4: { rmin: 15, rmax: 20, stufe: 'einbeinige Bridge' },
+  c3: { rmin: 10, rmax: 12, stufe: 'Rucksack auf den Rücken' }, c5: { rmin: 12, rmax: 15, stufe: 'Beine langsamer senken, 3 s runter' }
+};
+function letzteUebung(exId) {
+  for (let h = history.length - 1; h >= 0; h--) { const e = (history[h].ex || []).find(x => x.id === exId); if (e && e.sets && e.sets.length) return e; }
+  return null;
+}
+function steigerung(ex) {
+  const st = STEIG[ex.id]; if (!st || ex.einheit !== 'Wdh') return null;
+  const e = letzteUebung(ex.id); if (!e) return null;
+  const rs = e.sets.map(x => parseInt(x.r, 10) || 0);
+  const w = ex.kg ? parseFloat(String(e.sets[0].w || '').replace(',', '.')) : NaN;
+  if (rs.length < ex.sets) return { art: 'satz', text: `Letztes Mal ${rs.length} von ${ex.sets} Sätzen. Heute zuerst alle ${ex.sets} schaffen, gleiche Wiederholungen.` };
+  if (rs.slice(0, ex.sets).every(r => r >= st.rmax)) {
+    if (ex.kg && isFinite(w) && w > 0) { const nw = Math.round((w + (st.kg || 1)) * 10) / 10; return { art: 'kg', text: `Alle Sätze mit mindestens ${st.rmax} geschafft. Heute ${String(nw).replace('.', ',')} kg und wieder ab ${st.rmin} Wiederholungen.`, w: nw, alle: st.rmin }; }
+    if (st.stufe) return { art: 'stufe', text: `Alle Sätze mit mindestens ${st.rmax} geschafft. Zeit für die schwerere Variante: ${st.stufe}. Dort startest du wieder bei ${st.rmin}.`, alle: st.rmin };
+    return null;
+  }
+  const i = rs.findIndex((r, k) => k < ex.sets && r < st.rmax);
+  return { art: 'wdh', text: `Heute Satz ${i + 1} eine Wiederholung mehr: ${rs[i] + 1} statt ${rs[i]}.`, idx: i, r: rs[i] + 1 };
+}
+/* Vorschlag für einen Satz: letzter Wert aus dem Verlauf mit Steigerung, sonst das Soll aus dem Plan */
 function vorschlag(ex, i) {
   const lv = lastValues(ex.id, i);
-  return { w: ex.kg ? String(lv.w || ex.kgSoll || '') : '', r: String(lv.r || (ex.soll != null ? ex.soll : '')) };
+  let w = ex.kg ? String(lv.w || ex.kgSoll || '') : '', r = String(lv.r || (ex.soll != null ? ex.soll : ''));
+  const sg = steigerung(ex);
+  if (sg) { if (sg.w != null) w = String(sg.w); if (sg.alle != null) r = String(sg.alle); else if (sg.idx === i) r = String(sg.r); }
+  return { w, r };
 }
 
 function sessionFor(day) {
@@ -972,6 +1149,7 @@ function satzFertig(p) {
   const day = dayById(p.day); const ex = day.ex.find(x => x.id === p.ex); if (!ex) return;
   const st = sessionFor(day).sets[ex.id][p.satz]; if (!st) return;
   st.d = true; if (!st.r) st.r = String(ex.einheit === 'Min' ? Math.round(p.sek / 60) : p.sek);
+  { const ses = sessionFor(day); if (!ses.t0) ses.t0 = Date.now(); }
   saveSessions(); requestWake();
   if (tab === 'training' && curDay === day.id && !editMode) {
     renderTraining();
@@ -1085,7 +1263,7 @@ $('#timerbar').addEventListener('click', e => {
 });
 
 /* ======================================================= Tabs */
-const TITLES = { plan: 'Heute', training: 'Training', scan: 'Scannen', vorrat: 'Essen', tagebuch: 'Tagebuch' };
+const TITLES = { plan: 'Heute', training: 'Training', scan: 'Scannen', vorrat: 'Essen', tagebuch: 'Tagebuch', stats: 'Statistik' };
 let tab = LS.get('tab', 'plan');
 const warCoop = tab === 'coop';
 if (warCoop) { tab = 'vorrat'; LS.set('tab', tab); }
@@ -1099,6 +1277,7 @@ function setTab(t) {
   tab = t; LS.set('tab', t);
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
   $('#title').textContent = TITLES[t];
+  $('#btnStat').classList.toggle('an', t === 'stats');
   const showTimer = t === 'training' && Timer.aktiv();
   $('#timerbar').hidden = !showTimer;
   document.body.classList.toggle('with-timer', showTimer);
@@ -1125,6 +1304,7 @@ function render() {
   else if (tab === 'training') renderTraining();
   else if (tab === 'scan') renderScan();
   else if (tab === 'vorrat') renderVorrat();
+  else if (tab === 'stats') renderStats();
   else renderTagebuch();
   updateBadge();
 }
@@ -1385,7 +1565,7 @@ function renderTraining() {
   if (!editMode) h += streakKarte(true);
   h += `<div class="card daycard"><div class="ring" style="--p:${pct}" role="img" aria-label="${done} von ${total} Sätzen erledigt"><span>${done}/${total}</span></div>
     <div><div class="lab">${heuteHinweis(day)}</div><h2>${esc(day.name)}: ${esc(day.title)}</h2>
-    <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="history">Verlauf</button></div></div></div>`;
+    <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="history">Verlauf</button> · <button data-act="stats">Statistik</button></div></div></div>`;
   const aktivIdx = done ? day.ex.findIndex(x => s.sets[x.id].some(st => !st.d)) : 0;
   day.ex.forEach((ex, xi) => {
     const sets = s.sets[ex.id];
@@ -1412,6 +1592,7 @@ function renderTraining() {
             <div class="ziel">${ex.sets} × ${esc(ex.ziel || KA)}${ex.pause ? ' · Pause ' + ex.pause + ' s' : ''}</div>
             ${lm ? `<div class="last">Letztes Mal: ${esc(lm)}</div>` : ''}</div>
         </div>
+        ${offen ? (sg => sg ? `<div class="steig s-${sg.art}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 16l5.5-5.5 4 4L20 8M14.5 8H20v5.5"/></svg><span>${esc(sg.text)}</span></div>` : '')(steigerung(ex)) : ''}
         <div class="extools">
           <button class="tbtn" data-act="detail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>Anleitung</button>
         </div>
@@ -1454,6 +1635,7 @@ $('#main').addEventListener('click', e => {
   if (act === 'toggle' && ex) {
     unlockAudio();
     const s = sessionFor(day); const i = +b.dataset.i; const st = s.sets[ex.id][i];
+    if (!s.t0) s.t0 = Date.now();
     const p = Timer.akt();
     /* Zeitübung: Start Knopf startet den geführten Ablauf, nochmals tippen hält an */
     if (istZeit(ex) && !st.d) {
@@ -1472,6 +1654,7 @@ $('#main').addEventListener('click', e => {
   } else if (act === 'detail' && ex) openUebung(ex);
   else if (act === 'finish') finishTraining();
   else if (act === 'history') openHistory();
+  else if (act === 'stats') { stf.b = 'training'; LS.set('statf', stf); setTab('stats'); }
   else if (act === 'edit') { editMode = true; renderTraining(); }
   else if (act === 'editdone') { editMode = false; savePlan(); renderTraining(); toast('Plan gespeichert'); }
   else if (act === 'addex') {
@@ -1581,7 +1764,9 @@ function finishTraining() {
   const soll = day.ex.reduce((a, x) => a + x.sets, 0);
   const fertig = day.ex.reduce((a, x) => a + s.sets[x.id].filter(st => st.d).length, 0);
   const vorher = streakInfo();
-  history.push({ id: Date.now().toString(36), date: new Date().toISOString(), start: s.start, dayId: day.id, dayName: day.name + ': ' + day.title, ex, voll: fertig >= soll, soll, fertig });
+  const min = s.t0 ? Math.round((Date.now() - s.t0) / 60000) : null;
+  history.push({ id: Date.now().toString(36), date: new Date().toISOString(), start: s.start, dayId: day.id, dayName: day.name + ': ' + day.title, ex, voll: fertig >= soll, soll, fertig,
+    plan: day.ex.map(x => ({ id: x.id, name: x.name, sets: x.sets, einheit: x.einheit })), min: min != null && min > 0 && min < 180 ? min : null });
   if (!LS.set('history', history)) { history.pop(); return; }
   delete sessions[day.id]; saveSessions();
   Timer.ende(); releaseWake();
@@ -2366,13 +2551,17 @@ function openLists() {
   $('#sheetBody').onkeydown = e => { if (e.target.id === 'lIn' && e.key === 'Enter') { const v = e.target.value.trim(); if (v) { addToList(listTab, v, ''); draw(); } } };
 }
 $('#btnListe').addEventListener('click', openLists);
+$('#btnStat').addEventListener('click', () => setTab('stats'));
 
 /* ======================================================= Modul 5: Tagebuch
    Was du isst: Kalorien, Protein, Kohlenhydrate, Fett. Quellen: deine Migros und Coop Daten (Strichcode auch offline),
    Rezepte, Open Food Facts und eigene Lebensmittel. Alles bleibt auf dem Handy und ist in der Sicherung dabei. */
 const MAHL = [['morgen', 'Morgen'], ['mittag', 'Mittag'], ['abend', 'Abend'], ['snack', 'Snacks']];
 const MAHL_NAME = { morgen: 'Morgen', mittag: 'Mittag', abend: 'Abend', snack: 'Snacks' };
-const ZIELE_START = { k: 2400, pr: 150, kh: 290, f: 70 };
+const ZIELE_START = { k: 2300, pr: 150, kh: 265, f: 70 };
+const KCAL_MIN = 2200;
+/* Wer noch die alte Empfehlung 2400 gespeichert hat, bekommt die neue. Eigene Werte bleiben. */
+(() => { const z = LS.get('ziele', null); if (z && z.k === 2400 && z.pr === 150 && z.kh === 290 && z.f === 70) LS.del('ziele'); })();
 const NWK = ['k', 'pr', 'kh', 'f'];
 const NW_NAME = { k: 'Kalorien', pr: 'Protein', kh: 'Kohlenhydrate', f: 'Fett' };
 const WT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
@@ -2398,9 +2587,24 @@ const I_STERN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" str
 const I_STERN_V = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.6 2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>';
 const I_KOPIE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4h-7A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8"/></svg>';
 
+/* Welches Ziel galt an einem Tag: Änderungen werden mit Datum gemerkt, damit alte Tage am alten Ziel gemessen werden */
+function zielFuer(key) {
+  const h = LS.get('zielHist', []); let z = null;
+  h.forEach(x => { if (x.d <= key) z = x; });
+  return z ? { k: z.k, pr: z.pr } : { k: ziele.k, pr: ziele.pr };
+}
+function zieleSetzen(neu) {
+  ziele = neu; LS.set('ziele', ziele);
+  const h = LS.get('zielHist', []).filter(x => x.d !== tbHeute());
+  h.push({ d: tbHeute(), k: ziele.k, pr: ziele.pr }); LS.set('zielHist', h.slice(-60));
+}
+function khRest(k, pr, f) { return Math.max(0, Math.round((k - 4 * pr - 9 * f) / 4 / 5) * 5); }
 function tbLaden() { tb = LS.get('tb', {}); foods = LS.get('foods', {}); ziele = Object.assign({}, ZIELE_START, LS.get('ziele', {})); gewicht = LS.get('gewicht', {}); tbTag = null; }
 /* Zahlen wie auf der Packung: Komma, und ein echtes Minus statt Bindestrich */
-const fz = (v, d) => { if (v == null || !isFinite(v)) return KA; const f = Math.pow(10, d || 0); const r = Math.round(v * f) / f; return String(Object.is(r, -0) ? 0 : r).replace('.', ',').replace('-', '−'); };
+const fz = (v, d) => { if (v == null || !isFinite(v)) return KA; const f = Math.pow(10, d || 0); const r = Math.round(v * f) / f;
+  let t = String(Object.is(r, -0) ? 0 : r).replace('.', ',').replace('-', '−');
+  if (Math.abs(r) >= 10000) t = t.replace(/^(−?)(\d+)/, (m, s, z) => s + z.replace(/\B(?=(\d{3})+(?!\d))/g, '’'));
+  return t; };
 const fx = x => x === 0.5 ? '½' : x === 1.5 ? '1½' : x === 2.5 ? '2½' : fz(x, 2);
 const tbUid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 function tbHeute() { return tagKey(new Date()); }
@@ -2464,7 +2668,7 @@ function markeKurz(b) { return String(b || '').split(',')[0].trim(); }
 function foodAusProdukt(p, laden) {
   const st = stueckVon(p.s);
   return { key: (laden === 'coop' ? 'k:' : 'm:') + p.id, n: p.n, b: markeKurz(p.b), img: p.img || '', src: laden === 'coop' ? 'coop' : 'migros',
-    code: (p.bc || [])[0] || '', p100: khAusKcal(plausibel({ k: p.k, pr: p.pr, kh: null, f: p.f })), base: basisVon(p.s), port: st ? [st] : [], pack: p.g > 0 ? p.g : null };
+    code: (p.bc || [])[0] || '', p100: khAusKcal(plausibel({ k: p.k, pr: p.pr, kh: null, f: p.f, z: p.z })), base: basisVon(p.s), port: st ? [st] : [], pack: p.g > 0 ? p.g : null };
 }
 function foodAusOff(p, code) {
   const n = p.nutriments || {};
@@ -2473,7 +2677,8 @@ function foodAusOff(p, code) {
   const sq = zahl(p.serving_quantity), pq = zahl(p.product_quantity);
   const ml = /^(ml|cl|dl|l)$/i.test(p.product_quantity_unit || '') || /\d\s*(ml|cl|dl|l)\b/i.test(p.quantity || '');
   return { key: 'o:' + code, n: p.product_name_de || p.product_name || code, b: markeKurz(p.brands), img: p.image_front_small_url || '', src: 'off', code,
-    p100: khAusKcal(plausibel({ k, pr: zahl(n.proteins_100g), kh: zahl(n.carbohydrates_100g), f: zahl(n.fat_100g) })), base: ml ? 'ml' : 'g',
+    p100: khAusKcal(plausibel({ k, pr: zahl(n.proteins_100g), kh: zahl(n.carbohydrates_100g), f: zahl(n.fat_100g), z: zahl(n.sugars_100g) })), base: ml ? 'ml' : 'g',
+    ns: String(p.nutriscore_grade || '').toLowerCase(), nova: zahl(p.nova_group),
     port: sq > 0 && sq < 2000 ? [{ l: 'Portion', g: Math.round(sq * 10) / 10 }] : [], pack: pq > 0 && pq < 10000 ? pq : null };
 }
 function foodAusRezept(r) {
@@ -2520,6 +2725,13 @@ function tbBild(img, n) {
 }
 
 /* ---------- Eintragen */
+/* Für die Statistik: Werte pro 100 g (oder pro Portion), Zucker, Nutri-Score und Verarbeitung, soweit bekannt */
+function qualDaten(f) {
+  if (!f || f.fix) return null;
+  if (f.pp) return { pp: 1, k: f.pp.k, pr: f.pp.pr };
+  if (!f.p100) return null;
+  return { k: f.p100.k, pr: f.p100.pr, z: f.p100.z != null ? f.p100.z : null, f: f.p100.f, ns: f.ns || '', nova: f.nova || null };
+}
 function tbEintragen(f, u, x, m, tag) {
   tag = tag || tbAkt();
   const liste = tb[tag] || (tb[tag] = []);
@@ -2528,7 +2740,7 @@ function tbEintragen(f, u, x, m, tag) {
   const gleich = f.key ? liste.find(z => z.fk === f.key && z.m === m && z.e.l === u.l && z.e.g === u.g) : null;
   let ein;
   if (gleich) { gleich.x = Math.round((gleich.x + x) * 100) / 100; gleich.t = Date.now(); gleich.pu = pu; ein = gleich; }
-  else { ein = { id: tbUid(), t: Date.now(), m, fk: f.key || '', n: f.n || 'Eintrag', b: f.b || '', img: f.img || '', e: { l: u.l, g: u.g, basis: !!u.basis, bs: u.bs || '' }, x, pu }; liste.push(ein); }
+  else { ein = { id: tbUid(), t: Date.now(), m, fk: f.key || '', n: f.n || 'Eintrag', b: f.b || '', img: f.img || '', e: { l: u.l, g: u.g, basis: !!u.basis, bs: u.bs || '' }, x, pu, q: qualDaten(f) }; liste.push(ein); }
   if (f.key && !f.fix) {
     const alt = foods[f.key] || {};
     const kopie = Object.assign({}, f); delete kopie.fix;
@@ -2636,7 +2848,8 @@ function wocheKarte() {
     const ak = zaehlt.reduce((a, t) => a + t.s.k, 0) / zaehlt.length, ap = zaehlt.reduce((a, t) => a + t.s.pr, 0) / zaehlt.length;
     const ok = zaehlt.filter(t => t.s.pr >= ziele.pr).length;
     h += `<div class="tb-stat"><div><b class="num">${fz(ak)}</b><span>kcal im Schnitt</span></div><div><b class="num">${fz(ap)} g</b><span>Protein im Schnitt</span></div><div><b class="num">${ok} von ${zaehlt.length}</b><span>Tage Protein Ziel</span></div></div>
-      <p class="tb-hw" style="margin-top:10px">Strichlinie: dein Ziel von ${fz(ziele.k)} kcal. Punkt unter dem Tag: Protein Ziel erreicht.</p>`;
+      <p class="tb-hw" style="margin-top:10px">Strichlinie: dein Ziel von ${fz(ziele.k)} kcal. Punkt unter dem Tag: Protein Ziel erreicht.</p>
+      <button class="linkbtn" data-tbstat>Alle Statistiken</button>`;
   } else h += '<p class="tb-hw" style="margin-top:12px">Sobald du ein paar Tage eingetragen hast, siehst du hier deinen Schnitt.</p>';
   return h + '</div>';
 }
@@ -2647,6 +2860,18 @@ function gewichtTrend() {
   const n = pts.length, mx = pts.reduce((a, p) => a + p[0], 0) / n, my = pts.reduce((a, p) => a + p[1], 0) / n;
   let o = 0, u = 0; pts.forEach(p => { o += (p[0] - mx) * (p[1] - my); u += (p[0] - mx) * (p[0] - mx); });
   return u ? { proWoche: o / u * 7 * 864e5, n } : null;
+}
+/* Wochen Check: Vorschlag fürs Kalorienziel aus dem Gewichtstrend, frühestens 14 Tage nach der letzten Änderung */
+function zielVorschlag(tr) {
+  if (!tr) return null;
+  const h = LS.get('zielHist', []); const letzte = h.length ? h[h.length - 1].d : null;
+  if (letzte && (keyDatum(tbHeute()) - keyDatum(letzte)) / 864e5 < 14) return null;
+  const r = tr.proWoche; let d = 0;
+  if (r > -0.15) d = -150; else if (r < -0.8) d = 150;
+  if (!d) return null;
+  const k = Math.max(KCAL_MIN, Math.min(3500, ziele.k + d));
+  if (k === ziele.k) return { k, amBoden: true };
+  return { k, d: k - ziele.k };
 }
 function trendRat(r) {
   if (r > 0.15) return 'Du nimmst zu. Senk dein Kalorienziel um 200 kcal.';
@@ -2670,7 +2895,9 @@ function gewichtKarte(tag) {
     h += `<svg class="tb-spark" viewBox="0 0 300 48" preserveAspectRatio="none" aria-hidden="true"><polygon points="2,48 ${linie} 298,48"/><polyline points="${linie}"/></svg>`;
   }
   h += `<p class="small" style="margin:10px 0 0">${tr ? esc(trendRat(tr.proWoche)) : 'Wieg dich jeden Montag am Morgen, nach dem WC und vor dem Essen. Ab drei Messungen über zwei Wochen sage ich dir, ob dein Kalorienziel passt.'}</p>
-    ${tr ? '<button class="linkbtn" data-tbziele style="margin-top:4px">Ziele anpassen</button>' : ''}</div>`;
+    ${(() => { const v = zielVorschlag(tr); if (!v) return tr ? '<button class="linkbtn" data-tbziele style="margin-top:4px">Ziele ansehen</button>' : '';
+      if (v.amBoden) return `<p class="small muted" style="margin:8px 0 0">Du bist schon bei ${KCAL_MIN} kcal. Tiefer geht die App nicht: mehr Schritte statt weniger Essen.</p>`;
+      return `<button class="btn sm primary" data-tbanpass="${v.k}" style="margin-top:10px">Auf ${fz(v.k)} kcal anpassen</button>`; })()}</div>`;
   return h;
 }
 function tbHeuteKarte() {
@@ -2688,6 +2915,14 @@ $('#main').addEventListener('click', e => {
   const tg = t.closest('[data-tbtag]'); if (tg) { tbTag = tg.dataset.tbtag === tbHeute() ? null : tg.dataset.tbtag; renderTagebuch(); return; }
   if (t.closest('[data-tbscan]')) { tbScannen(mahlJetzt(), tbAkt()); return; }
   if (t.closest('[data-tbziele]')) { openZiele(); return; }
+  if (t.closest('[data-tbstat]')) { stf.b = 'essen'; LS.set('statf', stf); setTab('stats'); return; }
+  const ap = t.closest('[data-tbanpass]');
+  if (ap) {
+    const alt = Object.assign({}, ziele), altH = LS.get('zielHist', []);
+    const k = +ap.dataset.tbanpass; zieleSetzen({ k, pr: ziele.pr, f: ziele.f, kh: khRest(k, ziele.pr, ziele.f) }); renderTagebuch();
+    toastAktion('Neues Ziel: ' + fz(k) + ' kcal', 'Rückgängig', () => { ziele = alt; LS.set('ziele', ziele); LS.set('zielHist', altH); renderTagebuch(); });
+    return;
+  }
   if (t.closest('[data-tbgew]')) { openGewicht(tbAkt()); return; }
   const wie = t.closest('[data-tbwie]');
   if (wie) {
@@ -3015,7 +3250,8 @@ function openZiele() {
     <button class="btn primary wide" id="zOk">Speichern</button>
     <button class="btn wide" id="zStd" style="margin-top:10px">Empfehlung: ${ZIELE_START.k} kcal, ${ZIELE_START.pr} g Protein</button>
     <details class="how" style="margin-top:14px"><summary>Warum diese Zahlen?</summary>
-      <p><b>${ZIELE_START.k} kcal.</b> Bei 180 cm, rund 79 kg, Training an fünf Tagen und 7000 Schritten verbrauchst du geschätzt 2600 bis 2800 kcal. Mit ${ZIELE_START.k} isst du leicht darunter: Fett geht weg, Kraft und Wachstum leiden nicht. Das ist eine Schätzung. Die Gewichtskarte sagt dir nach zwei bis drei Wochen, ob du anpassen musst.</p>
+      <p><b>${ZIELE_START.k} kcal.</b> Bei 180 cm, rund 79 kg, Bürojob, Training um 30 Minuten und 7000 Schritten verbrauchst du geschätzt 2600 bis 2800 kcal. Mit ${ZIELE_START.k} verlierst du etwa 0,35 kg Fett pro Woche. Das ist das Tempo, bei dem Muskeln bleiben und Kraft weiter steigt. Schneller kostet Muskeln, und mit 16 oder 17 wächst du noch. Darum geht die App nie unter ${KCAL_MIN}.</p>
+      <p>Das ist eine Schätzung. Sobald du zwei Wochen gewogen und eingetragen hast, misst die App deinen echten Verbrauch und schlägt dir eine Anpassung vor.</p>
       <p><b>${ZIELE_START.pr} g Protein.</b> Knapp 2 g pro kg Körpergewicht. Das schützt deine Muskeln, während du Fett verlierst, und baut neue auf.</p>
       <p><b>${ZIELE_START.f} g Fett.</b> Genug für deine Hormone. Nicht darunter gehen.</p>
       <p><b>${ZIELE_START.kh} g Kohlenhydrate.</b> Der Rest. Treibstoff fürs Training am Morgen.</p>
@@ -3024,7 +3260,7 @@ function openZiele() {
     const v = {}; ['k', 'pr', 'kh', 'f'].forEach(k => { v[k] = zahlEin($('#z_' + k).value); });
     const rechn = v.pr != null && v.kh != null && v.f != null ? v.pr * 4 + v.kh * 4 + v.f * 9 : null;
     const w = [];
-    if (v.k != null && v.k < 2000) w.push('<b>Unter 2000 kcal ist für dich zu wenig.</b> Mit 16 oder 17 wächst du noch und trainierst fast täglich. Kraft, Schlaf und Haut leiden.');
+    if (v.k != null && v.k < KCAL_MIN) w.push(`<b>Unter ${KCAL_MIN} kcal speichert die App nicht.</b> Mit 16 oder 17 wächst du noch und trainierst fast täglich. Darunter verlierst du Muskeln und Kraft statt Fett.`);
     if (v.f != null && v.f < 50) w.push('<b>Unter 50 g Fett</b> leidet dein Hormonhaushalt.');
     if (v.pr != null && v.pr < 110) w.push('<b>Unter 110 g Protein</b> verlierst du im Defizit eher Muskeln.');
     if (rechn != null && v.k != null) w.push(`Protein, Kohlenhydrate und Fett ergeben zusammen <b>${fz(rechn)} kcal</b>${Math.abs(rechn - v.k) > 100 ? ', das weicht von deinem Kalorienziel ab' : ''}.`);
@@ -3038,7 +3274,8 @@ function openZiele() {
     if (!ev.target.closest('#zOk')) return;
     const v = pruefe();
     if (NWK.some(k => v[k] == null || v[k] <= 0) || v.k > 6000) { toast('Bitte alle vier Werte eingeben'); return; }
-    ziele = { k: Math.round(v.k), pr: Math.round(v.pr), kh: Math.round(v.kh), f: Math.round(v.f) }; LS.set('ziele', ziele);
+    if (v.k < KCAL_MIN) { toast('Mindestens ' + KCAL_MIN + ' kcal'); return; }
+    zieleSetzen({ k: Math.round(v.k), pr: Math.round(v.pr), kh: Math.round(v.kh), f: Math.round(v.f) });
     closeSheet(); toast('Ziele gespeichert');
   };
 }
@@ -3100,6 +3337,357 @@ async function tbCode(code) {
     const x = ev.target.closest('[data-x]'); if (!x) return;
     if (x.dataset.x === 'neu') closeSheet(); else openEigen({ code, m: z.m, tag: z.tag, nachScan: true });
   };
+}
+
+/* ======================================================= Modul 6: Statistik
+   Training, Essen und Gewicht über einen wählbaren Zeitraum. Ein Filter oben gilt für alles.
+   Jede Grafik: Antippen zeigt den genauen Wert, darunter gibt es die Tabelle. Samstag (Cheat Day) zählt beim Essen nicht. */
+let stf = Object.assign({ b: 'training', z: 30 }, LS.get('statf', {}));
+const ZEITEN = [[7, '7 Tage'], [30, '30 Tage'], [90, '3 Monate'], [0, 'Alles']];
+const kurzDatum = k => keyDatum(k).toLocaleDateString('de-CH', { day: 'numeric', month: 'numeric' });
+const tagLang = k => keyDatum(k).toLocaleDateString('de-CH', { weekday: 'short', day: 'numeric', month: 'numeric' });
+const pct = (a, b) => b > 0 ? Math.round(a / b * 100) : 0;
+const vz = v => (v > 0 ? '+' : v < 0 ? '−' : '') + fz(Math.abs(v));
+function statStart() {
+  let k = tbHeute();
+  history.forEach(h => { const x = tagKey(new Date(h.date)); if (x < k) k = x; });
+  Object.keys(tb).forEach(x => { if (x < k) k = x; });
+  Object.keys(gewicht).forEach(x => { if (x < k) k = x; });
+  return k;
+}
+function statTage() {
+  const heute = tbHeute(); const start = statStart();
+  let von = stf.z ? tagVerschoben(heute, -(stf.z - 1)) : start;
+  if (!stf.z && tagVerschoben(heute, -400) > von) von = tagVerschoben(heute, -400);
+  const out = []; for (let k = von; k <= heute; k = tagVerschoben(k, 1)) out.push(k);
+  return out;
+}
+function montagVon(k) { const d = keyDatum(k); return tagVerschoben(k, -((d.getDay() + 6) % 7)); }
+function karte(titel, inhalt, zusatz) { return `<section class="card st-k">${titel ? `<div class="st-kopf"><h3>${titel}</h3>${zusatz || ''}</div>` : ''}${inhalt}</section>`; }
+function tabelle(kopf, zeilen) {
+  if (!zeilen.length) return '';
+  return `<details class="st-tab"><summary>Als Tabelle</summary><table class="naehr"><thead><tr>${kopf.map(k => `<th>${esc(k)}</th>`).join('')}</tr></thead>
+    <tbody>${zeilen.map(z => `<tr>${z.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></details>`;
+}
+function chartInfo(text) { return `<p class="st-info" aria-live="polite">${esc(text)}</p>`; }
+function balkenZeile(label, wert, anteil, ak, sub) {
+  return `<div class="st-z"><div class="st-zk"><span>${esc(label)}</span><b class="num">${esc(wert)}</b></div>
+    <div class="tb-bar"><i ${anim(ak, 'w', Math.max(0, Math.min(100, anteil)))}></i></div>${sub ? `<div class="st-zs">${esc(sub)}</div>` : ''}</div>`;
+}
+/* Gestapelter Balken mit Lücken zwischen den Teilen, Beschriftung nur wenn sie hineinpasst, Legende immer */
+function stapel(teile, ak) {
+  const sum = teile.reduce((a, t) => a + t.v, 0) || 1;
+  return `<div class="st-stapel" role="img" aria-label="${esc(teile.map(t => t.l + ' ' + pct(t.v, sum) + ' Prozent').join(', '))}">${teile.filter(t => t.v > 0).map((t, i) => {
+    const p = t.v / sum * 100;
+    return `<span class="sg ${t.c}" data-tip="${esc(t.l + ': ' + pct(t.v, sum) + ' %' + (t.tip ? ', ' + t.tip : ''))}" ${anim(ak + i, 'w', p)}>${p >= 15 ? pct(t.v, sum) + ' %' : ''}</span>`;
+  }).join('')}</div>
+  <div class="st-leg">${teile.map(t => `<span><i class="${t.c}"></i>${esc(t.l)} <b class="num">${pct(t.v, sum)} %</b></span>`).join('')}</div>`;
+}
+function kachel(wert, label) { return `<div><b>${wert}</b><span>${esc(label)}</span></div>`; }
+function leer(text) { return `<div class="st-leer">${esc(text)}</div>`; }
+
+function renderStats() {
+  const tage = statTage();
+  let h = `<div class="seg drei st-seg" role="tablist">${[['training', 'Training'], ['essen', 'Essen'], ['gewicht', 'Gewicht']].map(([k, l]) => `<button data-stb="${k}" aria-pressed="${stf.b === k}">${l}</button>`).join('')}</div>
+    <div class="chips st-zeit">${ZEITEN.map(([z, l]) => `<button class="chip" data-stz="${z}" aria-pressed="${stf.z === z}">${l}</button>`).join('')}</div>`;
+  h += stf.b === 'essen' ? statEssen(tage) : stf.b === 'gewicht' ? statGewicht(tage) : statTraining(tage);
+  $('#main').innerHTML = h;
+  tbAnimieren();
+}
+$('#main').addEventListener('click', e => {
+  if (tab !== 'stats') return;
+  const b = e.target.closest('[data-stb]'); if (b) { stf.b = b.dataset.stb; LS.set('statf', stf); renderStats(); return; }
+  const z = e.target.closest('[data-stz]'); if (z) { stf.z = +z.dataset.stz; LS.set('statf', stf); renderStats(); return; }
+  const go = e.target.closest('[data-stgo]'); if (go) { if (go.dataset.stgo === 'tagebuch') tbTag = null; setTab(go.dataset.stgo); return; }
+  const t = e.target.closest('[data-tip]');
+  if (t) {
+    const k = t.closest('.st-k'); const info = k && k.querySelector('.st-info');
+    if (k) k.querySelectorAll('.sel').forEach(x => x.classList.remove('sel'));
+    t.classList.add('sel'); if (info) info.textContent = t.dataset.tip;
+  }
+});
+
+/* ---------- Training */
+function histNachTag() { const m = {}; history.forEach(h => { const k = tagKey(new Date(h.date)); (m[k] || (m[k] = [])).push(h); }); return m; }
+const PFLICHT_PLUS = ['A', 'B', 'C', 'J'];
+function trainingStatus(k, hm, start) {
+  const hs = hm[k] || [];
+  if (hs.some(h => h.voll !== false)) return 'komplett';
+  if (hs.length) return 'teil';
+  if (k === tbHeute()) return 'heute';
+  if (k < start) return 'vor';
+  const id = planIdFuer(keyDatum(k));
+  return id && PFLICHT_PLUS.indexOf(id) >= 0 ? 'verpasst' : 'frei';
+}
+/* Ältere Trainings haben kein gespeichertes Soll. Dann gilt der heutige Plan, aber nur mit Übungen, die du bis zu
+   diesem Tag schon einmal gemacht hast. Sonst würde eine neu dazugekommene Übung rückwirkend als ausgelassen zählen. */
+let schonGemacht = null;
+function planVon(h) {
+  if (h.plan) return { pl: h.plan, geschaetzt: false };
+  if (!schonGemacht || schonGemacht.n !== history.length) {
+    schonGemacht = { n: history.length, m: new Map() }; const seen = new Set();
+    history.slice().sort((a, b) => a.date < b.date ? -1 : 1).forEach(x => { (x.ex || []).forEach(e => seen.add(e.id)); schonGemacht.m.set(x, new Set(seen)); });
+  }
+  const bis = schonGemacht.m.get(h) || new Set((h.ex || []).map(e => e.id));
+  const d = plan.days.find(x => x.id === h.dayId);
+  const pl = d ? d.ex.filter(x => bis.has(x.id)).map(x => ({ id: x.id, name: x.name, sets: x.sets })) : [];
+  (h.ex || []).forEach(e => { if (!pl.some(p => p.id === e.id)) pl.push({ id: e.id, name: e.name, sets: e.sets.length }); });
+  return { pl, geschaetzt: true };
+}
+const ST_NAME = { komplett: 'komplett', teil: 'teilweise', verpasst: 'verpasst', frei: 'frei', heute: 'heute offen', vor: 'vor deinem Start' };
+function statTraining(tage) {
+  const hm = histNachTag(); const start = statStart();
+  const st = tage.map(k => ({ k, s: trainingStatus(k, hm, start), hs: hm[k] || [] }));
+  const n = { komplett: 0, teil: 0, verpasst: 0 }; st.forEach(x => { if (n[x.s] != null) n[x.s]++; });
+  const geplant = n.komplett + n.teil + n.verpasst;
+  const hs = st.flatMap(x => x.hs);
+  if (!history.length) return karte('', leer('Noch kein Training gespeichert. Nach deinem ersten Training siehst du hier, was du geschafft und was du ausgelassen hast.') + `<button class="btn primary wide" data-stgo="training">Zum Training</button>`);
+  let h = '';
+  /* Kopf: eine grosse Zahl */
+  h += karte('', `<div class="lab">Trainings komplett</div><div class="st-hero">${geplant ? pct(n.komplett, geplant) : 0}<small> %</small></div>
+    <p class="st-sub">${n.komplett} komplett, ${n.teil} teilweise, ${n.verpasst} verpasst von ${geplant} geplanten Trainings</p>
+    ${geplant ? stapel([{ l: 'Komplett', v: n.komplett, c: 'c1' }, { l: 'Teilweise', v: n.teil, c: 'c2' }, { l: 'Verpasst', v: n.verpasst, c: 'cx' }], 'stq') : ''}
+    ${chartInfo('Tippe auf einen Teil des Balkens für die Zahl.')}`);
+  /* Kalender */
+  const erster = montagVon(tage.length > 91 ? tage[tage.length - 91] : tage[0]);
+  const wochen = []; for (let m = erster; m <= tbHeute(); m = tagVerschoben(m, 7)) wochen.push(m);
+  const zelle = k => {
+    if (k > tbHeute()) return '<span class="st-c zu"></span>';
+    const s = trainingStatus(k, hm, start); const x = hm[k] || [];
+    const tip = `${tagLang(k)}: ${ST_NAME[s]}${x.length ? ' · ' + x.map(y => (y.dayName || '').split(':')[0] + ' ' + (y.fertig != null ? y.fertig + ' von ' + y.soll + ' Sätzen' : '')).join(', ') : ''}`;
+    return `<button class="st-c ${s}${k === tbHeute() ? ' jetzt' : ''}" data-tip="${esc(tip)}" aria-label="${esc(tip)}"></button>`;
+  };
+  h += karte('Kalender', `<div class="st-kal"><div class="st-kw">${['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(d => `<span>${d}</span>`).join('')}</div>
+    ${wochen.map(m => `<div class="st-kr">${[0, 1, 2, 3, 4, 5, 6].map(i => zelle(tagVerschoben(m, i))).join('')}</div>`).join('')}</div>
+    <div class="st-leg"><span><i class="c1"></i>komplett</span><span><i class="c2 halb"></i>teilweise</span><span><i class="cx"></i>verpasst</span><span><i class="leer"></i>frei</span></div>
+    ${chartInfo('Tippe auf einen Tag.')}`, `<span class="small muted">${wochen.length} Wochen</span>`);
+  /* Was du auslässt */
+  const ueb = {}; let geschaetzt = false;
+  hs.forEach(x => {
+    const { pl, geschaetzt: g } = planVon(x); if (g) geschaetzt = true;
+    pl.forEach(p => {
+      const gem = ((x.ex || []).find(e => e.id === p.id) || { sets: [] }).sets.length;
+      const u = ueb[p.name] || (ueb[p.name] = { n: p.name, soll: 0, fehlt: 0, ganz: 0, mal: 0 });
+      u.soll += p.sets; u.fehlt += Math.max(0, p.sets - gem); u.mal++; if (!gem) u.ganz++;
+    });
+  });
+  const aus = Object.values(ueb).filter(u => u.fehlt > 0).sort((a, b) => b.fehlt / b.soll - a.fehlt / a.soll || b.fehlt - a.fehlt);
+  const teilListe = hs.filter(x => x.voll === false).slice(-5).reverse();
+  let a = '';
+  if (!aus.length) a += `<p class="st-gut">${hs.length ? 'In diesem Zeitraum hast du keinen einzigen Satz ausgelassen.' : 'In diesem Zeitraum kein Training gespeichert.'}</p>`;
+  else a += aus.slice(0, 6).map((u, i) => balkenZeile(u.n, `${u.fehlt} von ${u.soll} Sätzen`, u.fehlt / u.soll * 100, 'sta' + i,
+    u.ganz ? `${u.ganz} von ${u.mal} Mal ganz weggelassen` : `in ${u.mal} Trainings`)).join('');
+  if (teilListe.length) a += `<div class="lab st-unterlab">Teilweise gemacht</div>` + teilListe.map(x => {
+    const { pl } = planVon(x);
+    const fehlt = pl.map(p => { const g = ((x.ex || []).find(e => e.id === p.id) || { sets: [] }).sets.length; return p.sets - g > 0 ? `${p.name}${g ? ' (' + (p.sets - g) + ' ' + (p.sets - g === 1 ? 'Satz' : 'Sätze') + ')' : ''}` : ''; }).filter(Boolean);
+    return `<div class="st-li"><div class="t"><b>${esc(tagLang(tagKey(new Date(x.date))))} · ${esc((x.dayName || '').split(':')[0])}</b><span>Fehlt: ${esc(fehlt.join(', ') || KA)}</span></div><span class="num st-wert">${x.fertig}/${x.soll}</span></div>`;
+  }).join('');
+  if (geschaetzt) a += '<p class="st-hw">Ältere Trainings speicherten das Soll noch nicht. Dort zählen nur Übungen, die du bis zu diesem Tag schon gemacht hast. Ab jetzt speichert die App das Soll genau.</p>';
+  h += karte('Was du auslässt', a);
+  /* Kraft: Verlauf der wichtigsten Übungen */
+  const reihen = Object.keys(STEIG).map(id => {
+    const pts = hs.map(x => { const e = (x.ex || []).find(y => y.id === id); if (!e || !e.sets.length) return null;
+      let best = null; e.sets.forEach(s => { const r = parseInt(s.r, 10) || 0, w = parseFloat(String(s.w || '').replace(',', '.')) || 0; const wert = w ? w * (1 + r / 30) : r; if (!best || wert > best.wert) best = { r, w, wert }; });
+      return { k: tagKey(new Date(x.date)), name: e.name, ...best }; }).filter(Boolean);
+    const tagName = (plan.days.find(d => d.ex.some(e => e.id === id)) || {}).name || '';
+    return pts.length ? { id, name: pts[pts.length - 1].name, tag: tagName, pts } : null;
+  }).filter(Boolean);
+  const satzText = p => p.w ? `${String(p.w).replace('.', ',')} kg × ${p.r}` : `${p.r} Wdh`;
+  let kr = '';
+  if (!reihen.length) kr = leer('Noch keine Kraftübung gespeichert.');
+  else kr = reihen.map(r => {
+    const f = r.pts[0], l = r.pts[r.pts.length - 1];
+    const d = l.w && f.w ? Math.round((l.w - f.w) * 10) / 10 : 0;
+    const dw = d ? (d > 0 ? '+' : '−') + String(Math.abs(d)).replace('.', ',') + ' kg' : (l.r - f.r ? (l.r - f.r > 0 ? '+' : '−') + Math.abs(l.r - f.r) + ' Wdh' : '±0');
+    const lo = Math.min(...r.pts.map(p => p.wert)), hi = Math.max(...r.pts.map(p => p.wert));
+    const xy = r.pts.map((p, i) => [r.pts.length === 1 ? 60 : 4 + i / (r.pts.length - 1) * 112, hi === lo ? 14 : 24 - (p.wert - lo) / (hi - lo) * 20]);
+    return `<div class="st-kr-z" data-tip="${esc(r.name + ': ' + r.pts.map(p => kurzDatum(p.k) + ' ' + satzText(p)).join(' · '))}" role="button" tabindex="0">
+      <div class="t"><b>${esc(r.name)}</b><span>${esc(r.tag)} · ${r.pts.length > 1 ? `${esc(satzText(f))} → ${esc(satzText(l))}` : esc(satzText(l))}</span></div>
+      <svg viewBox="0 0 120 28" class="st-spark" aria-hidden="true"><polyline points="${xy.map(p => p.map(v => v.toFixed(1)).join(',')).join(' ')}"/><circle cx="${xy[xy.length - 1][0].toFixed(1)}" cy="${xy[xy.length - 1][1].toFixed(1)}" r="3"/></svg>
+      <span class="st-delta${d > 0 || l.r > f.r ? ' hoch' : ''}">${r.pts.length > 1 ? dw : 'neu'}</span></div>`;
+  }).join('') + chartInfo('Tippe auf eine Übung für alle Werte.');
+  h += karte('Kraft', kr, '<span class="small muted">bester Satz pro Training</span>');
+  /* Sätze pro Woche */
+  const wk = {}; tage.forEach(k => { const m = montagVon(k); wk[m] = wk[m] || { m, gem: 0, soll: 0 }; });
+  st.forEach(x => {
+    const w = wk[montagVon(x.k)];
+    x.hs.forEach(y => { w.gem += y.fertig || 0; w.soll += y.soll || 0; });
+    if (x.s === 'verpasst') { const d = plan.days.find(p => p.id === planIdFuer(keyDatum(x.k))); if (d) w.soll += d.ex.reduce((a, e) => a + e.sets, 0); }
+  });
+  const wl = Object.values(wk).sort((a, b) => a.m < b.m ? -1 : 1).slice(-13);
+  const wmax = Math.max(1, ...wl.map(w => w.soll), ...wl.map(w => w.gem));
+  h += karte('Sätze pro Woche', `<div class="st-saeulen">${wl.map((w, i) => `<button class="st-s" data-tip="${esc('Woche ab ' + kurzDatum(w.m) + ': ' + w.gem + ' von ' + w.soll + ' geplanten Sätzen')}"><span class="spur" style="height:${Math.round(w.soll / wmax * 100)}%"></span><i ${anim('stw' + i, 'h', w.gem / wmax * 100)}></i></button>`).join('')}</div>
+    <div class="st-achse"><span>${esc(kurzDatum(wl[0].m))}</span><span>${wl.length > 1 ? esc(kurzDatum(wl[wl.length - 1].m)) : ''}</span></div>
+    <div class="st-leg"><span><i class="c1"></i>gemacht</span><span><i class="spur"></i>geplant</span></div>${chartInfo('Tippe auf eine Woche.')}
+    ${tabelle(['Woche ab', 'Gemacht', 'Geplant'], wl.map(w => [kurzDatum(w.m), String(w.gem), String(w.soll)]))}`);
+  /* Kacheln */
+  const mins = hs.map(x => x.min).filter(v => v > 0);
+  const si = streakInfo();
+  h += `<div class="st-kacheln">${kachel(mins.length ? fz(mins.reduce((a, b) => a + b, 0) / mins.length) + ' Min' : KA, 'Dauer im Schnitt')}${kachel(String(si.streak), si.streak === 1 ? 'Tag Streak' : 'Tage Streak')}${kachel(String(hs.length), 'Trainings im Zeitraum')}</div>`;
+  if (!mins.length) h += '<p class="st-hw" style="margin:-4px 2px 12px">Die Dauer misst die App ab jetzt: vom ersten abgehakten Satz bis zum Speichern.</p>';
+  return h;
+}
+
+/* ---------- Essen */
+const QUAL = [['gut', 'Gut', 'c1'], ['mittel', 'Mittel', 'c2'], ['schwach', 'Schwach', 'c3'], ['unbekannt', 'Unbekannt', 'cx']];
+/* Qualität eines Lebensmittels, nachvollziehbar statt Blackbox: Nutri-Score wenn bekannt, sonst Protein pro 100 kcal,
+   Zucker und Energiedichte. Stark verarbeitet (NOVA 4) ist höchstens mittel. */
+function qualStufe(q) {
+  if (!q || q.k == null) return 'unbekannt';
+  const ns = String(q.ns || '').toLowerCase();
+  if (ns === 'a' || ns === 'b') return 'gut';
+  if (ns === 'd' || ns === 'e') return 'schwach';
+  const ppk = q.k > 0 && q.pr != null ? q.pr / q.k * 100 : null;
+  if (q.pp) return ppk == null ? 'unbekannt' : ppk >= 6 ? 'gut' : ppk >= 3 ? 'mittel' : 'schwach';
+  let s;
+  if ((q.z != null && q.z > 15) || (q.k >= 400 && ppk != null && ppk < 3)) s = 'schwach';
+  else if ((ppk != null && ppk >= 8) || (ppk != null && ppk >= 5 && q.z != null && q.z <= 5) || (q.k <= 100 && q.z != null && q.z <= 10)) s = 'gut';
+  else s = 'mittel';
+  if ((ns === 'c' || q.nova === 4) && s === 'gut' && !(ppk >= 8)) s = 'mittel';
+  return s;
+}
+function qualVon(e) { return qualStufe(e.q || (e.fk && foods[e.fk] ? qualDaten(foods[e.fk]) : null)); }
+function gramm(e) { return e.e && e.e.g ? e.e.g * e.x : null; }
+function statEssen(tage) {
+  const rows = tage.filter(k => (tb[k] || []).length).map(k => { const s = tagSumme(k); const z = zielFuer(k); return { k, s, z, sams: keyDatum(k).getDay() === 6, dev: s.k - z.k }; });
+  if (!rows.length) return karte('', leer('In diesem Zeitraum hast du noch nichts eingetragen.') + `<button class="btn primary wide" data-stgo="tagebuch">Zum Tagebuch</button>`);
+  const zl = rows.filter(r => !r.sams);
+  const avg = (l, f) => l.length ? l.reduce((a, r) => a + f(r), 0) / l.length : null;
+  const ak = avg(zl, r => r.s.k), ap = avg(zl, r => r.s.pr), az = avg(zl, r => r.z.k);
+  const imZiel = zl.filter(r => Math.abs(r.dev) <= r.z.k * 0.1).length, drueber = zl.filter(r => r.dev > r.z.k * 0.1).length, drunter = zl.length - imZiel - drueber;
+  const protOk = zl.filter(r => r.s.pr >= r.z.pr).length;
+  let h = '';
+  const diff = ak != null ? ak - az : null;
+  h += karte('', `<div class="lab">Kalorien im Schnitt</div><div class="st-hero">${ak != null ? fz(ak) : KA}<small> kcal</small></div>
+    <p class="st-sub">${diff == null ? 'Nur Samstage erfasst, die zählen nicht.' : `${fz(Math.abs(diff))} kcal ${diff > 0 ? 'über' : 'unter'} deinem Ziel${zl.every(r => r.z.k === zl[0].z.k) ? ' von ' + fz(az) + ' kcal' : ', das im Zeitraum im Schnitt ' + fz(az) + ' kcal war'}`}</p>
+    <div class="st-kacheln innen">${kachel(`${imZiel}<small> von ${zl.length}</small>`, 'Tage im Ziel ±10 %')}${kachel(`${protOk}<small> von ${zl.length}</small>`, 'Tage Protein Ziel')}${kachel(ap != null ? fz(ap) + '<small> g</small>' : KA, 'Protein im Schnitt')}</div>
+    ${zl.length ? stapel([{ l: 'Im Ziel', v: imZiel, c: 'c1' }, { l: 'Darüber', v: drueber, c: 'c2' }, { l: 'Darunter', v: drunter, c: 'c3' }], 'ste') : ''}
+    ${chartInfo('Tippe auf einen Teil des Balkens.')}`);
+  /* Abweichung vom Ziel: über dem Ziel nach oben, darunter nach unten. Lange Zeiträume als Wochen. */
+  const woche = tage.length > 31;
+  const punkte = woche
+    ? Object.values(tage.reduce((m, k) => { const w = montagVon(k); (m[w] || (m[w] = { k: w, l: [] })).l.push(rows.find(r => r.k === k)); return m; }, {}))
+      .map(w => { const l = w.l.filter(r => r && !r.sams); return { k: w.k, dev: l.length ? avg(l, r => r.dev) : null, n: l.length, k2: l.length ? avg(l, r => r.s.k) : null, pr: l.length ? avg(l, r => r.s.pr) : null, z: l.length ? avg(l, r => r.z.k) : null }; })
+    : tage.map(k => { const r = rows.find(x => x.k === k); return { k, dev: r ? r.dev : null, sams: keyDatum(k).getDay() === 6, k2: r ? r.s.k : null, pr: r ? r.s.pr : null, z: r ? r.z.k : null }; });
+  while (punkte.length > 7 && punkte[0].dev == null) punkte.shift();
+  const mx = Math.max(250, Math.ceil(Math.max(0, ...punkte.map(p => Math.abs(p.dev || 0))) / 250) * 250);
+  const band = Math.min(100, (az || ziele.k) * 0.1 / mx * 100);
+  h += karte('Wie nah am Ziel', `<div class="st-div" style="--band:${band}%"><div class="st-band"></div><div class="st-null"></div>
+      <span class="st-y o">+${fz(mx)}</span><span class="st-y m">Ziel</span><span class="st-y u">−${fz(mx)}</span>
+      <div class="st-dv-cols">${punkte.map((p, i) => {
+        const tip = p.dev == null ? `${woche ? 'Woche ab ' : ''}${tagLang(p.k)}: ${p.sams ? 'Samstag, Cheat Day' : 'nicht erfasst'}`
+          : `${woche ? 'Woche ab ' + kurzDatum(p.k) + ', Schnitt' : tagLang(p.k)}: ${fz(p.k2)} kcal, ${vz(p.dev)} zum Ziel ${fz(p.z)}${p.sams ? ', Cheat Day' : ''}`;
+        const o = p.dev > 0 ? p.dev / mx * 100 : 0, u = p.dev < 0 ? -p.dev / mx * 100 : 0;
+        return `<button class="st-dv${p.sams ? ' cheat' : ''}${p.dev == null ? ' ohne' : ''}" data-tip="${esc(tip)}" aria-label="${esc(tip)}"><span class="ob"><i ${anim('stdo' + i, 'h', o)}></i></span><span class="un"><i ${anim('stdu' + i, 'h', u)}></i></span></button>`;
+      }).join('')}</div></div>
+    <div class="st-achse"><span>${esc(kurzDatum(punkte[0].k))}</span><span>${esc(kurzDatum(punkte[punkte.length - 1].k))}</span></div>
+    <div class="st-leg"><span><i class="c1"></i>über dem Ziel</span><span><i class="c2"></i>darunter</span><span><i class="band"></i>im Ziel ±10 %</span>${woche ? '' : '<span><i class="cx"></i>Samstag</span>'}</div>
+    ${chartInfo(woche ? 'Pro Woche der Schnitt ohne Samstag. Tippe auf einen Balken.' : 'Tippe auf einen Tag.')}
+    ${tabelle(['Tag', 'kcal', 'Ziel', 'Abweichung'], rows.slice().reverse().map(r => [tagLang(r.k) + (r.sams ? ' (Sa)' : ''), fz(r.s.k), fz(r.z.k), vz(r.dev)]))}`,
+    `<span class="small muted">${woche ? 'pro Woche' : 'pro Tag'}</span>`);
+  /* Protein */
+  const pp = punkte;
+  const pmx = Math.max((zielFuer(tbHeute()).pr || 150) * 1.3, ...pp.map(p => p.pr || 0));
+  const pz = (zielFuer(tbHeute()).pr || 150) / pmx * 100;
+  h += karte('Protein', `<div class="st-chart"><div class="st-ziellinie" style="bottom:${pz}%"></div>
+      <div class="st-saeulen eng">${pp.map((p, i) => `<button class="st-s${p.pr != null && p.pr >= (zielFuer(p.k).pr) ? ' ok' : ''}${p.sams ? ' cheat' : ''}" data-tip="${esc((woche ? 'Woche ab ' + kurzDatum(p.k) + ', Schnitt' : tagLang(p.k)) + ': ' + (p.pr == null ? 'nicht erfasst' : fz(p.pr) + ' g von ' + zielFuer(p.k).pr + ' g'))}"><i ${anim('stp' + i, 'h', p.pr ? p.pr / pmx * 100 : 0)}></i></button>`).join('')}</div></div>
+    <div class="st-achse"><span>${esc(kurzDatum(pp[0].k))}</span><span>${esc(kurzDatum(pp[pp.length - 1].k))}</span></div>
+    <div class="st-leg"><span><i class="c1"></i>Ziel erreicht</span><span><i class="c2"></i>darunter</span><span><i class="linie"></i>${zielFuer(tbHeute()).pr} g Ziel</span></div>${chartInfo('Tippe auf einen Balken.')}`);
+  /* Makros: Anteil an den Kalorien, du gegen Ziel */
+  let mp = 0, mk = 0, mf = 0; zl.forEach(r => { mp += r.s.pr * 4; mk += r.s.kh * 4; mf += r.s.f * 9; });
+  const fehlt = zl.reduce((a, r) => a + Math.max(r.s.fehlt.kh, r.s.fehlt.f), 0);
+  h += karte('Woher deine Kalorien kommen', `<div class="lab st-unterlab" style="margin-top:0">Du</div>${stapel([{ l: 'Protein', v: mp, c: 'c1' }, { l: 'Kohlenhydrate', v: mk, c: 'c2' }, { l: 'Fett', v: mf, c: 'c3' }], 'stm')}
+    <div class="lab st-unterlab">Dein Ziel</div>${stapel([{ l: 'Protein', v: ziele.pr * 4, c: 'c1' }, { l: 'Kohlenhydrate', v: ziele.kh * 4, c: 'c2' }, { l: 'Fett', v: ziele.f * 9, c: 'c3' }], 'stmz')}
+    ${fehlt ? `<p class="st-hw">Bei ${fehlt} Einträgen fehlen Kohlenhydrate oder Fett, sie fehlen auch hier.</p>` : ''}${chartInfo('Tippe auf einen Teil.')}`);
+  /* Qualität */
+  const qs = { gut: 0, mittel: 0, schwach: 0, unbekannt: 0 }; const proFood = {}; let zuck = 0, zuckBekannt = 0, eintr = 0;
+  rows.forEach(r => (tb[r.k] || []).forEach(e => {
+    const n = nwMal(e.pu, e.x); const k = n.k || 0; eintr++;
+    const q = qualVon(e); if (!r.sams) qs[q] += k;
+    const id = e.fk || 'n:' + e.n; const p = proFood[id] || (proFood[id] = { n: e.n, img: e.img, k: 0, pr: 0, mal: 0, q });
+    p.k += k; p.pr += n.pr || 0; p.mal++;
+    const qd = e.q || (e.fk && foods[e.fk] ? qualDaten(foods[e.fk]) : null); const g = gramm(e);
+    if (!r.sams && qd && qd.z != null && g) { zuck += qd.z * g / 100; zuckBekannt++; }
+  }));
+  const qsum = qs.gut + qs.mittel + qs.schwach + qs.unbekannt;
+  const schwachTop = Object.values(proFood).filter(p => p.q === 'schwach').sort((a, b) => b.k - a.k).slice(0, 3);
+  h += karte('Wie gesund', `${qsum ? stapel(QUAL.map(([k, l, c]) => ({ l, v: qs[k], c, tip: fz(qs[k]) + ' kcal' })), 'stg') : leer('Keine Kalorien ausserhalb von Samstagen.')}
+    <p class="st-sub" style="margin-top:12px">${qsum ? `<b>${pct(qs.gut, qsum)} %</b> deiner Kalorien kamen aus guten Lebensmitteln, <b>${pct(qs.schwach, qsum)} %</b> aus schwachen.` : ''}${zuckBekannt ? ` Zucker, wo bekannt: im Schnitt ${fz(zuck / Math.max(1, zl.length))} g pro Tag.` : ''}</p>
+    ${schwachTop.length ? `<div class="lab st-unterlab">Die grössten schwachen Quellen</div>` + schwachTop.map(p => `<div class="st-li">${tbBild(p.img, p.n)}<div class="t"><b>${esc(p.n)}</b><span>${p.mal} Mal eingetragen</span></div><span class="num st-wert">${fz(p.k)} kcal</span></div>`).join('') : ''}
+    ${chartInfo('Tippe auf einen Teil des Balkens.')}
+    <details class="how" style="margin-top:6px"><summary>Wie wird das bewertet?</summary>
+      <p><b>Gut:</b> Nutri-Score A oder B. Ohne Nutri-Score: mindestens 8 g Protein pro 100 kcal, oder 5 g bei höchstens 5 g Zucker, oder leicht mit höchstens 100 kcal und 10 g Zucker pro 100 g.</p>
+      <p><b>Schwach:</b> Nutri-Score D oder E, mehr als 15 g Zucker pro 100 g, oder über 400 kcal pro 100 g bei weniger als 3 g Protein pro 100 kcal. Typisch: Schokoriegel, Chips, Gebäck.</p>
+      <p><b>Mittel:</b> alles dazwischen. Stark verarbeitete Produkte (NOVA 4) sind höchstens mittel, ausser sie liefern sehr viel Protein.</p>
+      <p><b>Unbekannt:</b> Einträge mit nur Kalorien, zum Beispiel das Kantinen Menü. Rezepte zählen nach Protein pro Kalorie.</p>
+      <p>Gewichtet nach Kalorien, Samstag zählt nicht. Das ist eine grobe Einordnung, keine medizinische Bewertung.</p></details>`);
+  /* Top Quellen */
+  const alleFood = Object.values(proFood);
+  const topK = alleFood.slice().sort((a, b) => b.k - a.k).slice(0, 5), topP = alleFood.filter(p => p.pr > 0).sort((a, b) => b.pr - a.pr).slice(0, 5);
+  const gesK = alleFood.reduce((a, p) => a + p.k, 0) || 1, gesP = alleFood.reduce((a, p) => a + p.pr, 0) || 1;
+  h += karte('Deine grössten Quellen', `<div class="lab st-unterlab" style="margin-top:0">Kalorien</div>${topK.map((p, i) => balkenZeile(p.n, fz(p.k) + ' kcal', p.k / topK[0].k * 100, 'stk' + i, `${pct(p.k, gesK)} % aller Kalorien · ${p.mal} Mal`)).join('')}
+    ${topP.length ? `<div class="lab st-unterlab">Protein</div>${topP.map((p, i) => balkenZeile(p.n, fz(p.pr) + ' g', p.pr / topP[0].pr * 100, 'stpq' + i, `${pct(p.pr, gesP)} % deines Proteins · ${p.mal} Mal`)).join('')}` : ''}`,
+    '<span class="small muted">inklusive Samstag</span>');
+  /* Mahlzeiten */
+  const mz = { morgen: 0, mittag: 0, abend: 0, snack: 0 }; zl.forEach(r => (tb[r.k] || []).forEach(e => { mz[e.m] = (mz[e.m] || 0) + (nwMal(e.pu, e.x).k || 0); }));
+  const msum = Object.values(mz).reduce((a, b) => a + b, 0) || 1; const mmax = Math.max(1, ...Object.values(mz));
+  h += karte('Wann du isst', MAHL.map(([m, l], i) => balkenZeile(l, pct(mz[m], msum) + ' %', mz[m] / mmax * 100, 'stmh' + i, `${fz(mz[m] / Math.max(1, zl.length))} kcal pro Tag`)).join('')
+    + (mz.snack / msum > 0.3 ? `<p class="st-sub" style="margin-top:10px"><b>${pct(mz.snack, msum)} % deiner Kalorien sind Snacks.</b> Dort lässt sich am leichtesten sparen, ohne zu hungern.</p>` : ''));
+  h += `<p class="st-hw" style="margin:0 2px 14px">${rows.length} Tage mit Einträgen, ${eintr} Einträge. Samstage (Cheat Day) zählen beim Schnitt, beim Ziel und bei der Qualität nicht.</p>`;
+  return h;
+}
+
+/* ---------- Gewicht */
+function verbrauchSchaetzung() {
+  const heute = tbHeute(); const ab = tagVerschoben(heute, -27);
+  const pts = Object.entries(gewicht).filter(([k]) => k >= ab).map(([k, kg]) => [keyDatum(k).getTime(), kg]).sort((a, b) => a[0] - b[0]);
+  if (pts.length < 3 || pts[pts.length - 1][0] - pts[0][0] < 13 * 864e5) return null;
+  const n = pts.length, mx = pts.reduce((a, p) => a + p[0], 0) / n, my = pts.reduce((a, p) => a + p[1], 0) / n;
+  let o = 0, u = 0; pts.forEach(p => { o += (p[0] - mx) * (p[1] - my); u += (p[0] - mx) ** 2; });
+  const proTag = u ? o / u * 864e5 : 0;
+  const tageE = []; for (let k = ab; k <= heute; k = tagVerschoben(k, 1)) if ((tb[k] || []).length && k !== heute) tageE.push(tagSumme(k).k);
+  if (tageE.length < 10) return { fehlt: 10 - tageE.length };
+  const essen = tageE.reduce((a, b) => a + b, 0) / tageE.length;
+  return { kcal: Math.round((essen - proTag * 7700) / 10) * 10, essen, proWoche: proTag * 7, tage: tageE.length };
+}
+function statGewicht(tage) {
+  const ein = Object.entries(gewicht).filter(([k]) => k >= tage[0]).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  const alle = Object.entries(gewicht).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  if (!alle.length) return karte('', leer('Noch kein Gewicht eingetragen. Wieg dich am Montag morgen und trag es im Tagebuch ein.') + `<button class="btn primary wide" data-stgo="tagebuch">Zum Tagebuch</button>`);
+  const letzt = alle[alle.length - 1]; const tr = gewichtTrend();
+  let h = '';
+  const diff = ein.length > 1 ? ein[ein.length - 1][1] - ein[0][1] : null;
+  h += karte('', `<div class="lab">Aktuelles Gewicht</div><div class="st-hero">${fz(letzt[1], 1)}<small> kg</small></div>
+    <p class="st-sub">${esc(tagDatum(letzt[0]))}${diff != null ? ` · ${diff > 0 ? '+' : diff < 0 ? '−' : '±'}${fz(Math.abs(diff), 1)} kg im Zeitraum` : ''}</p>`);
+  if (ein.length >= 2) {
+    const W = 320, H = 150, L = 34, R = 8, T = 10, B = 22;
+    const ys = ein.map(e => e[1]); let lo = Math.floor((Math.min(...ys) - .3) * 2) / 2, hi = Math.ceil((Math.max(...ys) + .3) * 2) / 2; if (hi - lo < 1) { hi += .5; lo -= .5; }
+    const t0 = keyDatum(ein[0][0]).getTime(), t1 = Math.max(t0 + 864e5, keyDatum(ein[ein.length - 1][0]).getTime());
+    const X = k => L + (keyDatum(k).getTime() - t0) / (t1 - t0) * (W - L - R), Y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+    const ticks = []; const step = hi - lo > 4 ? 1 : .5; for (let v = lo; v <= hi + 1e-9; v += step) ticks.push(v);
+    let trendLinie = '';
+    if (tr) { const k1 = ein[ein.length - 1][0], k0 = ein[0][0]; const v1 = letzt[1]; const tage0 = (keyDatum(k1) - keyDatum(k0)) / 864e5; const v0 = v1 - tr.proWoche / 7 * tage0;
+      trendLinie = `<line class="trend" x1="${X(k0).toFixed(1)}" y1="${Y(v0).toFixed(1)}" x2="${X(k1).toFixed(1)}" y2="${Y(v1).toFixed(1)}"/>`; }
+    h += karte('Verlauf', `<svg class="st-line" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gewichtsverlauf">
+      ${ticks.map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text x="${L - 6}" y="${(Y(v) + 3.5).toFixed(1)}" text-anchor="end">${fz(v, 1)}</text>`).join('')}
+      ${trendLinie}<polyline class="mess" points="${ein.map(e => X(e[0]).toFixed(1) + ',' + Y(e[1]).toFixed(1)).join(' ')}"/>
+      ${ein.map(e => `<g class="pt" data-tip="${esc(tagLang(e[0]) + ': ' + fz(e[1], 1) + ' kg')}"><circle class="hit" cx="${X(e[0]).toFixed(1)}" cy="${Y(e[1]).toFixed(1)}" r="13"/><circle class="dot" cx="${X(e[0]).toFixed(1)}" cy="${Y(e[1]).toFixed(1)}" r="4.5"/></g>`).join('')}
+      <text x="${L}" y="${H - 5}" class="ax">${esc(kurzDatum(ein[0][0]))}</text><text x="${W - R}" y="${H - 5}" class="ax" text-anchor="end">${esc(kurzDatum(ein[ein.length - 1][0]))}</text></svg>
+      <div class="st-leg"><span><i class="c1 rund"></i>gemessen</span>${tr ? '<span><i class="linie hell"></i>Trend</span>' : ''}</div>${chartInfo('Tippe auf einen Punkt.')}
+      ${tabelle(['Tag', 'kg'], ein.slice().reverse().map(e => [tagLang(e[0]), fz(e[1], 1)]))}`);
+  }
+  const vb = verbrauchSchaetzung();
+  h += `<div class="st-kacheln">${kachel(tr ? (tr.proWoche > 0 ? '+' : tr.proWoche < 0 ? '−' : '') + fz(Math.abs(tr.proWoche), 2) + '<small> kg</small>' : KA, 'Trend pro Woche')}
+    ${kachel(vb && vb.kcal ? fz(vb.kcal) + '<small> kcal</small>' : KA, 'Dein Verbrauch, gemessen')}${kachel(fz(ziele.k) + '<small> kcal</small>', 'Dein Ziel')}</div>`;
+  let erk = '';
+  if (vb && vb.kcal) erk = `<p class="st-sub" style="margin:0">Du hast an ${vb.tage} Tagen im Schnitt <b>${fz(vb.essen)} kcal</b> gegessen und dabei ${fz(Math.abs(vb.proWoche), 2)} kg pro Woche ${vb.proWoche < 0 ? 'verloren' : 'zugenommen'}. Daraus ergibt sich ein Verbrauch von etwa <b>${fz(vb.kcal)} kcal</b>. ${vb.kcal > ziele.k ? `Dein Ziel von ${fz(ziele.k)} kcal liegt ${fz(vb.kcal - ziele.k)} kcal darunter, das sind etwa <b>${fz((vb.kcal - ziele.k) * 7 / 7700, 2)} kg Fett pro Woche</b>, wenn du es triffst.` : `Dein Ziel von ${fz(ziele.k)} kcal liegt nicht darunter. So nimmst du nicht ab.`}</p>
+    <p class="st-hw">Stimmt nur, wenn du an den erfassten Tagen wirklich alles einträgst. Nicht erfasste Samstage fehlen in der Rechnung.</p>`;
+  else if (vb && vb.fehlt) erk = `<p class="st-sub" style="margin:0">Noch ${vb.fehlt} Tage mit Einträgen in den letzten 4 Wochen, dann rechnet die App deinen echten Verbrauch aus Essen und Gewicht.</p>`;
+  else erk = '<p class="st-sub" style="margin:0">Mit drei Messungen über zwei Wochen und zehn erfassten Tagen rechnet die App deinen echten Verbrauch aus. Das ist genauer als jede Formel.</p>';
+  h += karte('Was dein Körper verbraucht', erk);
+  const zh = LS.get('zielHist', []);
+  if (zh.length) h += karte('Kalorienziel', zh.slice().reverse().slice(0, 6).map(z => `<div class="st-li"><div class="t"><b>${fz(z.k)} kcal</b><span>${esc(tagDatum(z.d))}</span></div><span class="num st-wert">${z.pr} g Protein</span></div>`).join(''));
+  return h;
 }
 
 /* ======================================================= Sheet */
@@ -3468,7 +4056,7 @@ $('#importFile').addEventListener('change', async e => {
     Object.entries(d.daten).forEach(([k, v]) => { if (k.indexOf('fit.') === 0 && typeof v === 'string') { try { localStorage.setItem(k, v); n++; } catch (er) {} } });
     plan = loadPlan(); sessions = LS.get('sess', {}); history = LS.get('history', []); curDay = todayDayId();
     zutaten = ladeZutaten(); nogo = LS.get('nogo', NOGO_DEFAULT); favs = LS.get('fav', {}); listen = LS.get('listen', { coop: [], migros: [] });
-    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf); tbLaden();
+    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf); tbLaden(); stf = Object.assign({ b: 'training', z: 30 }, LS.get('statf', {}));
     toast(n + ' Einträge importiert'); closeSheet();
   } catch (er) { toast('Import fehlgeschlagen: ' + er.message); }
 });
