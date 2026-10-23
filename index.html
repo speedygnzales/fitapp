@@ -18,6 +18,7 @@
   --ink: #FAFAFA; --muted: #A3A3A3; --faint: #8A8A8A; --inv: #0E0E0E;
   --r: 14px; --rs: 10px; --tab-h: 64px; --pill-h: 112px;
   --safe-b: env(safe-area-inset-bottom, 0px);
+  --gut: #0ca30c; --knapp: #fab219; --mies: #d03b3b;
   color-scheme: dark;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -477,6 +478,8 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 .tb-spark { display: block; width: 100%; height: 48px; margin-top: 12px; }
 .tb-spark polyline { fill: none; stroke: var(--ink); stroke-width: 1.8; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
 .tb-spark polygon { fill: rgba(250,250,250,.06); }
+.tb-fuer { margin: 2px 2px 8px; }
+.tb-wochelink { display: block; margin: 6px auto 4px; }
 .tb-statlink { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; color: var(--ink); font: inherit; }
 .tb-statlink .t { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .tb-statlink b { font-weight: 600; }
@@ -720,6 +723,81 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 .st-tab th { text-align: left; font-weight: 500; color: var(--faint); font-size: .72rem; padding: 4px 0; }
 .st-tab th + th, .st-tab td + td { text-align: right; }
 .st-s, .st-dv, .st-c, .st-kr-z, .st-stapel .sg { -webkit-tap-highlight-color: transparent; }
+
+/* Wochenbericht: Statusfarben nur für gut, knapp, Baustelle, immer mit Zeichen und Wort */
+.wb-nav { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.wb-nav > div { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; line-height: 1.25; }
+.wb-nav b { font-weight: 600; font-size: 1.05rem; }
+.wb-nav span { font-size: .78rem; color: var(--muted); }
+.wb-nav .iconbtn[disabled] { opacity: .25; pointer-events: none; }
+.wb-held { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; padding: 20px 18px; position: relative; overflow: hidden; }
+.wb-held::before { content: ""; position: absolute; inset: 0; background: radial-gradient(110% 90% at 0% 0%, var(--glow, transparent), transparent 62%); opacity: .2; pointer-events: none; }
+.wb-held.s-gut { --glow: var(--gut); border-color: rgba(12,163,12,.45); }
+.wb-held.s-knapp { --glow: var(--knapp); border-color: rgba(250,178,25,.4); }
+.wb-held.s-mies { --glow: var(--mies); border-color: rgba(208,59,59,.45); }
+.wb-held > * { position: relative; }
+.wb-ring { position: relative; width: clamp(104px, 30vw, 122px); aspect-ratio: 1; }
+.wb-ring svg, .tb-ring.klein svg { transform: rotate(-90deg); }
+.wb-ring svg { display: block; width: 100%; height: 100%; }
+.wb-ring circle { fill: none; stroke-width: 10; }
+.wb-ring .bg { stroke: var(--fill2); }
+.wb-ring .fg { stroke: var(--ink); stroke-linecap: round; transition: stroke-dasharray 1s cubic-bezier(.2,.8,.2,1); }
+.wb-ring .fg.null { stroke-opacity: 0; }
+.s-gut .wb-ring .fg, .tb-ring.s-gut .fg { stroke: var(--gut); }
+.s-knapp .wb-ring .fg, .tb-ring.s-knapp .fg { stroke: var(--knapp); }
+.s-mies .wb-ring .fg, .tb-ring.s-mies .fg { stroke: var(--mies); }
+.wb-ring .mitte { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.wb-ring .mitte b { font-size: 2.7rem; font-weight: 600; letter-spacing: -.045em; line-height: 1; }
+.wb-ring .mitte span { font-size: .68rem; color: var(--muted); margin-top: 5px; }
+.wb-text { min-width: 0; }
+.wb-text h2 { margin: 10px 0 0; font-size: 1.16rem; line-height: 1.32; font-weight: 600; letter-spacing: -.01em; }
+.wb-pill { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-width: 26px; height: 26px; padding: 0 10px; border-radius: 8px; font-size: .78rem; font-weight: 700; background: var(--fill2); color: var(--muted); flex: 0 0 auto; letter-spacing: .01em; }
+.wb-pill.s-gut { background: var(--gut); color: #fff; }
+.wb-pill.s-knapp { background: var(--knapp); color: #0b0b0b; }
+.wb-pill.s-mies { background: var(--mies); color: #fff; }
+.wb-delta { display: inline-flex; margin-top: 10px; font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.wb-delta.hoch { color: var(--ink); }
+.wb-ampel { padding: 4px 16px 0; }
+.wb-z { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--hair); }
+.wb-z:first-child { border-top: 0; }
+.wb-z .wb-pill { width: 30px; height: 30px; padding: 0; font-size: .92rem; }
+.wb-z .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.wb-z .t b { font-weight: 600; font-size: .95rem; }
+.wb-z .t span { font-size: .78rem; color: var(--muted); }
+.wb-punkte { display: grid; grid-template-columns: repeat(7, 9px); gap: 4px; flex: 0 0 auto; }
+.wb-punkte i, .wb-leg i { width: 9px; height: 9px; border-radius: 3px; background: var(--fill2); display: inline-block; }
+.wb-punkte i.s-zu { background: transparent; box-shadow: inset 0 0 0 1px var(--hair); }
+.wb-punkte i.s-gut, .wb-leg i.s-gut { background: var(--gut); }
+.wb-punkte i.s-knapp, .wb-leg i.s-knapp { background: var(--knapp); }
+.wb-punkte i.s-mies, .wb-leg i.s-mies { background: var(--mies); }
+.wb-wort { font-size: .78rem; color: var(--muted); flex: 0 0 auto; }
+.wb-leg { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px 0 12px; border-top: 1px solid var(--hair); font-size: .7rem; color: var(--faint); }
+.wb-leg span { display: inline-flex; align-items: center; gap: 5px; }
+.wb-leg .r { margin-left: auto; }
+.wb-schritt { border-color: var(--line2); }
+.wb-schritt p { margin: 8px 0 0; font-size: 1rem; line-height: 1.5; }
+.wb-ziel { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--fill); font-size: .86rem; line-height: 1.45; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+.wb-ziel b { font-weight: 600; }
+.wb-r { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--hair); }
+.wb-rek .lab + .wb-r { border-top: 0; margin-top: 4px; }
+.wb-r .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.wb-r .t b { font-weight: 600; font-size: .92rem; }
+.wb-r .t span { font-size: .78rem; color: var(--muted); }
+.wb-pokal { width: 38px; height: 38px; border-radius: 11px; background: rgba(250,178,25,.14); color: var(--knapp); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex: 0 0 auto; }
+.wb-pokal.flamme { background: var(--fill2); color: var(--ink); }
+.wb-pokal svg { width: 20px; height: 20px; }
+.wb-mehr { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; color: var(--ink); font: inherit; }
+.wb-mehr .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.wb-mehr b { font-weight: 600; }
+.wb-mehr .t span { font-size: .8rem; color: var(--muted); }
+.wb-mehr > svg { color: var(--faint); flex: 0 0 auto; }
+.wb-mehr:active { transform: scale(.98); }
+.tb-ring.klein .mz { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .92rem; }
+.st-kopfzahl { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+.st-kopfzahl b small { font-size: 1rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.st-kopfzahl b { font-size: 2.2rem; font-weight: 600; letter-spacing: -.03em; }
+.st-kopfzahl span { font-size: .82rem; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .wb-ring .fg { transition: none; } }
 
 /* ======================================================= Bewegung
    Kurz, ruhig, mit Zweck: Eintritt beim Tab Wechsel, Blätter von unten, Druck Feedback, Haken, Fortschritt.
@@ -1527,7 +1605,7 @@ function renderPlan() {
         ${trainingBald ? '<button class="btn primary" data-goto="training">Training öffnen</button>' : ''}
         ${g && g !== 'training' ? `<button class="btn ${gewHeute()[g] ? 'ok' : ''}" data-gew="${g}">${gewHeute()[g] ? 'Erledigt' : 'Abhaken'}</button>` : ''}</div>` : ''}
     </div>`;
-    h += tbHeuteKarte() + koerperHeuteKarte();
+    h += bauchHeuteKarte() + tbHeuteKarte() + wocheHeuteKarte() + koerperHeuteKarte();
     /* Gewohnheiten von heute */
     const keys = []; d.items.forEach(it => { const k = gewohnheitVon(it); if (k && keys.indexOf(k) < 0) keys.push(k); });
     if (keys.length) {
@@ -1592,6 +1670,7 @@ $('#main').addEventListener('click', e => {
     const neu = $('.gew .gew-bar i'); if (neu && vorher != null) { const ziel = neu.style.width; neu.style.width = vorher; requestAnimationFrame(() => requestAnimationFrame(() => { neu.style.width = ziel; })); }
     return;
   }
+  if (e.target.closest('[data-heutebauch]')) { openBauch(tbHeute()); return; }
   const go = e.target.closest('[data-goto]'); if (go) { curDay = todayDayId(); if (go.dataset.stk) zeigeStats(go.dataset.stk); else setTab(go.dataset.goto); }
 });
 setInterval(() => { if (tab === 'plan' && document.visibilityState === 'visible' && $('#sheet').hidden) renderPlan(); }, 60000);
@@ -2646,7 +2725,7 @@ function openLists() {
   $('#sheetBody').onkeydown = e => { if (e.target.id === 'lIn' && e.key === 'Enter') { const v = e.target.value.trim(); if (v) { addToList(listTab, v, ''); draw(); } } };
 }
 $('#btnListe').addEventListener('click', openLists);
-$('#btnStat').addEventListener('click', () => setTab('stats'));
+$('#btnStat').addEventListener('click', () => zeigeStats('woche'));
 
 /* ======================================================= Modul 5: Tagebuch
    Was du isst: Kalorien, Protein, Kohlenhydrate, Fett. Quellen: deine Migros und Coop Daten (Strichcode auch offline),
@@ -2895,7 +2974,7 @@ function renderTagebuch() {
   const fehlt = Math.max(s.fehlt.kh, s.fehlt.f);
   const hinweis = [fehlt ? `Bei ${fehlt} ${fehlt === 1 ? 'Eintrag fehlen' : 'Einträgen fehlen'} Kohlenhydrate oder Fett, dort sind die Summen zu tief.` : '',
     s.khs ? 'Kohlenhydrate teils aus den Kalorien berechnet.' : ''].filter(Boolean).join(' ');
-  h += `<div class="card tb-sum">
+  h += `<div class="lab tb-fuer">${heute ? 'Für heute' : 'An diesem Tag'}</div><div class="card tb-sum">
     <div class="tb-ring" role="img" aria-label="${fz(s.k)} von ${fz(ziele.k)} kcal">${ringSvg('tbr', p)}
       <div class="mitte">${rest >= 0 ? `<b class="num">${fz(rest)}</b><span>kcal übrig</span>` : `<b class="num">${fz(-rest)}</b><span>kcal drüber</span>`}</div></div>
     <div class="tb-mak">${makZeile('pr', s)}${makZeile('kh', s)}${makZeile('f', s)}</div>
@@ -2916,7 +2995,7 @@ function renderTagebuch() {
     }
     h += '</div>';
   });
-  h += `<button class="card tb-statlink" data-tbstat="tag"><span class="t"><b>Statistik</b><span>Jeder Tag mit allen Details, Wochen, Qualität, Verlauf</span></span>${I_RECHTS}</button>` + gewichtKarte(tag);
+  h += `<button class="linkbtn tb-wochelink" data-tbwoche>Wie läuft deine Woche? Zum Wochenbericht</button>`;
   $('#main').innerHTML = h;
   tbAnimieren();
 }
@@ -3010,6 +3089,7 @@ $('#main').addEventListener('click', e => {
   const tg = t.closest('[data-tbtag]'); if (tg) { tbTag = tg.dataset.tbtag === tbHeute() ? null : tg.dataset.tbtag; renderTagebuch(); return; }
   if (t.closest('[data-tbscan]')) { tbScannen(mahlJetzt(), tbAkt()); return; }
   if (t.closest('[data-tbziele]')) { openZiele(); return; }
+  if (t.closest('[data-tbwoche]')) { zeigeStats('woche'); return; }
   if (t.closest('[data-tbstat]')) { zeigeStats('essen', t.closest('[data-tbstat]').dataset.tbstat === 'tag' ? 'tag' : 'grob'); return; }
   const ap = t.closest('[data-tbanpass]');
   if (ap) {
@@ -3437,7 +3517,8 @@ async function tbCode(code) {
 /* ======================================================= Modul 6: Statistik
    Training, Essen und Gewicht über einen wählbaren Zeitraum. Ein Filter oben gilt für alles.
    Jede Grafik: Antippen zeigt den genauen Wert, darunter gibt es die Tabelle. Samstag (Cheat Day) zählt beim Essen nicht. */
-let stf = Object.assign({ b: 'training', z: 30, v: 'grob', f: 'alles' }, LS.get('statf', {}));
+let stf = Object.assign({ b: 'training', z: 30, v: 'woche', f: 'alles', w: 0 }, LS.get('statf', {}));
+stf.w = 0;
 if (stf.b === 'gewicht') stf.b = 'koerper';
 const ZEITEN = [[7, '7 Tage'], [30, '30 Tage'], [90, '3 Monate'], [0, 'Alles']];
 const kurzDatum = k => keyDatum(k).toLocaleDateString('de-CH', { day: 'numeric', month: 'numeric' });
@@ -3484,8 +3565,9 @@ function leer(text) { return `<div class="st-leer">${esc(text)}</div>`; }
 
 function renderStats() {
   const tage = statTage();
-  let h = `<div class="seg st-ansicht" role="tablist"><button data-stv="grob" aria-pressed="${stf.v !== 'tag'}">Übersicht</button><button data-stv="tag" aria-pressed="${stf.v === 'tag'}">Jeder Tag</button></div>`;
+  let h = `<div class="seg drei st-ansicht" role="tablist"><button data-stv="woche" aria-pressed="${stf.v === 'woche'}">Woche</button><button data-stv="grob" aria-pressed="${stf.v === 'grob'}">Details</button><button data-stv="tag" aria-pressed="${stf.v === 'tag'}">Jeder Tag</button></div>`;
   if (stf.v === 'tag') h += statJederTag();
+  else if (stf.v === 'woche') h += statWoche();
   else {
     h += `<div class="seg drei st-seg" role="tablist">${[['training', 'Training'], ['essen', 'Essen'], ['koerper', 'Körper']].map(([k, l]) => `<button data-stb="${k}" aria-pressed="${stf.b === k}">${l}</button>`).join('')}</div>
       <div class="chips st-zeit">${ZEITEN.map(([z, l]) => `<button class="chip" data-stz="${z}" aria-pressed="${stf.z === z}">${l}</button>`).join('')}</div>`;
@@ -3494,7 +3576,7 @@ function renderStats() {
   $('#main').innerHTML = h;
   tbAnimieren();
 }
-function zeigeStats(b, v) { if (b) stf.b = b; stf.v = v || 'grob'; LS.set('statf', stf); setTab('stats'); }
+function zeigeStats(b, v) { if (b === 'woche') { stf.v = 'woche'; stf.w = 0; } else { if (b) stf.b = b; stf.v = v || 'grob'; } LS.set('statf', stf); setTab('stats'); }
 /* Tagesdetails erst beim Aufklappen bauen, so bleibt auch ein Jahr voller Tage schnell */
 $('#main').addEventListener('toggle', e => {
   if (tab !== 'stats' || !e.target.classList || !e.target.classList.contains('st-tag') || !e.target.open) return;
@@ -3508,6 +3590,13 @@ $('#main').addEventListener('click', e => {
   const v = e.target.closest('[data-stv]'); if (v) { stf.v = v.dataset.stv; LS.set('statf', stf); renderStats(); window.scrollTo(0, 0); return; }
   const fi = e.target.closest('[data-stf]'); if (fi) { stf.f = fi.dataset.stf; LS.set('statf', stf); renderStats(); return; }
   if (e.target.closest('[data-stset]')) { openSettings(); return; }
+  const sw = e.target.closest('[data-stw]'); if (sw) { if (sw.disabled) return; stf.w = Math.max(0, (stf.w || 0) + +sw.dataset.stw); renderStats(); return; }
+  const mehr = e.target.closest('[data-stmehr]'); if (mehr) { stf.b = mehr.dataset.stmehr; stf.v = 'grob'; LS.set('statf', stf); renderStats(); window.scrollTo(0, 0); return; }
+  if (e.target.closest('[data-stbauch]')) { openBauch(tbHeute()); return; }
+  const ap = e.target.closest('[data-stanpass]');
+  if (ap) { const alt = Object.assign({}, ziele), altH = LS.get('zielHist', []); const k = +ap.dataset.stanpass;
+    zieleSetzen({ k, pr: ziele.pr, f: ziele.f, kh: khRest(k, ziele.pr, ziele.f) }); renderStats();
+    toastAktion('Neues Ziel: ' + fz(k) + ' kcal', 'Rückgängig', () => { ziele = alt; LS.set('ziele', ziele); LS.set('zielHist', altH); renderStats(); }); return; }
   const b = e.target.closest('[data-stb]'); if (b) { stf.b = b.dataset.stb; LS.set('statf', stf); renderStats(); return; }
   const z = e.target.closest('[data-stz]'); if (z) { stf.z = +z.dataset.stz; LS.set('statf', stf); renderStats(); return; }
   const go = e.target.closest('[data-stgo]'); if (go) { if (go.dataset.stgo === 'tagebuch') tbTag = null; setTab(go.dataset.stgo); return; }
@@ -3909,7 +3998,7 @@ function isoWoche(k) { const d = keyDatum(k); const t = new Date(Date.UTC(d.getF
 
 /* ======================================================= Statistik: Körper (Gewicht, Schritte, Schlaf, Puls) */
 function statKoerper(tage) {
-  let h = statGewicht(tage);
+  let h = statBauch(tage) + (Object.keys(gewicht).length ? statGewicht(tage) : '');
   const hatH = tage.some(k => health[k]);
   if (!hatH) {
     h += karte('Schritte, Schlaf und Puls', `<p class="st-sub" style="margin:0">Kommt aus Samsung Health, sobald du die App verbindest. Dann siehst du hier jeden Tag deine Schritte, wann und wie lange du geschlafen hast, deinen Puls und deine Trainings von der Uhr.</p>
@@ -3972,7 +4061,7 @@ function tagZeile(k, hm, start) {
   const b = [];
   if (f === 'alles' || f === 'training') { if (ts !== 'vor' && ts !== 'frei') b.push(`<span class="st-b ${ts}">${ts === 'heute' && (hm[k] || []).length === 0 ? (sessions[planIdFuer(keyDatum(k))] ? 'Training läuft' : 'Training offen') : ST_BADGE[ts]}</span>`); }
   if (f === 'alles' || f === 'essen') { if (s) b.push(`<span class="st-b">${fz(s.k)} kcal${heute ? ' bisher' : ` · ${vz(s.k - z.k)}`}</span>`, `<span class="st-b">${fz(s.pr)} g Protein</span>`); }
-  if (f === 'alles' || f === 'koerper') { if (kg != null) b.push(`<span class="st-b">${fz(kg, 1)} kg</span>`); if (hh.st != null) b.push(`<span class="st-b">${fz(hh.st)} Schritte</span>`); if (hh.sm != null) b.push(`<span class="st-b">Schlaf ${dauerHM(hh.sm)}</span>`); }
+  if (f === 'alles' || f === 'koerper') { if (bauch[k] != null) b.push(`<span class="st-b">Bauch ${fz(bauch[k], 1)} cm</span>`); if (kg != null) b.push(`<span class="st-b">${fz(kg, 1)} kg</span>`); if (hh.st != null) b.push(`<span class="st-b">${fz(hh.st)} Schritte</span>`); if (hh.sm != null) b.push(`<span class="st-b">Schlaf ${dauerHM(hh.sm)}</span>`); }
   const d = keyDatum(k);
   return `<details class="st-tag${heute ? ' heute' : ''}" data-k="${k}"><summary><span class="st-dat"><b>${heute ? 'Heute' : WT[d.getDay()]}</b><small>${d.getDate()}.${d.getMonth() + 1}.</small></span>
     <span class="st-bs">${b.join('') || '<span class="st-b leer">keine Daten</span>'}</span></summary><div class="st-inh"></div></details>`;
@@ -4015,6 +4104,7 @@ function tagDetail(k) {
   }
   if (f === 'alles' || f === 'koerper') {
     const hh = health[k] || {}; let t = '';
+    if (bauch[k] != null) t += `<div class="st-dr"><span>Bauchumfang</span><span class="num">${fz(bauch[k], 1)} cm</span></div>`;
     if (gewicht[k] != null) t += `<div class="st-dr"><span>Gewicht</span><span class="num">${fz(gewicht[k], 1)} kg</span></div>`;
     if (hh.st != null) t += `<div class="st-dr"><span>Schritte</span><span class="num">${fz(hh.st)} von ${fz(SCHRITT_ZIEL)}${heute ? ', bisher' : ''}</span></div>`;
     if (hh.sm != null) t += `<div class="st-dr"><span>Schlaf in der Nacht davor</span><span class="num">${dauerHM(hh.sm)}${hh.sv && hh.sb ? ', ' + hh.sv + ' bis ' + hh.sb : ''}</span></div>`;
@@ -4057,6 +4147,208 @@ function statJederTag() {
   });
   if (woche) h += '</div>';
   return h;
+}
+
+/* ======================================================= Bauchumfang: misst Fettverlust ohne Waage
+   Einmal pro Woche, am Montag morgen. Zusammen mit der Kraft zeigt er, ob dein Kalorienziel passt. */
+let bauch = LS.get('bauch', {});
+function bauchTrend() {
+  const jetzt = keyDatum(tbHeute()).getTime();
+  const pts = Object.entries(bauch).map(([d, cm]) => [keyDatum(d).getTime(), cm]).filter(p => jetzt - p[0] <= 49 * 864e5).sort((a, b) => a[0] - b[0]);
+  if (pts.length < 3 || pts[pts.length - 1][0] - pts[0][0] < 13 * 864e5) return null;
+  const n = pts.length, mx = pts.reduce((a, p) => a + p[0], 0) / n, my = pts.reduce((a, p) => a + p[1], 0) / n;
+  let o = 0, u = 0; pts.forEach(p => { o += (p[0] - mx) * (p[1] - my); u += (p[0] - mx) ** 2; });
+  return u ? { proWoche: o / u * 7 * 864e5, n } : null;
+}
+/* Kraft der letzten 14 Tage gegen die 14 davor, über alle Übungen mit Steigerung */
+function kraftTrend() {
+  const heute = keyDatum(tbHeute()).getTime(); let hoch = 0, runter = 0;
+  Object.keys(STEIG).forEach(id => {
+    const best = (von, bis) => { let b = 0; history.forEach(h => { const t = new Date(h.date).getTime(); if (t < heute - von * 864e5 || t >= heute - bis * 864e5) return;
+      const e = (h.ex || []).find(x => x.id === id); if (!e) return; e.sets.forEach(s => { const r = parseInt(s.r, 10) || 0, w = parseFloat(String(s.w || '').replace(',', '.')) || 0; b = Math.max(b, w ? w * (1 + r / 30) : r); }); }); return b; };
+    const neu = best(14, -1), alt = best(28, 14);
+    if (neu && alt) { if (neu > alt * 1.02) hoch++; else if (neu < alt * 0.95) runter++; }
+  });
+  return { hoch, runter, faellt: runter >= 2 && runter > hoch };
+}
+/* Vorschlag fürs Kalorienziel: schrumpft der Bauch über Wochen nicht, weniger essen. Fällt die Kraft, mehr essen. */
+function zielCheck() {
+  const h = LS.get('zielHist', []); const letzte = h.length ? h[h.length - 1].d : null;
+  if (letzte && (keyDatum(tbHeute()) - keyDatum(letzte)) / 864e5 < 14) return null;
+  const tr = bauchTrend(); const kr = kraftTrend();
+  let d = 0, grund = '';
+  if (kr.faellt) { d = 150; grund = `Deine Kraft ist bei ${kr.runter} Übungen gesunken. Das heisst meistens: zu wenig Energie.`; }
+  else if (tr && tr.proWoche > -0.1) { d = -150; grund = `Dein Bauch ist in den letzten Wochen kaum kleiner geworden (${tr.proWoche > 0 ? '+' : ''}${fz(tr.proWoche, 2)} cm pro Woche).`; }
+  if (!d) return null;
+  const k = Math.max(KCAL_MIN, Math.min(3500, ziele.k + d));
+  if (k === ziele.k) return { amBoden: true, grund };
+  return { k, d: k - ziele.k, grund };
+}
+function openBauch(tag) {
+  tag = tag || tbHeute();
+  const alt = bauch[tag]; const vorher = Object.entries(bauch).sort((a, b) => a[0] < b[0] ? 1 : -1)[0];
+  openSheet('Bauchumfang', `<p class="small muted" style="margin-top:0">${esc(tagName(tag))}, ${esc(tagDatum(tag))}</p>
+    <div class="mg-step"><label class="feld" style="flex:1"><input id="bKm" inputmode="decimal" autocomplete="off" value="${alt != null ? fz(alt, 1) : vorher ? fz(vorher[1], 1) : ''}" aria-label="Bauchumfang in cm"><span>cm</span></label></div>
+    <ol class="small schritte" style="margin-top:14px">
+      <li>Montag am Morgen, nach dem WC, vor dem Essen und Trinken.</li>
+      <li>Stehen, Bauch locker, nicht einziehen. Normal ausatmen, dann messen.</li>
+      <li>Massband waagrecht auf Höhe des Bauchnabels, eng anliegend, ohne einzuschneiden.</li>
+      <li>Jedes Mal genau gleich. Nur dann sind die Zahlen vergleichbar.</li></ol>
+    <button class="btn primary wide mg-ok" id="bOk">Speichern</button>
+    ${alt != null ? '<button class="btn danger wide" id="bDel" style="margin-top:10px">Löschen</button>' : ''}`);
+  const i = $('#bKm'); i.style.width = '5ch';
+  $('#sheetBody').onclick = ev => {
+    if (ev.target.closest('#bDel')) { delete bauch[tag]; LS.set('bauch', bauch); closeSheet(); toast('Gelöscht'); return; }
+    if (!ev.target.closest('#bOk')) return;
+    const v = zahlEin(i.value);
+    if (v == null || v < 40 || v > 200) { toast('Gib deinen Bauchumfang in cm ein, zum Beispiel 84,5'); i.focus(); return; }
+    bauch[tag] = Math.round(v * 10) / 10; LS.set('bauch', bauch); closeSheet(); toast('Bauchumfang gespeichert');
+  };
+  $('#sheetBody').onkeydown = ev => { if (ev.target.id === 'bKm' && ev.key === 'Enter') { ev.preventDefault(); $('#bOk').click(); } };
+}
+function bauchDieseWoche() { const m = montagVon(tbHeute()); return Object.keys(bauch).some(k => k >= m); }
+function statBauch(tage) {
+  const alle = Object.entries(bauch).sort((a, b) => a[0] < b[0] ? -1 : 1);
+  const ein = alle.filter(([k]) => k >= tage[0]);
+  const tr = bauchTrend();
+  let inhalt = `<button class="btn ${bauchDieseWoche() ? '' : 'primary'} wide" data-stbauch>${bauchDieseWoche() ? 'Messung ändern' : 'Jetzt messen'}</button>`;
+  if (!alle.length) return karte('Bauchumfang', `<p class="st-sub" style="margin:0 0 14px">Ohne Waage ist der Bauchumfang dein bester Messwert: Er zeigt Fettverlust genau dort, wo du ihn willst, und Muskeln verfälschen ihn kaum. Einmal pro Woche messen, am Montag.</p>${inhalt}`);
+  const letzt = alle[alle.length - 1];
+  const diff = ein.length > 1 ? ein[ein.length - 1][1] - ein[0][1] : null;
+  let chart = '';
+  if (ein.length >= 2) chart = linieChart(ein.map(([k, v]) => ({ k, v })), v => fz(v, 1) + ' cm') + chartInfo('Tippe auf einen Punkt.');
+  return karte('Bauchumfang', `<div class="st-kopfzahl"><b>${fz(letzt[1], 1)}<small> cm</small></b><span>${esc(tagDatum(letzt[0]))}${diff != null ? ` · ${diff > 0 ? '+' : diff < 0 ? '−' : '±'}${fz(Math.abs(diff), 1)} cm im Zeitraum` : ''}</span></div>
+    ${chart}<div class="st-kacheln innen" style="margin:12px 0 14px">${kachel(tr ? (tr.proWoche > 0 ? '+' : tr.proWoche < 0 ? '−' : '') + fz(Math.abs(tr.proWoche), 2) + '<small> cm</small>' : KA, 'pro Woche')}${kachel(String(alle.length), 'Messungen')}${kachel(fz(ziele.k) + '<small> kcal</small>', 'dein Ziel')}</div>
+    ${tr ? '' : '<p class="st-hw" style="margin:0 0 12px">Ab drei Messungen über zwei Wochen siehst du hier den Trend.</p>'}${inhalt}`);
+}
+
+/* ======================================================= Wochenbericht: eine Note, ein Satz, eine Ampel, ein nächster Schritt */
+const STUFE = { gut: ['Stark', '✓'], knapp: ['Knapp', '!'], mies: ['Baustelle', '✕'], keine: ['Keine Daten', '·'] };
+const stufeVon = w => w == null ? 'keine' : w >= 0.8 ? 'gut' : w >= 0.5 ? 'knapp' : 'mies';
+function wocheDaten(m) {
+  const heute = tbHeute(), start = statStart(), hm = histNachTag();
+  const tage = []; for (let i = 0; i < 7; i++) { const k = tagVerschoben(m, i); if (k <= heute) tage.push(k); }
+  const fertig = tage.filter(k => k < heute && k >= start);
+  const A = {};
+  /* Training: geplante Tage, heute nur wenn schon trainiert */
+  const tst = tage.map(k => ({ k, s: trainingStatus(k, hm, start) }));
+  const gepl = tst.filter(x => ['komplett', 'teil', 'verpasst'].indexOf(x.s) >= 0);
+  const kompl = gepl.filter(x => x.s === 'komplett').length, teil = gepl.filter(x => x.s === 'teil').length;
+  const ausgelassen = {}; tage.forEach(k => (hm[k] || []).forEach(h => { planVon(h).pl.forEach(p => { const g = ((h.ex || []).find(e => e.id === p.id) || { sets: [] }).sets.length; if (p.sets > g) ausgelassen[p.name] = (ausgelassen[p.name] || 0) + p.sets - g; }); }));
+  const meist = Object.entries(ausgelassen).sort((a, b) => b[1] - a[1])[0];
+  A.training = { name: 'Training', w: gepl.length ? (kompl + teil * 0.5) / gepl.length : null, wert: `${kompl} von ${gepl.length} komplett`,
+    punkte: tage.map(k => { const s = trainingStatus(k, hm, start); return { k, c: s === 'komplett' ? 'gut' : s === 'teil' ? 'knapp' : s === 'verpasst' ? 'mies' : '' }; }),
+    tipp: () => gepl.length - kompl === 0 ? '' : (tst.some(x => x.s === 'verpasst') ? `Verpasst: ${tst.filter(x => x.s === 'verpasst').map(x => WT[keyDatum(x.k).getDay()]).join(', ')}. Am Sonntag kannst du einen Pflichttag nachholen. ` : '') + (meist ? `Am meisten ausgelassen hast du ${meist[0]} (${meist[1]} ${meist[1] === 1 ? 'Satz' : 'Sätze'}). Mach diese Woche zuerst die ganze Einheit, lieber langsamer.` : '') };
+  /* Essen: nur abgeschlossene Tage ausser Samstag */
+  const ess = fertig.filter(k => keyDatum(k).getDay() !== 6);
+  const erf = ess.filter(k => (tb[k] || []).length);
+  const sums = erf.map(k => ({ k, s: tagSumme(k), z: zielFuer(k) }));
+  A.erfassung = { name: 'Eingetragen', w: ess.length ? erf.length / ess.length : null, wert: `${erf.length} von ${ess.length} Tagen`,
+    punkte: tage.map(k => ({ k, c: k >= heute || keyDatum(k).getDay() === 6 ? '' : (tb[k] || []).length ? 'gut' : 'mies' })),
+    tipp: () => `Du hast nur an ${erf.length} von ${ess.length} Tagen eingetragen. Ohne Einträge stimmt hier keine Zahl. Trag diese Woche jeden Tag ausser Samstag ein, auch wenn es nur das Kantinen Menü ist.` };
+  const prOk = sums.filter(x => x.s.pr >= x.z.pr).length;
+  const prFehlt = sums.length ? sums.reduce((a, x) => a + Math.max(0, x.z.pr - x.s.pr), 0) / sums.length : 0;
+  A.protein = { name: 'Protein', w: sums.length ? prOk / sums.length : null, wert: `Ziel an ${prOk} von ${sums.length} Tagen`,
+    punkte: tage.map(k => { const x = sums.find(y => y.k === k); return { k, c: !x ? '' : x.s.pr >= x.z.pr ? 'gut' : x.s.pr >= x.z.pr * 0.8 ? 'knapp' : 'mies' }; }),
+    tipp: () => `Dir fehlen im Schnitt ${fz(prFehlt)} g Protein pro Tag. Ein zweiter Shake mit deinem Whey bringt etwa 20 g, Magerquark als Dip etwa 12 g pro 100 g.` };
+  const kOk = sums.filter(x => Math.abs(x.s.k - x.z.k) <= x.z.k * 0.1).length;
+  const kDev = sums.length ? sums.reduce((a, x) => a + (x.s.k - x.z.k), 0) / sums.length : 0;
+  A.kalorien = { name: 'Kalorien', w: sums.length ? kOk / sums.length : null, wert: `im Ziel an ${kOk} von ${sums.length} Tagen`,
+    punkte: tage.map(k => { const x = sums.find(y => y.k === k); if (!x) return { k, c: '' }; const d = Math.abs(x.s.k - x.z.k) / x.z.k; return { k, c: d <= 0.1 ? 'gut' : d <= 0.2 ? 'knapp' : 'mies' }; }),
+    tipp: () => {
+      if (kDev > 0) { const q = {}; erf.forEach(k => (tb[k] || []).forEach(e => { if (qualVon(e) === 'schwach') q[e.n] = (q[e.n] || 0) + (nwMal(e.pu, e.x).k || 0); })); const top = Object.entries(q).sort((a, b) => b[1] - a[1])[0];
+        return `Im Schnitt ${fz(kDev)} kcal über dem Ziel.${top ? ` Am meisten schwache Kalorien kamen aus ${top[0]} (${fz(top[1])} kcal in dieser Woche).` : ''} Eine Portion davon weniger reicht oft schon.`; }
+      return `Im Schnitt ${fz(-kDev)} kcal unter dem Ziel. Zu wenig kostet Kraft und Muskeln, iss lieber eine Portion mehr.`;
+    } };
+  let gut = 0, mit = 0, sch = 0; erf.forEach(k => (tb[k] || []).forEach(e => { const kc = nwMal(e.pu, e.x).k || 0; const q = qualVon(e); if (q === 'gut') gut += kc; else if (q === 'mittel') mit += kc; else if (q === 'schwach') sch += kc; }));
+  const qs = gut + mit + sch;
+  A.qualitaet = { name: 'Essen Qualität', w: qs ? (gut + mit * 0.5) / qs : null, wert: qs ? `${pct(gut, qs)} % gut, ${pct(sch, qs)} % schwach` : KA, punkte: null,
+    tipp: () => `${pct(sch, qs)} % deiner Kalorien kamen aus schwachen Lebensmitteln. Tausch einen Snack pro Tag gegen einen mit dem Häkchen gut aus der Snacks Liste.` };
+  /* Körper aus Samsung Health */
+  const sl = tage.map(k => (health[k] || {}).sm).filter(v => v != null);
+  if (sl.length) { const avg = sl.reduce((a, b) => a + b, 0) / sl.length; const ein = tage.map(k => (health[k] || {}).sv).filter(Boolean);
+    A.schlaf = { name: 'Schlaf', w: Math.max(0, Math.min(1, (avg - 300) / 180)), wert: `${dauerHM(avg)} pro Nacht`,
+      punkte: tage.map(k => { const v = (health[k] || {}).sm; return { k, c: v == null ? '' : v >= 450 ? 'gut' : v >= 390 ? 'knapp' : 'mies' }; }),
+      tipp: () => `Im Schnitt ${dauerHM(avg)} Schlaf${ein.length ? `, eingeschlafen meist gegen ${ein.sort()[Math.floor(ein.length / 2)]}` : ''}. Dein Plan sagt Licht aus um 20:30. Leg das Handy 15 Minuten früher weg.` }; }
+  const st = fertig.map(k => (health[k] || {}).st).filter(v => v != null);
+  if (st.length) { const avg = st.reduce((a, b) => a + b, 0) / st.length;
+    A.schritte = { name: 'Schritte', w: Math.min(1, avg / SCHRITT_ZIEL), wert: `${fz(avg)} pro Tag`,
+      punkte: tage.map(k => { const v = (health[k] || {}).st; return { k, c: v == null || k === heute ? '' : v >= SCHRITT_ZIEL ? 'gut' : v >= 5000 ? 'knapp' : 'mies' }; }),
+      tipp: () => `Im Schnitt ${fz(avg)} Schritte. 20 Minuten zügig gehen bringen etwa 2000, zum Beispiel ein Umweg zum Bahnhof am Abend.` }; }
+  const GEW = { training: 3, protein: 2.5, kalorien: 2, erfassung: 1, qualitaet: 1, schlaf: 1, schritte: 0.5 };
+  let su = 0, sw = 0; Object.entries(A).forEach(([id, a]) => { if (a.w != null) { su += a.w * GEW[id]; sw += GEW[id]; } });
+  return { m, tage, A, note: sw ? Math.round(su / sw * 100) : null, laeuft: tage.indexOf(heute) >= 0 };
+}
+/* Persönliche Rekorde in dieser Woche: bester Satz besser als je zuvor */
+function rekorde(m) {
+  const bis = tagVerschoben(m, 7); const out = [];
+  Object.keys(STEIG).forEach(id => {
+    let vorher = null, jetzt = null, name = '', tagN = (plan.days.find(d => d.ex.some(e => e.id === id)) || {}).name || '';
+    history.forEach(h => { const k = tagKey(new Date(h.date)); const e = (h.ex || []).find(x => x.id === id); if (!e) return; name = e.name;
+      e.sets.forEach(s => { const r = parseInt(s.r, 10) || 0, w = parseFloat(String(s.w || '').replace(',', '.')) || 0; const wert = w ? w * (1 + r / 30) : r; const b = { wert, r, w };
+        if (k < m) { if (!vorher || wert > vorher.wert) vorher = b; } else if (k < bis) { if (!jetzt || wert > jetzt.wert) jetzt = b; } }); });
+    if (vorher && jetzt && jetzt.wert > vorher.wert) out.push({ name, tag: tagN, jetzt, vorher, plus: jetzt.wert / vorher.wert });
+  });
+  const proName = {}; out.forEach(r => { if (!proName[r.name] || r.plus > proName[r.name].plus) proName[r.name] = r; });
+  return Object.values(proName).sort((a, b) => b.plus - a.plus);
+}
+const satzKurz = b => b.w ? `${String(b.w).replace('.', ',')} kg × ${b.r}` : `${b.r} Wdh`;
+function wochenNote(w) { return w.note == null ? '' : w.note >= 80 ? 'Starke Woche.' : w.note >= 60 ? 'Solide Woche.' : w.note >= 40 ? 'Durchzogene Woche.' : 'Schwache Woche.'; }
+function schwaechste(w) {
+  const l = Object.entries(w.A).filter(([, a]) => a.w != null && a.w < 0.8);
+  if (w.A.erfassung && w.A.erfassung.w != null && w.A.erfassung.w < 0.5) return ['erfassung', w.A.erfassung];
+  const GEW = { training: 3, protein: 2.5, kalorien: 2, erfassung: 1, qualitaet: 1, schlaf: 1, schritte: 0.5 };
+  l.sort((a, b) => (1 - b[1].w) * GEW[b[0]] - (1 - a[1].w) * GEW[a[0]]);
+  return l[0] || null;
+}
+function statWoche() {
+  const diese = montagVon(tbHeute()); const off = stf.w || 0;
+  const m = tagVerschoben(diese, -7 * off);
+  const startM = montagVon(statStart());
+  const w = wocheDaten(m), vw = m > startM ? wocheDaten(tagVerschoben(m, -7)) : null;
+  const delta = w.note != null && vw && vw.note != null ? w.note - vw.note : null;
+  const sw = schwaechste(w); const st = stufeVon(w.note == null ? null : w.note / 100);
+  const satz = w.note == null ? 'In dieser Woche gibt es noch keine Daten.' : `${wochenNote(w)} ${sw ? sw[1].name + ' ist deine Baustelle.' : 'Alles im grünen Bereich.'}`;
+  let h = `<div class="wb-nav"><button class="iconbtn" data-stw="1" aria-label="Woche davor"${m <= startM ? ' disabled' : ''}>${I_LINKS}</button>
+    <div><b>${off === 0 ? 'Diese Woche' : off === 1 ? 'Letzte Woche' : 'KW ' + isoWoche(m)}</b><span>${esc(keyDatum(m).toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }))} bis ${esc(keyDatum(tagVerschoben(m, 6)).toLocaleDateString('de-CH', { day: 'numeric', month: 'short' }))}${w.laeuft ? ' · läuft noch' : ''}</span></div>
+    <button class="iconbtn" data-stw="-1" aria-label="Woche danach"${off === 0 ? ' disabled' : ''}>${I_RECHTS}</button></div>`;
+  h += `<section class="card wb-held s-${st}">
+    <div class="wb-ring">${ringSvg('wbr', w.note || 0)}<div class="mitte"><b>${w.note == null ? '0' : w.note}</b><span>von 100</span></div></div>
+    <div class="wb-text"><span class="wb-pill s-${st}">${STUFE[st][1]} ${STUFE[st][0]}</span><h2>${esc(satz)}</h2>
+      ${delta != null ? `<span class="wb-delta ${delta > 0 ? 'hoch' : delta < 0 ? 'runter' : ''}">${delta > 0 ? '▲ +' + delta : delta < 0 ? '▼ −' + Math.abs(delta) : '± 0'} zur Woche davor</span>` : ''}</div></section>`;
+  /* Ampel */
+  h += `<section class="card wb-ampel">${Object.entries(w.A).map(([id, a]) => { const s = stufeVon(a.w);
+    return `<div class="wb-z"><span class="wb-pill s-${s}" aria-label="${STUFE[s][0]}">${STUFE[s][1]}</span><div class="t"><b>${esc(a.name)}</b><span>${esc(a.wert)}</span></div>
+      ${a.punkte ? `<span class="wb-punkte" aria-hidden="true">${a.punkte.concat(Array(7 - a.punkte.length).fill({ c: 'zu' })).map(p => `<i class="${p.c ? 's-' + p.c : ''}"></i>`).join('')}</span>` : `<span class="wb-wort s-${s}">${STUFE[s][0]}</span>`}</div>`; }).join('')}
+    <div class="wb-leg"><span><i class="s-gut"></i>stark</span><span><i class="s-knapp"></i>knapp</span><span><i class="s-mies"></i>Baustelle</span><span><i></i>noch nichts</span><span class="r">Mo bis So</span></div></section>`;
+  /* Ein nächster Schritt */
+  const zc = off === 0 ? zielCheck() : null;
+  const tipp = sw ? sw[1].tipp() : '';
+  h += `<section class="card wb-schritt"><div class="lab">Dein nächster Schritt</div>
+    <p>${esc(tipp || (w.note == null ? 'Trag diese Woche ein, was du isst, und schliess deine Trainings ab. Dann sagt dir die App hier, was dir am meisten bringt.' : 'Alles im grünen Bereich. Halt den Kurs und hol dir bei der nächsten Übung mit Steigerungshinweis die Steigerung.'))}</p>
+    ${zc && !zc.amBoden ? `<div class="wb-ziel"><b>Kalorienziel prüfen.</b> ${esc(zc.grund)} Vorschlag: ${fz(zc.k)} statt ${fz(ziele.k)} kcal.<button class="btn sm primary" data-stanpass="${zc.k}">Auf ${fz(zc.k)} kcal</button></div>` : ''}
+    ${off === 0 && !bauchDieseWoche() ? `<div class="wb-ziel"><b>Bauch messen.</b> ${Object.keys(bauch).length ? 'Für diese Woche fehlt die Messung.' : 'Damit die App prüfen kann, ob dein Kalorienziel Fett wegnimmt.'}<button class="btn sm" data-stbauch>Jetzt messen</button></div>` : ''}</section>`;
+  /* Rekorde */
+  const rk = rekorde(m); const si = streakInfo();
+  h += `<section class="card wb-rek"><div class="lab">Erfolge</div>${rk.length ? rk.slice(0, 3).map(r => `<div class="wb-r"><span class="wb-pokal" aria-hidden="true">★</span><div class="t"><b>Neuer Rekord: ${esc(r.name)}</b><span>${esc(r.tag)} · ${esc(satzKurz(r.jetzt))}, vorher ${esc(satzKurz(r.vorher))}</span></div></div>`).join('')  + (rk.length > 3 ? `<p class="st-dp" style="margin-top:6px">Und ${rk.length - 3} weitere Rekorde.</p>` : '') : '<p class="st-dp" style="margin-top:6px">Diese Woche noch kein neuer Rekord. Die Steigerungshinweise im Training führen dich dorthin.</p>'}
+    ${si.streak ? `<div class="wb-r"><span class="wb-pokal flamme" aria-hidden="true">${ICON_FLAMME}</span><div class="t"><b>${si.streak} ${si.streak === 1 ? 'Tag' : 'Tage'} Streak</b><span>${si.freezes ? si.freezes + ' Freeze auf Vorrat' : 'Kein Freeze auf Vorrat'}</span></div></div>` : ''}</section>`;
+  /* Weiter in die Details */
+  const det = [['training', 'Training im Detail', 'Kalender, Auslassungen, Kraftverlauf, jede Übung'], ['essen', 'Essen im Detail', 'Abweichung vom Ziel, Protein, Makros, Qualität, Quellen'], ['koerper', 'Körper im Detail', 'Bauchumfang, Schritte, Schlaf, Puls']];
+  h += `<div class="lab" style="margin:22px 2px 10px">Mehr ansehen</div>` + det.map(([b, t, s]) => `<button class="card wb-mehr" data-stmehr="${b}"><span class="t"><b>${t}</b><span>${s}</span></span>${I_RECHTS}</button>`).join('')
+    + `<button class="card wb-mehr" data-stv="tag"><span class="t"><b>Jeder Tag</b><span>Alle Tage seit Beginn mit jedem Detail</span></span>${I_RECHTS}</button>`;
+  return h;
+}
+function wocheHeuteKarte() {
+  const w = wocheDaten(montagVon(tbHeute()));
+  if (w.note == null) return '';
+  const sw = schwaechste(w); const st = stufeVon(w.note / 100);
+  return `<button class="card tb-mini wb-mini" data-goto="stats" data-stk="woche"><span class="tb-ring klein s-${st}">${ringSvg('wbmini', w.note)}<span class="mz">${w.note}</span></span>
+    <span class="t"><span class="lab">Deine Woche</span><b>${esc(wochenNote(w))}</b><span class="small muted">${sw ? esc(sw[1].name) + ' ist die Baustelle' : 'Alles im grünen Bereich'}</span></span>${I_RECHTS}</button>`;
+}
+function bauchHeuteKarte() {
+  if (bauchDieseWoche() || new Date().getDay() !== 1) return '';
+  return `<button class="card tb-mini" data-heutebauch><span class="wb-pill s-knapp" style="width:44px;height:44px;font-size:1.1rem">!</span>
+    <span class="t"><span class="lab">Montag</span><b>Bauch messen</b><span class="small muted">Einmal pro Woche, vor dem Essen</span></span>${I_RECHTS}</button>`;
 }
 
 /* ======================================================= Sheet */
@@ -4429,7 +4721,7 @@ $('#importFile').addEventListener('change', async e => {
     Object.entries(d.daten).forEach(([k, v]) => { if (k.indexOf('fit.') === 0 && typeof v === 'string') { try { localStorage.setItem(k, v); n++; } catch (er) {} } });
     plan = loadPlan(); sessions = LS.get('sess', {}); history = LS.get('history', []); curDay = todayDayId();
     zutaten = ladeZutaten(); nogo = LS.get('nogo', NOGO_DEFAULT); favs = LS.get('fav', {}); listen = LS.get('listen', { coop: [], migros: [] });
-    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf); tbLaden(); stf = Object.assign({ b: 'training', z: 30, v: 'grob', f: 'alles' }, LS.get('statf', {})); health = LS.get('health', {});
+    sf = LS.get('snack', sf); rf = LS.get('rfilter', rf); tbLaden(); stf = Object.assign({ b: 'training', z: 30, v: 'woche', f: 'alles', w: 0 }, LS.get('statf', {})); health = LS.get('health', {}); bauch = LS.get('bauch', {});
     toast(n + ' Einträge importiert'); closeSheet();
   } catch (er) { toast('Import fehlgeschlagen: ' + er.message); }
 });
