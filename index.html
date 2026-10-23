@@ -16,7 +16,7 @@
 :root {
   --bg: #0E0E0E; --fill: #161616; --fill2: #1E1E1E; --line: #262626; --line2: #333333; --hair: #1C1C1C;
   --ink: #FAFAFA; --muted: #A3A3A3; --faint: #8A8A8A; --inv: #0E0E0E;
-  --r: 14px; --rs: 10px; --tab-h: 64px; --pill-h: 64px;
+  --r: 14px; --rs: 10px; --tab-h: 64px; --pill-h: 112px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   color-scheme: dark;
 }
@@ -103,6 +103,12 @@ label.field span { display: block; font-size: .8rem; color: var(--muted); margin
 .pv-anim img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
 .pv-anim img + img { animation: pvwechsel 2.4s steps(1, end) infinite; }
 .pv-anim.kaputt { display: none; }
+.pv-fig { display: block; width: 100%; height: 100%; background: #141414; }
+.pv-fig svg { display: block; width: 100%; height: 100%; }
+.pv-fig .fb { animation: pvwechsel 2.4s steps(1, end) infinite; }
+.pv-fig .fa { animation: pvaus 2.4s steps(1, end) infinite; }
+@keyframes pvaus { 0% { opacity: 1; } 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pv-fig .fb { display: none; } }
 @keyframes pvwechsel { 0% { opacity: 0; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .pv-anim img + img { animation: none; opacity: 0; } }
 .extools { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 6px; }
@@ -209,19 +215,36 @@ label.field.check span { display: inline; margin: 0; color: var(--ink); font-siz
 .sk-unten span:first-child { color: var(--ink); }
 
 /* Pausentimer, schwebt frei über der Navigation */
-#timerbar { position: fixed; left: 12px; right: 12px; bottom: calc(var(--tab-h) + var(--safe-b) + 10px); z-index: 25;
-  max-width: 696px; margin: 0 auto; display: flex; align-items: center; gap: 6px;
-  background: var(--ink); color: var(--inv); border-radius: 18px; padding: 8px 8px 8px 18px; box-shadow: 0 12px 32px rgba(0,0,0,.6); }
+#timerbar { position: fixed; left: 12px; right: 12px; bottom: calc(var(--tab-h) + var(--safe-b) + 10px); z-index: 25; max-width: 696px; margin: 0 auto;
+  border-radius: 22px; padding: 12px 12px 12px 18px; background: #1A1A1A; color: var(--ink); border: 1px solid var(--line2);
+  box-shadow: 0 16px 40px rgba(0,0,0,.65); transition: background-color .35s ease, color .35s ease, border-color .35s ease; }
 #timerbar[hidden] { display: none; }
-#timerbar .info { flex: 1 1 auto; min-width: 0; }
-#timerbar .clock { font-size: 1.6rem; font-weight: 600; line-height: 1.1; font-variant-numeric: tabular-nums; }
-#timerbar .lbl { font-size: .72rem; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#timerbar .adj { width: 44px; height: 44px; flex: 0 0 auto; border-radius: 12px; border: 0; background: #E4E4E4; color: var(--inv);
-  font-weight: 600; font-size: .85rem; display: flex; align-items: center; justify-content: center; padding: 0; }
-#timerbar .go { width: 48px; height: 48px; flex: 0 0 auto; border-radius: 12px; border: 0; background: var(--inv); color: var(--ink);
-  display: flex; align-items: center; justify-content: center; padding: 0; }
-#timerbar.alarm { animation: flash .5s 6; }
-@keyframes flash { 50% { background: #9A9A9A; } }
+.dock-kopf { display: flex; align-items: center; gap: 10px; min-height: 26px; }
+.dock-phase { font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 4px 9px; border-radius: 7px; background: var(--fill2); color: var(--ink); flex: 0 0 auto; transition: background-color .35s ease, color .35s ease; }
+.dock-ctx { flex: 1; min-width: 0; font-size: .82rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color .35s ease; }
+.dock-x { width: 30px; height: 30px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); display: flex; align-items: center; justify-content: center; padding: 0; flex: 0 0 auto; }
+.dock-main { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+#timerbar .clock { flex: 1; font-size: 2.3rem; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+#timerbar .adj { width: 44px; height: 44px; flex: 0 0 auto; border-radius: 13px; border: 0; background: var(--fill2); color: var(--ink); font-weight: 600; font-size: .85rem; display: flex; align-items: center; justify-content: center; padding: 0; transition: background-color .35s ease, color .35s ease, transform .12s ease; }
+#timerbar .go { width: 52px; height: 52px; flex: 0 0 auto; border-radius: 16px; border: 0; background: var(--ink); color: var(--inv); display: flex; align-items: center; justify-content: center; padding: 0; transition: background-color .35s ease, color .35s ease, transform .12s ease; }
+#timerbar .adj:active, #timerbar .go:active { transform: scale(.94); }
+.dock-spur { height: 4px; border-radius: 4px; background: var(--line); margin-top: 12px; overflow: hidden; }
+.dock-spur i { display: block; height: 100%; width: 0; background: var(--ink); border-radius: 4px; transition: width .2s linear, background-color .35s ease; }
+/* Arbeit: hell, nicht zu übersehen. Pause: dunkel und ruhig. */
+#timerbar.ph-arbeit { background: var(--ink); color: var(--inv); border-color: var(--ink); }
+#timerbar.ph-arbeit .dock-phase { background: var(--inv); color: var(--ink); }
+#timerbar.ph-arbeit .dock-ctx, #timerbar.ph-arbeit .dock-x { color: #555; }
+#timerbar.ph-arbeit .adj { background: #E2E2E2; color: var(--inv); }
+#timerbar.ph-arbeit .go { background: var(--inv); color: var(--ink); }
+#timerbar.ph-arbeit .dock-spur { background: #D4D4D4; }
+#timerbar.ph-arbeit .dock-spur i { background: var(--inv); }
+#timerbar.ph-bereit .dock-phase, #timerbar.ph-wechsel .dock-phase { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink); }
+#timerbar.ph-arbeit .adj[data-t="minus"], #timerbar.ph-arbeit .adj[data-t="plus"], #timerbar.ph-wechsel .adj[data-t="minus"], #timerbar.ph-wechsel .adj[data-t="plus"] { display: none; }
+#timerbar.angehalten .clock { opacity: .45; }
+.set.laeuft { background: var(--fill); border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line2); }
+.sc.start { color: var(--ink); border-color: var(--line2); }
+.set.laeuft .sc.start { background: var(--ink); color: var(--inv); border-color: var(--ink); animation: puls 1.6s ease-in-out infinite; }
+@keyframes puls { 50% { box-shadow: 0 0 0 6px rgba(250,250,250,.12); } }
 body.with-timer { padding-bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-h) + 34px); }
 
 /* Produkte und Rezepte */
@@ -415,12 +438,17 @@ body.with-timer #toast { bottom: calc(var(--tab-h) + var(--safe-b) + var(--pill-
 
 <main id="main"></main>
 
-<div id="timerbar" hidden>
-  <div class="info"><div class="clock" id="clock">0:00</div><div class="lbl" id="clockLbl">Pause</div></div>
-  <button class="adj" data-t="minus" aria-label="15 Sekunden weniger">−15</button>
-  <button class="adj" data-t="plus" aria-label="15 Sekunden mehr">+15</button>
-  <button class="adj" data-t="reset" aria-label="Pause zurücksetzen"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 4v4.5h4.5"/></svg></button>
-  <button class="go" data-t="toggle" id="tToggle" aria-label="Start"></button>
+<div id="timerbar" class="dock" hidden role="timer" aria-live="off">
+  <div class="dock-kopf"><span class="dock-phase" id="dockPhase">Pause</span><span class="dock-ctx" id="dockCtx"></span>
+    <button class="dock-x" data-t="stop" aria-label="Ablauf beenden"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="dock-main">
+    <div class="clock" id="clock">0:00</div>
+    <button class="adj" data-t="minus" aria-label="15 Sekunden weniger">−15</button>
+    <button class="adj" data-t="plus" aria-label="15 Sekunden mehr">+15</button>
+    <button class="adj" data-t="skip" aria-label="Überspringen"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 6.6v10.8a.9.9 0 0 0 1.4.75L13 13.4v4a.9.9 0 0 0 1.4.75l7.2-5.4a.9.9 0 0 0 0-1.5L14.4 5.85A.9.9 0 0 0 13 6.6v4L6.4 5.85A.9.9 0 0 0 5 6.6z"/></svg></button>
+    <button class="go" data-t="toggle" id="tToggle" aria-label="Start"></button>
+  </div>
+  <div class="dock-spur"><i id="dockBar"></i></div>
 </div>
 
 <nav class="tabs" role="tablist">
@@ -541,25 +569,25 @@ const COOP_MEALS = [
 const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
 
 /* ======================================================= Trainingsplan */
-const PLAN_V = 6;
+const PLAN_V = 7;
 const DEFAULT_PLAN = { v: PLAN_V, days: [
   { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wds: [1], ex: [
     { id: 'a0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups', bild: 'Arm_Circles', mus: 'Schultern, ganzer Körper' },
     { id: 'a1', name: 'Liegestütze', sets: 3, ziel: '8 bis 12, Satz 1 und 2 nicht bis zum Anschlag', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss. Weniger Wiederholungen in Satz 2 und 3 sind normal. Schaffst du 3 Mal 12, machst du alle Sätze mit den Füssen auf dem Bett.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps, Schultern vorne' },
-    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.', vid: 'pike push up tutorial', bild: '', mus: 'Schultern, Trizeps' },
+    { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.', vid: 'pike push up tutorial', bild: '', mus: 'Schultern, Trizeps', figur: 'pike' },
     { id: 'a4', name: 'Enge Liegestütze', sets: 2, ziel: 'max, Knie am Boden ist ok', pause: 60, einheit: 'Wdh', soll: 6, kg: false, how: 'Hände direkt unter den Schultern, Ellbogen streifen beim Runtergehen den Körper. Sobald es auf den Füssen nicht mehr geht, auf den Knien weitermachen.', easy: 'Auf den Knien.', vid: 'close grip push up form', bild: 'Push-Ups_-_Close_Triceps_Position', mus: 'Trizeps, Brust' },
-    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.', vid: 'forearm plank and hollow body hold', bild: 'Plank', mus: 'Bauch, Rumpf', bildHinweis: 'Bild zeigt den Stütz, der Hollow kommt direkt danach in Rückenlage.' },
-    { id: 'a6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken' },
-    { id: 'a7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich' }
+    { id: 'a5', name: 'Bauch Zirkel: Unterarmstütz und Hollow', sets: 3, ziel: '40 s Stütz, direkt 25 s Hollow', pause: 60, einheit: 'Sek', soll: 40, kg: false, how: 'Stütz: Unterarme am Boden, Po weder hoch noch durchhängend. Hollow: Rückenlage, unterer Rücken am Boden, Arme und Beine gestreckt knapp über dem Boden.', easy: 'Beim Hollow die Knie anwinkeln.', vid: 'forearm plank and hollow body hold', bild: 'Plank', mus: 'Bauch, Rumpf', bildHinweis: 'Bild zeigt den Stütz, der Hollow kommt direkt danach in Rückenlage.', teile: [{ n: 'Unterarmstütz', s: 40 }, { n: 'Hollow', s: 25 }] },
+    { id: 'a6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
+    { id: 'a7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] }
   ] },
   { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wds: [3], ex: [
     { id: 'b0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, Bein vor und zurück pendeln 10 Mal pro Bein, 15 Kniebeugen ohne Gewicht, 10 Glute Bridges. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute lower body warm up', bild: 'Bodyweight_Squat', mus: 'Beine, Hüfte' },
-    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken. Erst alle Wiederholungen mit einem Bein, dann direkt das andere. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Normaler Ausfallschritt ohne Erhöhung.', vid: 'bulgarian split squat form', bild: '', mus: 'Oberschenkel vorne, Po' },
+    { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken. Erst alle Wiederholungen mit einem Bein, dann direkt das andere. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Normaler Ausfallschritt ohne Erhöhung.', vid: 'bulgarian split squat form', bild: 'Suspended_Split_Squat', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Schlaufen, du legst den hinteren Fuss aufs Bett oder Sofa.' },
     { id: 'b2', name: 'Rucksack Rudern', sets: 3, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Schaffst du 3 Mal 12 sauber, kommt 1 kg mehr in den Rucksack.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', mus: 'Rücken Mitte, Latissimus, Bizeps', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack mit beiden Händen.' },
     { id: 'b3', name: 'Rumänisches Kreuzheben mit Rucksack', sets: 3, ziel: '10 bis 12', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Knie leicht gebeugt, Po nach hinten schieben bis es hinten im Oberschenkel zieht, Rücken gerade, wieder aufrichten. Langsam runter, das ist der wirksame Teil.', easy: 'Ohne Rucksack.', vid: 'backpack romanian deadlift form', bild: 'Romanian_Deadlift', mus: 'Oberschenkel hinten, Po, unterer Rücken', bildHinweis: 'Bild mit Langhantel, du nimmst den Rucksack.' },
     { id: 'b4', name: 'Zirkel: Glute Bridge und YTW', sets: 2, ziel: '15 Bridges, direkt 6 pro Buchstabe', pause: 60, einheit: 'Wdh', soll: 15, kg: false, how: 'Bridge: Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper gerade ist, oben 1 s halten. YTW: Bauchlage, Daumen nach oben, Arme als Y, T und W anheben.', easy: '', vid: 'glute bridge and prone YTW raises', bild: 'Butt_Lift_Bridge', mus: 'Po, oberer Rücken', bildHinweis: 'Bild zeigt die Bridge. YTW: in Bauchlage die Arme als Y, T und W heben.' },
-    { id: 'b5', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken' },
-    { id: 'b6', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich' }
+    { id: 'b5', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
+    { id: 'b6', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] }
   ] },
   { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wds: [5], ex: [
     { id: 'c0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups', bild: 'Arm_Circles', mus: 'Schultern, ganzer Körper' },
@@ -568,26 +596,26 @@ const DEFAULT_PLAN = { v: PLAN_V, days: [
     { id: 'c3', name: 'Rückwärts Ausfallschritte', sets: 2, ziel: '10 pro Bein', pause: 60, einheit: 'Wdh', soll: 10, kg: false, how: 'Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden, zurück in den Stand. Beine abwechseln.', easy: 'Kleinerer Schritt, nicht so tief.', vid: 'reverse lunge form', bild: 'Dumbbell_Rear_Lunge', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Hanteln, du machst es ohne Gewicht.' },
     { id: 'c4', name: 'Rucksack Rudern', sets: 2, ziel: '10 bis 12', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Gleich wie Tag B.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', mus: 'Rücken Mitte, Latissimus, Bizeps', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack.' },
     { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 2, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.', vid: 'lying leg raise side plank dead bug', bild: 'Dead_Bug', mus: 'Bauch, Rumpf', bildHinweis: 'Bild zeigt den Dead Bug.' },
-    { id: 'c6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken' },
-    { id: 'c7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich' }
+    { id: 'c6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
+    { id: 'c7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] }
   ] },
   { id: 'J', name: 'Beweglichkeit', title: 'Füsse, Beine, Rücken', wds: [2, 4], ex: [
     { id: 'j0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: 'Auf der Stelle marschieren, Arme locker kreisen, Schultern hoch und runter, Hüfte kreisen. Nur warm werden, nicht ausser Atem.', easy: '', vid: 'gentle warm up before stretching', bild: 'Arm_Circles', mus: 'ganzer Körper' },
     { id: 'j1', name: 'Fussgelenke kreisen und Zehen spreizen', sets: 1, ziel: '10 Kreise pro Richtung und Fuss, dann 10 Mal Zehen spreizen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Auf die Bettkante sitzen, einen Fuss anheben und langsam grosse Kreise machen, 10 in jede Richtung. Dann Zehen so weit wie möglich auseinander spreizen und wieder einkrallen. Anderer Fuss.', easy: '', vid: 'ankle circles and toe spreading exercise', bild: 'Ankle_Circles', mus: 'Fussgelenke, Füsse' },
     { id: 'j2', name: 'Wadendehnung an der Wand', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Hände an die Wand, ein Bein weit nach hinten, Ferse bleibt am Boden, Bein gestreckt. Satz 1 mit gestrecktem Bein, Satz 2 mit leicht gebeugtem hinterem Knie, dann dehnt es tiefer unten an der Achillessehne.', easy: 'Kleinerer Schritt nach hinten.', vid: 'calf stretch against wall straight and bent knee', bild: 'Calf_Stretch_Hands_Against_Wall', mus: 'Waden, Achillessehne' },
-    { id: 'j3', name: 'Knie zur Wand', sets: 2, ziel: '10 pro Bein', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Fuss etwa eine Handbreit vor der Wand, Knie nach vorne zur Wand schieben, Ferse bleibt am Boden. Berührt das Knie die Wand locker, Fuss etwas weiter weg stellen. Das macht deine Fussgelenke beweglicher.', easy: 'Fuss näher an die Wand.', vid: 'knee to wall ankle mobility drill', bild: '', mus: 'Fussgelenke, Waden' },
+    { id: 'j3', name: 'Knie zur Wand', sets: 2, ziel: '10 pro Bein', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Fuss etwa eine Handbreit vor der Wand, Knie nach vorne zur Wand schieben, Ferse bleibt am Boden. Berührt das Knie die Wand locker, Fuss etwas weiter weg stellen. Das macht deine Fussgelenke beweglicher.', easy: 'Fuss näher an die Wand.', vid: 'knee to wall ankle mobility drill', bild: '', mus: 'Fussgelenke, Waden', figur: 'kniewand' },
     { id: 'j4', name: 'Katze und Kuh', sets: 2, ziel: '10 langsam', pause: 10, einheit: 'Wdh', soll: 10, kg: false, how: 'Vierfüssler, Hände unter den Schultern, Knie unter der Hüfte. Ausatmen: Rücken rund wie eine Katze, Kopf runter. Einatmen: Bauch Richtung Boden, Brust nach vorne, Blick leicht hoch.', easy: '', vid: 'cat cow stretch', bild: 'Cat_Stretch', mus: 'Rücken' },
     { id: 'j5', name: 'Hüftbeuger Dehnung im Kniestand', sets: 2, ziel: '30 s pro Seite', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Ein Knie am Boden, Kissen drunter, anderer Fuss vorne. Po anspannen und Becken nach vorne schieben, bis es vorne an der Hüfte zieht. Oberkörper aufrecht, kein Hohlkreuz. Gut gegen langes Sitzen.', easy: 'Weniger weit nach vorne schieben.', vid: 'half kneeling hip flexor stretch', bild: 'Kneeling_Hip_Flexor', mus: 'Hüftbeuger, Oberschenkel vorne' },
     { id: 'j6', name: 'Oberschenkel hinten dehnen', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Rückenlage, ein Bein gestreckt am Boden, das andere gestreckt hoch. Handtuch um die Fusssohle legen und das Bein sanft Richtung Kopf ziehen. Ziehen ja, Schmerz nein.', easy: 'Knie vom oberen Bein leicht beugen.', vid: 'lying hamstring stretch with towel', bild: 'Hamstring_Stretch', mus: 'Oberschenkel hinten', bildHinweis: 'Bild mit Band, du nimmst ein Handtuch.' },
-    { id: 'j7', name: '90/90 Hüftrotation', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Am Boden sitzen, beide Knie im rechten Winkel, eines zeigt nach vorne, eines zur Seite. Hände hinter dir abstützen, Knie langsam auf die andere Seite kippen. Zurück und wiederholen.', easy: 'Hände weiter hinten abstützen.', vid: '90 90 hip switch mobility', bild: '', mus: 'Hüfte' },
-    { id: 'j8', name: 'Rücken öffnen in Seitenlage', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Seitenlage, Knie angewinkelt vor dem Bauch, Arme gestreckt nach vorne aufeinander. Oberen Arm in einem grossen Bogen auf die andere Seite öffnen, Blick folgt der Hand, Knie bleiben unten. 2 s halten, zurück.', easy: '', vid: 'open book thoracic rotation stretch', bild: '', mus: 'Brustwirbelsäule, oberer Rücken' },
-    { id: 'j9', name: 'Tiefe Hocke halten', sets: 2, ziel: '30 s', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Füsse etwas breiter als schulterbreit, Zehen leicht nach aussen, so tief wie möglich in die Hocke, Fersen am Boden. Ellbogen drücken die Knie leicht nach aussen, Rücken lang.', easy: 'Am Türrahmen festhalten oder die Fersen auf ein gefaltetes Handtuch stellen.', vid: 'deep squat hold mobility', bild: '', mus: 'Hüfte, Fussgelenke, Rücken' },
+    { id: 'j7', name: '90/90 Hüftrotation', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Am Boden sitzen, beide Knie im rechten Winkel, eines zeigt nach vorne, eines zur Seite. Hände hinter dir abstützen, Knie langsam auf die andere Seite kippen. Zurück und wiederholen.', easy: 'Hände weiter hinten abstützen.', vid: '90 90 hip switch mobility', bild: '', mus: 'Hüfte', figur: '9090' },
+    { id: 'j8', name: 'Rücken öffnen in Seitenlage', sets: 2, ziel: '8 pro Seite', pause: 10, einheit: 'Wdh', soll: 8, kg: false, how: 'Seitenlage, Knie angewinkelt vor dem Bauch, Arme gestreckt nach vorne aufeinander. Oberen Arm in einem grossen Bogen auf die andere Seite öffnen, Blick folgt der Hand, Knie bleiben unten. 2 s halten, zurück.', easy: '', vid: 'open book thoracic rotation stretch', bild: '', mus: 'Brustwirbelsäule, oberer Rücken', figur: 'openbook' },
+    { id: 'j9', name: 'Tiefe Hocke halten', sets: 2, ziel: '30 s', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Füsse etwas breiter als schulterbreit, Zehen leicht nach aussen, so tief wie möglich in die Hocke, Fersen am Boden. Ellbogen drücken die Knie leicht nach aussen, Rücken lang.', easy: 'Am Türrahmen festhalten oder die Fersen auf ein gefaltetes Handtuch stellen.', vid: 'deep squat hold mobility', bild: '', mus: 'Hüfte, Fussgelenke, Rücken', figur: 'hocke' },
     { id: 'j10', name: 'Kindhaltung', sets: 1, ziel: '45 s', pause: 0, einheit: 'Sek', soll: 45, kg: false, how: 'Kniestand, Po zu den Fersen, Oberkörper nach vorne ablegen, Arme lang nach vorne. Ruhig in den unteren Rücken atmen.', easy: 'Kissen zwischen Po und Fersen.', vid: 'child pose stretch', bild: 'Childs_Pose', mus: 'unterer Rücken, Hüfte' },
-    { id: 'j11', name: 'Kinn zurückziehen', sets: 1, ziel: '10 Mal, je 2 s halten', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen, Blick nach vorne. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, der Kopf kippt dabei nicht. 2 s halten, lösen. Gut gegen den Kopf, der beim Gamen nach vorne wandert.', easy: '', vid: 'chin tuck exercise posture', bild: '', mus: 'Nacken, Haltung' },
+    { id: 'j11', name: 'Kinn zurückziehen', sets: 1, ziel: '10 Mal, je 2 s halten', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen, Blick nach vorne. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, der Kopf kippt dabei nicht. 2 s halten, lösen. Gut gegen den Kopf, der beim Gamen nach vorne wandert.', easy: '', vid: 'chin tuck exercise posture', bild: '', mus: 'Nacken, Haltung', figur: 'kinn' },
     { id: 'j12', name: 'Nacken seitlich dehnen', sets: 1, ziel: '30 s pro Seite', pause: 0, einheit: 'Sek', soll: 30, kg: false, how: 'Ohr Richtung Schulter neigen, mit der Hand auf der Kopfseite nur ganz leicht nachhelfen. Die andere Schulter bleibt unten. 30 s, dann Seite wechseln.', easy: '', vid: 'neck side stretch', bild: 'Side_Neck_Stretch', mus: 'Nacken seitlich' }
   ] },
   { id: 'L', name: 'Spaziergang', title: '7000 Schritte', wds: [6, 0], ex: [
-    { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '', vid: '', bild: '', mus: 'Ausdauer' }
+    { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '', vid: '', bild: '', mus: 'Ausdauer', figur: 'gehen' }
   ] },
   { id: 'M', name: 'Minimum', title: '15 Minuten, wenn gar nichts geht', wds: [], ex: [
     { id: 'm1', name: 'Liegestütze', sets: 3, ziel: '10', pause: 30, einheit: 'Wdh', soll: 10, kg: false, how: '', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps' },
@@ -615,8 +643,8 @@ function migratePlan(p) {
   /* Version 3: Tag A war zu lang für 32 Minuten, wird durch die neue Fassung ersetzt */
   if ((p.v || 1) < 3) { const i = p.days.findIndex(x => x.id === 'A'); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === 'A')); }
   /* Version 5: Aufwärmen und Nacken in jedem Training, Joggen wird Beweglichkeit, Videos zu jeder Übung */
-  /* Version 6: Bilder, Muskeln, Nacken in zwei Übungen */
-  if ((p.v || 1) < 6) ['A', 'B', 'C', 'J', 'L', 'M'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
+  /* Version 7: Bilder für alle Übungen, Teile für den geführten Timer */
+  if ((p.v || 1) < 7) ['A', 'B', 'C', 'J', 'L', 'M'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
   /* Version 4: Tag B, Tag C und Joggen ebenfalls auf unter 30 Minuten gebracht */
   if ((p.v || 1) < 4) ['B', 'C', 'J'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i >= 0) p.days[i] = clone(DEFAULT_PLAN.days.find(x => x.id === id)); });
   p.v = PLAN_V;
@@ -735,53 +763,152 @@ async function requestWake() {
 }
 function releaseWake() { try { if (wakeLock) wakeLock.release(); } catch (e) {} wakeLock = null; try { if (NATIVE) NATIVE.keepScreenOn(false); } catch (e) {} }
 
+/* Geführter Ablauf: eine Folge von Phasen.
+   bereit = gleich geht es los, arbeit = jetzt halten oder üben, wechsel = Seite wechseln, pause = Erholung.
+   Nach einer Pause startet der nächste Satz von selbst, wenn er auf Zeit läuft. Bei Wiederholungen startet die Pause beim Abhaken. */
+const PHASE = { arbeit: 'Los', wechsel: 'Wechseln', bereit: 'Bereit machen', pause: 'Pause' };
+function ton(freq, n, dauer, abstand) {
+  try {
+    if (!audioCtx) return;
+    const t0 = audioCtx.currentTime;
+    for (let i = 0; i < n; i++) {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = t0 + i * (abstand || .28);
+      o.type = 'sine'; o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.35, t + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t + dauer);
+      o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + dauer + .02);
+    }
+  } catch (e) {}
+}
+function vibr(m) { try { if (navigator.vibrate) navigator.vibrate(m); } catch (e) {} }
+const istZeit = ex => ex && (ex.einheit === 'Sek' || ex.einheit === 'Min');
+function satzSek(ex, st) {
+  const v = parseFloat(st && st.r); const n = isFinite(v) && v > 0 ? v : (ex.soll || 30);
+  return ex.einheit === 'Min' ? Math.round(n * 60) : Math.round(n);
+}
+function teileVon(ex) {
+  if (ex.teile && ex.teile.length) return ex.teile;
+  if (/pro Bein/.test(ex.ziel || '')) return [{ n: 'Linkes Bein' }, { n: 'Rechtes Bein' }];
+  if (/pro Seite/.test(ex.ziel || '')) return [{ n: 'Links' }, { n: 'Rechts' }];
+  return [{ n: '' }];
+}
+/* Nächster offener Satz im Training, nach einer bestimmten Stelle */
+function naechsterSatz(day, nachEx, nachI) {
+  const s = sessionFor(day); let vorbei = nachEx == null;
+  for (const ex of day.ex) {
+    const arr = s.sets[ex.id] || [];
+    for (let i = 0; i < arr.length; i++) {
+      if (!vorbei) { if (ex.id === nachEx && i === nachI) vorbei = true; continue; }
+      if (!arr[i].d) return { ex, i };
+    }
+  }
+  return vorbei ? null : naechsterSatz(day);
+}
+function phasenFuer(day, ex, i, nachPause) {
+  const st = sessionFor(day).sets[ex.id][i]; const basis = satzSek(ex, st);
+  const teile = teileVon(ex); const ph = []; const kopf = { day: day.id, ex: ex.id, exName: ex.name, satz: i, saetze: ex.sets };
+  ph.push(Object.assign({ typ: 'bereit', sek: nachPause ? 5 : 3, teil: teile[0].n }, kopf));
+  teile.forEach((t, k) => {
+    if (k) ph.push(Object.assign({ typ: 'wechsel', sek: 5, teil: t.n }, kopf));
+    ph.push(Object.assign({ typ: 'arbeit', sek: t.s || basis, teil: t.n, letzte: k === teile.length - 1 }, kopf));
+  });
+  const n = naechsterSatz(day, ex.id, i);
+  if (ex.pause > 0 && n) ph.push(Object.assign({ typ: 'pause', sek: ex.pause }, kopf));
+  return ph;
+}
+function satzFertig(p) {
+  const day = dayById(p.day); const ex = day.ex.find(x => x.id === p.ex); if (!ex) return;
+  const st = sessionFor(day).sets[ex.id][p.satz]; if (!st) return;
+  st.d = true; if (!st.r) st.r = String(ex.einheit === 'Min' ? Math.round(p.sek / 60) : p.sek);
+  saveSessions(); requestWake();
+  if (tab === 'training' && curDay === day.id && !editMode) {
+    renderTraining();
+    const nb = $(`[data-ex="${ex.id}"] [data-act="toggle"][data-i="${p.satz}"]`); if (nb) nb.classList.add('pop');
+  }
+}
+function nativeText(p) {
+  if (p.typ === 'pause') { const day = dayById(p.day); const n = naechsterSatz(day, p.ex, p.satz); return 'Pause vorbei\n' + (n ? 'Jetzt: ' + n.ex.name + ', Satz ' + (n.i + 1) : 'Weiter geht es.'); }
+  return 'Zeit um\n' + p.exName + (p.teil ? ', ' + p.teil : '');
+}
 const Timer = {
-  st: LS.get('timer', { running: false, endAt: 0, rem: 0, total: 0, label: 'Pause', fired: true }),
-  save() { LS.set('timer', this.st); nativeTimer(this.st); },
-  remaining() { return this.st.running ? Math.max(0, this.st.endAt - Date.now()) : Math.max(0, this.st.rem); },
-  start(sec, label) {
-    this.st = { running: true, endAt: Date.now() + sec * 1000, rem: sec * 1000, total: sec * 1000, label: label || 'Pause', fired: false, paused: false };
-    this.save(); this.render();
+  st: (() => { const v = LS.get('ablauf', null); return v && Array.isArray(v.ph) ? v : { ph: [], i: 0, running: false, endAt: 0, rem: 0 }; })(),
+  akt() { return this.st.ph[this.st.i] || null; },
+  aktiv() { return !!this.akt(); },
+  save() { LS.set('ablauf', this.st); const p = this.akt(); nativeTimer({ running: !!p && this.st.running, endAt: this.st.endAt, label: p ? nativeText(p) : '' }); },
+  remaining() { if (!this.akt()) return 0; return this.st.running ? Math.max(0, this.st.endAt - Date.now()) : Math.max(0, this.st.rem); },
+  setze(ph) { this.st = { ph, i: 0, running: false, endAt: 0, rem: 0 }; unlockAudio(); this.phaseStart(); },
+  phaseStart() {
+    const p = this.akt(); if (!p) { this.ende(); return; }
+    this.st.rem = p.sek * 1000; this.st.endAt = Date.now() + p.sek * 1000; this.st.running = true; this.st.tock = Math.ceil(p.sek);
+    this.save(); this.render(); this.markiere();
   },
+  /* Phase vorbei, von selbst oder übersprungen */
+  weiter(still) {
+    const p = this.akt(); if (!p) return;
+    if (p.typ === 'arbeit' && p.letzte) satzFertig(p);
+    this.st.i++;
+    if (!this.akt() && p.typ === 'pause') {
+      const day = dayById(p.day); const n = naechsterSatz(day, p.ex, p.satz);
+      if (n && istZeit(n.ex)) this.st.ph = this.st.ph.concat(phasenFuer(day, n.ex, n.i, true));
+      else { if (!still) { ton(880, 3, .22, .32); vibr([350, 120, 350, 120, 350]); } toast(n ? `Pause vorbei. Jetzt: ${n.ex.name}, Satz ${n.i + 1}` : 'Pause vorbei.'); this.ende(); return; }
+    }
+    const neu = this.akt();
+    if (!neu) { if (!still) { ton(1046, 3, .16, .2); vibr([200, 100, 200]); } this.ende(); return; }
+    if (!still) {
+      if (p.typ === 'arbeit' && neu.typ === 'pause') { ton(1046, 3, .16, .2); vibr([200, 100, 200]); }
+      else if (neu.typ === 'arbeit') { ton(1318, 1, .35); vibr(120); }
+      else if (neu.typ === 'wechsel') { ton(988, 2, .14, .2); vibr([90, 80, 90]); }
+      else if (neu.typ === 'bereit') { ton(880, 3, .2, .3); vibr([300, 120, 300]); }
+    }
+    this.phaseStart();
+  },
+  ende() { this.st = { ph: [], i: 0, running: false, endAt: 0, rem: 0 }; this.save(); this.render(); this.markiere(); },
   toggle() {
-    const s = this.st;
-    if (s.running) { s.rem = Math.max(0, s.endAt - Date.now()); s.running = false; s.paused = true; }
-    else if (s.rem > 0) { s.endAt = Date.now() + s.rem; s.running = true; s.fired = false; s.paused = false; }
-    else if (s.total > 0) { this.start(s.total / 1000, s.label); return; }
-    else { this.start(60, 'Pause'); return; }
-    this.save(); this.render();
+    const s = this.st; if (!this.akt()) return;
+    if (s.running) { s.rem = Math.max(0, s.endAt - Date.now()); s.running = false; }
+    else { s.endAt = Date.now() + s.rem; s.running = true; }
+    this.save(); this.render(); this.markiere();
   },
-  reset() { const s = this.st; s.running = false; s.rem = s.total; s.fired = true; s.paused = false; this.save(); this.render(); },
   add(sec) {
-    const s = this.st;
-    if (s.running) s.endAt = Math.max(Date.now(), s.endAt + sec * 1000);
-    else { s.rem = Math.max(0, s.rem + sec * 1000); if (sec > 0 && s.total < s.rem) s.total = s.rem; }
+    const s = this.st; if (!this.akt()) return;
+    if (s.running) s.endAt = Math.max(Date.now() + 1000, s.endAt + sec * 1000); else s.rem = Math.max(1000, s.rem + sec * 1000);
+    this.akt().sek = Math.max(1, this.akt().sek + sec);
     this.save(); this.render();
   },
   tick() {
-    const s = this.st;
-    if (s.running && Date.now() >= s.endAt) {
-      const late = Date.now() - s.endAt > 3000;
-      s.running = false; s.rem = 0;
-      if (!s.fired) { s.fired = true; if (late) toast('Pause ist vorbei.'); else this.alarm(); }
-      this.save();
+    const s = this.st; const p = this.akt();
+    if (p && s.running) {
+      const rest = s.endAt - Date.now();
+      const sek = Math.ceil(rest / 1000);
+      if (sek <= 3 && sek >= 1 && sek < s.tock && (p.typ !== 'pause' || p.sek > 5)) { s.tock = sek; if (rest > -500) ton(660, 1, .08); }
+      if (rest <= 0) { this.weiter(rest < -4000); return; }
     }
     this.render();
   },
-  alarm() {
-    beep();
-    try { if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 400]); } catch (e) {}
-    const bar = $('#timerbar'); bar.classList.remove('alarm'); void bar.offsetWidth; bar.classList.add('alarm');
-    toast('Pause vorbei. Nächster Satz.');
+  /* laufender Satz in der Liste hervorheben */
+  markiere() {
+    $$('.set.laeuft').forEach(x => x.classList.remove('laeuft'));
+    const p = this.akt(); if (!p || p.typ === 'pause') return;
+    const row = $(`[data-ex="${p.ex}"] [data-act="toggle"][data-i="${p.satz}"]`); if (row) row.closest('.set').classList.add('laeuft');
   },
   render() {
-    const ms = this.remaining();
-    const sec = Math.ceil(ms / 1000);
+    const bar = $('#timerbar'); const p = this.akt();
+    const zeigen = !!p && tab === 'training';
+    if (bar.hidden === zeigen) { bar.hidden = !zeigen; document.body.classList.toggle('with-timer', zeigen); }
+    if (!p) return;
+    const ms = this.remaining(); const sec = Math.ceil(ms / 1000);
+    bar.className = 'dock ph-' + p.typ + (this.st.running ? '' : ' angehalten');
+    const exd = dayById(p.day).ex.find(x => x.id === p.ex) || {};
+    $('#dockPhase').textContent = p.typ === 'arbeit' ? (exd.einheit === 'Min' ? 'Los' : 'Halten') : PHASE[p.typ];
+    let ctx = '';
+    if (p.typ === 'pause') { const n = naechsterSatz(dayById(p.day), p.ex, p.satz); ctx = n ? `Danach Satz ${n.i + 1}/${n.ex.sets} · ${n.ex.name}` : 'Danach: fertig'; }
+    else if (p.typ === 'bereit') ctx = `Gleich: ${p.teil ? p.teil + ' · ' : ''}${p.exName}`;
+    else if (p.typ === 'wechsel') ctx = `Gleich: ${p.teil || 'andere Seite'}`;
+    else ctx = `${p.teil ? p.teil + ' · ' : ''}Satz ${p.satz + 1}/${p.saetze} · ${p.exName}`;
+    $('#dockCtx').textContent = ctx;
     $('#clock').textContent = Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
-    $('#clockLbl').textContent = this.st.label || 'Pause';
-    const lab = this.st.running ? 'Pause' : (this.st.paused && this.st.rem > 0 ? 'Weiter' : 'Start');
-    const tg = $('#tToggle');
-    if (tg.getAttribute('aria-label') !== lab || !tg.firstChild) {
+    $('#dockBar').style.width = (p.sek ? Math.min(100, (1 - ms / (p.sek * 1000)) * 100) : 0).toFixed(1) + '%';
+    const tg = $('#tToggle'); const lab = this.st.running ? 'Anhalten' : 'Weiter';
+    if (tg.getAttribute('aria-label') !== lab) {
       tg.setAttribute('aria-label', lab);
       tg.innerHTML = this.st.running
         ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>'
@@ -789,7 +916,7 @@ const Timer = {
     }
   }
 };
-setInterval(() => Timer.tick(), 250);
+setInterval(() => Timer.tick(), 200);
 document.addEventListener('visibilitychange', () => { Timer.tick(); requestWake(); if (document.visibilityState === 'visible') streakAnsWidget(); });
 document.addEventListener('pointerdown', unlockAudio, { capture: true });
 
@@ -798,7 +925,8 @@ $('#timerbar').addEventListener('click', e => {
   unlockAudio();
   const t = b.dataset.t;
   if (t === 'toggle') Timer.toggle();
-  else if (t === 'reset') Timer.reset();
+  else if (t === 'skip') Timer.weiter(true);
+  else if (t === 'stop') Timer.ende();
   else if (t === 'plus') Timer.add(15);
   else if (t === 'minus') Timer.add(-15);
 });
@@ -817,7 +945,7 @@ function setTab(t) {
   tab = t; LS.set('tab', t);
   $$('nav.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
   $('#title').textContent = TITLES[t];
-  const showTimer = t === 'training';
+  const showTimer = t === 'training' && Timer.aktiv();
   $('#timerbar').hidden = !showTimer;
   document.body.classList.toggle('with-timer', showTimer);
   const m = $('#main');
@@ -1110,7 +1238,6 @@ function renderTraining() {
     } else {
       const lm = letztesMal(ex);
       const offen = sets.some(x => !x.d);
-      const halten = (ex.einheit === 'Sek' || ex.einheit === 'Min') && ex.soll;
       h += `${xi === aktivIdx ? '<div class="jetzt">Jetzt dran</div>' : ''}
         <div class="exhead">
           <button class="pv" data-act="detail" aria-label="Anleitung für ${esc(ex.name)}">${bildHtml(ex)}</button>
@@ -1119,7 +1246,6 @@ function renderTraining() {
             ${lm ? `<div class="last">Letztes Mal: ${esc(lm)}</div>` : ''}</div>
         </div>
         <div class="extools">
-          ${halten && offen ? `<button class="tbtn" data-act="halten"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>${ex.einheit === 'Min' ? ex.soll + ' Min' : ex.soll + ' s'} Timer</button>` : ''}
           <button class="tbtn" data-act="detail"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>Anleitung</button>
         </div>
         <div class="sethead"><span>Satz</span>${ex.kg ? '<span>kg</span>' : ''}<span>${ex.einheit === 'Wdh' ? 'Wiederholungen' : ex.einheit === 'Sek' ? 'Sekunden' : 'Minuten'}</span><span>Fertig</span></div>`;
@@ -1128,7 +1254,9 @@ function renderTraining() {
           <span class="nr">${i + 1}</span>
           ${ex.kg ? `<label class="fld"><input inputmode="decimal" data-f="w" data-i="${i}" value="${esc(st.w)}" placeholder="0" aria-label="Gewicht Satz ${i + 1} in kg"></label>` : ''}
           <label class="fld"><input inputmode="numeric" data-f="r" data-i="${i}" value="${esc(st.r)}" placeholder="0" aria-label="${esc(ex.einheit)} Satz ${i + 1}"></label>
-          <button class="sc" data-act="toggle" data-i="${i}" aria-pressed="${st.d}" aria-label="Satz ${i + 1} ${st.d ? 'erledigt' : 'abhaken'}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+          ${istZeit(ex) && !st.d
+            ? `<button class="sc start" data-act="toggle" data-i="${i}" aria-pressed="false" aria-label="Satz ${i + 1} starten"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></button>`
+            : `<button class="sc" data-act="toggle" data-i="${i}" aria-pressed="${st.d}" aria-label="Satz ${i + 1} ${st.d ? 'erledigt' : 'abhaken'}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>`}
         </div>`;
       });
     }
@@ -1143,6 +1271,7 @@ function renderTraining() {
   }
   $('#main').innerHTML = h;
   const ring = $('.daycard .ring');
+  Timer.markiere();
   if (ring) { const alt = renderTraining.p; if (alt != null && alt !== pct && renderTraining.tag === day.id) { ring.style.setProperty('--p', alt); requestAnimationFrame(() => requestAnimationFrame(() => ring.style.setProperty('--p', pct))); } renderTraining.p = pct; renderTraining.tag = day.id; }
 }
 
@@ -1157,17 +1286,24 @@ $('#main').addEventListener('click', e => {
   const act = b.dataset.act;
   if (act === 'toggle' && ex) {
     unlockAudio();
-    const s = sessionFor(day); const st = s.sets[ex.id][+b.dataset.i];
+    const s = sessionFor(day); const i = +b.dataset.i; const st = s.sets[ex.id][i];
+    const p = Timer.akt();
+    /* Zeitübung: Start Knopf startet den geführten Ablauf, nochmals tippen hält an */
+    if (istZeit(ex) && !st.d) {
+      if (p && p.ex === ex.id && p.satz === i && p.typ !== 'pause') Timer.toggle();
+      else { Timer.setze(phasenFuer(day, ex, i, false)); requestWake(); }
+      renderTraining(); Timer.markiere(); return;
+    }
     st.d = !st.d; saveSessions();
-    if (st.d && ex.pause > 0) Timer.start(ex.pause, ex.name + ', Satz ' + (+b.dataset.i + 1));
-    if (st.d) requestWake();
-    renderTraining();
+    if (st.d) {
+      const n = naechsterSatz(day, ex.id, i);
+      if (ex.pause > 0 && n) Timer.setze([{ typ: 'pause', sek: ex.pause, day: day.id, ex: ex.id, exName: ex.name, satz: i, saetze: ex.sets }]);
+      requestWake();
+    } else if (p && p.ex === ex.id && p.satz === i) Timer.ende();
+    renderTraining(); Timer.markiere();
     if (st.d) { const nb = $(`[data-ex="${ex.id}"] [data-act="toggle"][data-i="${b.dataset.i}"]`); if (nb) nb.classList.add('pop'); }
   } else if (act === 'detail' && ex) openUebung(ex);
-  else if (act === 'halten' && ex) {
-    unlockAudio(); requestWake();
-    Timer.start(ex.einheit === 'Min' ? ex.soll * 60 : ex.soll, (ex.einheit === 'Min' ? '' : 'Halten: ') + ex.name);
-  } else if (act === 'finish') finishTraining();
+  else if (act === 'finish') finishTraining();
   else if (act === 'history') openHistory();
   else if (act === 'edit') { editMode = true; renderTraining(); }
   else if (act === 'editdone') { editMode = false; savePlan(); renderTraining(); toast('Plan gespeichert'); }
@@ -1213,7 +1349,9 @@ $('#main').addEventListener('change', e => {
 /* Bilder: Free Exercise DB (github.com/yuhonas/free-exercise-db), Public Domain. Zwei Fotos, Start und Ende, im Wechsel wie ein kurzes Video */
 const BILD_BASE = 'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
 const ICON_HANTEL = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M6 8v8M3.5 10v4M18 8v8M20.5 10v4M6 12h12"/></svg>';
+const FIGUREN = {"pike": "<svg viewBox=\"0 0 160 110\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"12\" y1=\"101\" x2=\"148\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"2\"/><g class=\"fa\"><polyline points=\"106,72 107,86 110,98\" stroke=\"#7A7A7A\"/><polyline points=\"80,38 63,68 48,98\" stroke=\"#7A7A7A\"/><line x1=\"106\" y1=\"72\" x2=\"80\" y2=\"38\" stroke=\"#EDEDED\"/><polyline points=\"80,38 66,68 52,98\" stroke=\"#EDEDED\"/><polyline points=\"106,72 110,86 114,98\" stroke=\"#EDEDED\"/><circle cx=\"113\" cy=\"80\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g><g class=\"fb\"><polyline points=\"104,82 93,92 110,98\" stroke=\"#7A7A7A\"/><polyline points=\"82,44 64,71 48,98\" stroke=\"#7A7A7A\"/><line x1=\"104\" y1=\"82\" x2=\"82\" y2=\"44\" stroke=\"#EDEDED\"/><polyline points=\"82,44 67,71 52,98\" stroke=\"#EDEDED\"/><polyline points=\"104,82 96,92 114,98\" stroke=\"#EDEDED\"/><circle cx=\"118\" cy=\"91\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g></svg>", "kniewand": "<svg viewBox=\"0 0 160 110\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"12\" y1=\"101\" x2=\"148\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"2\"/><g class=\"fa\"><line x1=\"134\" y1=\"8\" x2=\"134\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"3\"/><polyline points=\"92,30 106,44 124,48\" stroke=\"#7A7A7A\"/><polyline points=\"88,62 74,80 60,98\" stroke=\"#7A7A7A\"/><line x1=\"92\" y1=\"30\" x2=\"88\" y2=\"62\" stroke=\"#EDEDED\"/><polyline points=\"88,62 112,72 114,98\" stroke=\"#EDEDED\"/><polyline points=\"92,30 108,40 126,44\" stroke=\"#EDEDED\"/><circle cx=\"92\" cy=\"16\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g><g class=\"fb\"><line x1=\"134\" y1=\"8\" x2=\"134\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"3\"/><polyline points=\"95,31 110,45 126,49\" stroke=\"#7A7A7A\"/><polyline points=\"92,63 78,81 60,98\" stroke=\"#7A7A7A\"/><line x1=\"95\" y1=\"31\" x2=\"92\" y2=\"63\" stroke=\"#EDEDED\"/><polyline points=\"92,63 128,74 114,98\" stroke=\"#EDEDED\"/><polyline points=\"95,31 112,41 128,45\" stroke=\"#EDEDED\"/><circle cx=\"96\" cy=\"17\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g></svg>", "hocke": "<svg viewBox=\"0 0 160 110\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"12\" y1=\"101\" x2=\"148\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"2\"/><g class=\"fa\"><polyline points=\"80,60 77,80 76,98\" stroke=\"#7A7A7A\"/><line x1=\"80\" y1=\"28\" x2=\"80\" y2=\"60\" stroke=\"#EDEDED\"/><polyline points=\"80,60 81,80 80,98\" stroke=\"#EDEDED\"/><polyline points=\"80,28 84,44 86,60\" stroke=\"#EDEDED\"/><circle cx=\"80\" cy=\"14\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g><g class=\"fb\"><polyline points=\"88,52 97,68 93,58\" stroke=\"#7A7A7A\"/><polyline points=\"70,86 93,76 82,98\" stroke=\"#7A7A7A\"/><line x1=\"88\" y1=\"52\" x2=\"70\" y2=\"86\" stroke=\"#EDEDED\"/><polyline points=\"70,86 96,74 86,98\" stroke=\"#EDEDED\"/><polyline points=\"88,52 100,66 96,56\" stroke=\"#EDEDED\"/><circle cx=\"92\" cy=\"40\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g></svg>", "9090": "<svg viewBox=\"0 0 160 110\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"12\" y1=\"101\" x2=\"148\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"2\"/><g class=\"fa\"><polyline points=\"80,44 68,66 60,96\" stroke=\"#7A7A7A\"/><polyline points=\"80,84 104,92 84,98\" stroke=\"#7A7A7A\"/><line x1=\"80\" y1=\"44\" x2=\"80\" y2=\"84\" stroke=\"#EDEDED\"/><polyline points=\"80,84 52,86 46,98\" stroke=\"#EDEDED\"/><polyline points=\"80,44 92,66 100,96\" stroke=\"#EDEDED\"/><circle cx=\"80\" cy=\"30\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g><g class=\"fb\"><polyline points=\"80,44 68,66 60,96\" stroke=\"#7A7A7A\"/><polyline points=\"80,84 56,92 76,98\" stroke=\"#7A7A7A\"/><line x1=\"80\" y1=\"44\" x2=\"80\" y2=\"84\" stroke=\"#EDEDED\"/><polyline points=\"80,84 108,86 114,98\" stroke=\"#EDEDED\"/><polyline points=\"80,44 92,66 100,96\" stroke=\"#EDEDED\"/><circle cx=\"80\" cy=\"30\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g></svg>", "openbook": "<svg viewBox=\"0 0 160 110\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"12\" y1=\"101\" x2=\"148\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"2\"/><g class=\"fa\"><path d=\"M132 70 A 30 30 0 0 0 86 72\" stroke=\"#3A3A3A\" stroke-width=\"2\" stroke-dasharray=\"3 5\"/><polyline points=\"104,92 118,88 134,84\" stroke=\"#7A7A7A\"/><polyline points=\"62,94 79,80 55,80\" stroke=\"#7A7A7A\"/><line x1=\"104\" y1=\"92\" x2=\"62\" y2=\"94\" stroke=\"#EDEDED\"/><polyline points=\"62,94 76,76 52,74\" stroke=\"#EDEDED\"/><polyline points=\"104,92 118,80 132,68\" stroke=\"#EDEDED\"/><circle cx=\"120\" cy=\"90\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g><g class=\"fb\"><path d=\"M132 70 A 30 30 0 0 0 86 72\" stroke=\"#3A3A3A\" stroke-width=\"2\" stroke-dasharray=\"3 5\"/><polyline points=\"104,92 118,88 134,84\" stroke=\"#7A7A7A\"/><polyline points=\"62,94 79,80 55,80\" stroke=\"#7A7A7A\"/><line x1=\"104\" y1=\"92\" x2=\"62\" y2=\"94\" stroke=\"#EDEDED\"/><polyline points=\"62,94 76,76 52,74\" stroke=\"#EDEDED\"/><polyline points=\"104,92 94,78 84,64\" stroke=\"#EDEDED\"/><circle cx=\"120\" cy=\"90\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g></svg>", "kinn": "<svg viewBox=\"0 0 160 110\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"12\" y1=\"101\" x2=\"148\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"2\"/><g class=\"fa\"><path d=\"M50 101 C 52 84, 66 78, 80 76 L 82 60\" stroke=\"#EDEDED\"/><circle cx=\"96\" cy=\"42\" r=\"18\" fill=\"#EDEDED\" stroke=\"none\"/><path d=\"M113 40 l6 4 l-6 2\" fill=\"#EDEDED\" stroke=\"none\"/><line x1=\"104\" y1=\"40\" x2=\"104\" y2=\"40\" stroke=\"none\"/></g><g class=\"fb\"><path d=\"M50 101 C 52 84, 66 78, 78 76 L 80 60\" stroke=\"#EDEDED\"/><circle cx=\"84\" cy=\"42\" r=\"18\" fill=\"#EDEDED\" stroke=\"none\"/><path d=\"M101 40 l6 4 l-6 2\" fill=\"#EDEDED\" stroke=\"none\"/><line x1=\"104\" y1=\"40\" x2=\"104\" y2=\"40\" stroke=\"none\"/></g></svg>", "gehen": "<svg viewBox=\"0 0 160 110\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"12\" y1=\"101\" x2=\"148\" y2=\"101\" stroke=\"#3A3A3A\" stroke-width=\"2\"/><g class=\"fa\"><polyline points=\"82,30 74,44 68,56\" stroke=\"#7A7A7A\"/><polyline points=\"80,62 74,80 64,98\" stroke=\"#7A7A7A\"/><line x1=\"82\" y1=\"30\" x2=\"80\" y2=\"62\" stroke=\"#EDEDED\"/><polyline points=\"80,62 90,80 98,98\" stroke=\"#EDEDED\"/><polyline points=\"82,30 90,44 96,56\" stroke=\"#EDEDED\"/><circle cx=\"82\" cy=\"16\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g><g class=\"fb\"><polyline points=\"84,30 92,44 98,56\" stroke=\"#7A7A7A\"/><polyline points=\"82,62 90,80 100,98\" stroke=\"#7A7A7A\"/><line x1=\"84\" y1=\"30\" x2=\"82\" y2=\"62\" stroke=\"#EDEDED\"/><polyline points=\"82,62 76,80 68,98\" stroke=\"#EDEDED\"/><polyline points=\"84,30 76,44 70,56\" stroke=\"#EDEDED\"/><circle cx=\"84\" cy=\"16\" r=\"7\" fill=\"#EDEDED\" stroke=\"none\"/></g></svg>"};
 function bildHtml(ex, gross) {
+  if (!ex.bild && ex.figur && FIGUREN[ex.figur]) return `<span class="pv-fig ${gross ? 'gross' : ''}">${FIGUREN[ex.figur]}</span>`;
   if (!ex.bild) return `<span class="pv-leer">${ICON_HANTEL}</span>`;
   const u = BILD_BASE + encodeURIComponent(ex.bild) + '/';
   return `<span class="pv-anim ${gross ? 'gross' : ''}"><img src="${u}0.jpg" alt="" loading="lazy" decoding="async" onerror="this.closest('.pv-anim').classList.add('kaputt')"><img src="${u}1.jpg" alt="" loading="lazy" decoding="async"></span>`;
@@ -1257,7 +1395,7 @@ function openUebung(ex) {
     ${schritte.length ? `<div class="lab" style="margin-top:14px">So geht's</div><ol class="schritte">${schritte.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
     ${ex.easy ? `<div class="card" style="margin-top:12px"><div class="lab">Zu schwer?</div><p style="margin:6px 0 0">${esc(ex.easy)}</p></div>` : ''}
     ${ex.vid === '' ? '' : `<a class="btn wide vidbtn" href="${esc(videoLink(ex))}" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>Videos auf YouTube</a>`}
-    ${ex.bild ? '<p class="muted small" style="margin-top:12px">Bilder: Free Exercise DB, gemeinfrei.</p>' : ''}
+    ${ex.bild ? '<p class="muted small" style="margin-top:12px">Bilder: Free Exercise DB, gemeinfrei.</p>' : ex.figur ? '<p class="muted small" style="margin-top:12px">Zeichnung zeigt Start und Ende der Bewegung.</p>' : ''}
   </div>`;
   openSheet(ex.name, body);
 }
@@ -1279,7 +1417,7 @@ function finishTraining() {
   history.push({ id: Date.now().toString(36), date: new Date().toISOString(), start: s.start, dayId: day.id, dayName: day.name + ': ' + day.title, ex, voll: fertig >= soll, soll, fertig });
   if (!LS.set('history', history)) { history.pop(); return; }
   delete sessions[day.id]; saveSessions();
-  Timer.reset(); releaseWake();
+  Timer.ende(); releaseWake();
   renderTraining();
   const nachher = streakInfo();
   streakAnsWidget();

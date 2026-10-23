@@ -17,6 +17,14 @@ public class TimerReceiver extends BroadcastReceiver {
     public void onReceive(Context c, Intent intent) {
         SharedPreferences p = c.getSharedPreferences(MainActivity.PREFS, Context.MODE_PRIVATE);
         String label = p.getString("label", "Pause");
+        /* Die App schickt "Titel\nText", zum Beispiel "Pause vorbei\nJetzt: Liegestütze, Satz 2" */
+        String titel = "Pause vorbei";
+        String text = label + ". Nächster Satz.";
+        int nl = label.indexOf('\n');
+        if (nl >= 0) {
+            titel = label.substring(0, nl);
+            text = label.substring(nl + 1);
+        }
         MainActivity.createChannel(c);
 
         Intent open = new Intent(c, MainActivity.class)
@@ -26,8 +34,8 @@ public class TimerReceiver extends BroadcastReceiver {
 
         Notification n = new Notification.Builder(c, MainActivity.CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat)
-                .setContentTitle("Pause vorbei")
-                .setContentText(label + ". Nächster Satz.")
+                .setContentTitle(titel)
+                .setContentText(text)
                 .setCategory(Notification.CATEGORY_ALARM)
                 .setAutoCancel(true)
                 .setContentIntent(pi)
