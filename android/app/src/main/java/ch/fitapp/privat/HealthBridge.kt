@@ -101,10 +101,18 @@ class HealthBridge(private val activity: Activity, private val web: WebView) {
     fun verbinden() {
         when (sdk()) {
             HealthConnectClient.SDK_AVAILABLE -> try {
-                val anfrage = PermissionController.createRequestPermissionResultContract().createIntent(activity, rechte)
-                activity.startActivityForResult(anfrage, REQ)
+                if (Build.VERSION.SDK_INT >= 34) {
+                    /* Ab Android 14 sind das normale Berechtigungen des Systems. Der Vertrag von Health Connect baut dort
+                       einen Intent, den nur eine ComponentActivity versteht, darum direkt beim System anfragen. */
+                    activity.requestPermissions(rechte.toTypedArray(), REQ)
+                } else {
+                    val anfrage = PermissionController.createRequestPermissionResultContract().createIntent(activity, rechte)
+                    activity.startActivityForResult(anfrage, REQ)
+                }
             } catch (e: Exception) {
-                fehler("Anfrage ging nicht: " + e.javaClass.simpleName)
+                /* Falls trotzdem nichts aufgeht: Health Connect selbst öffnen, dort kann man FitApp von Hand erlauben */
+                fehler("Anfrage ging nicht: " + e.javaClass.simpleName + ". Öffne Health Connect und erlaube FitApp dort von Hand.")
+                einstellungen()
             }
             HealthConnectClient.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED -> oeffnen(
                 Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.google.android.apps.healthdata&url=healthconnect%3A%2F%2Fonboarding"))

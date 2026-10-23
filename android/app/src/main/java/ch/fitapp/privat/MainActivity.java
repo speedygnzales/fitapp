@@ -166,6 +166,10 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int code, String[] permissions, int[] results) {
         super.onRequestPermissionsResult(code, permissions, results);
+        if (code == HealthBridge.REQ) {
+            health.nachAnfrage();
+            return;
+        }
         if (code == REQ_CAM && camRequest != null) {
             if (results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED) {
                 camRequest.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE});
@@ -220,7 +224,8 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         web.evaluateJavascript(
                 "(function(){var s=document.getElementById('sheet');"
-                        + "if(s&&!s.hidden&&typeof closeSheet==='function'){closeSheet();return 'c';}return 'n';})()",
+                        + "if(s&&!s.hidden&&typeof closeSheet==='function'){closeSheet();return 'c';}"
+                        + "if(typeof window.fitZurueck==='function'&&window.fitZurueck()){return 'c';}return 'n';})()",
                 value -> {
                     if (value == null || !value.contains("c")) {
                         moveTaskToBack(true);
