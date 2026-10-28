@@ -1132,9 +1132,23 @@ const COOP_MEALS = [
 const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
 
 /* ======================================================= Trainingsplan */
-const PLAN_V = 8;
+const PLAN_V = 9;
 const DEFAULT_PLAN = { v: PLAN_V, days: [
-  { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wds: [1], ex: [
+  /* Ab 28.10.: Der grosse Plan war für den Anfang zu viel. Zuerst wird das Aufstehen zur Gewohnheit, dann die Muskeln. */
+  { id: 'K', name: 'Mini', title: '5 Minuten nach dem Aufstehen', wds: [1, 2, 3, 4, 5], ex: [
+    { id: 'k1', name: 'Kniebeugen', sets: 1, ziel: '10, langsam', pause: 30, einheit: 'Wdh', soll: 10, kg: false, how: 'Direkt dort, wo das Handy liegt, noch bevor du nachdenkst. Füsse schulterbreit, Po nach hinten und runter, bis die Oberschenkel waagrecht sind, Fersen bleiben am Boden. Langsam runter, normal hoch.', easy: 'Nur halb so tief runter.', vid: 'bodyweight squat form', bild: 'Bodyweight_Squat', mus: 'Beine, Po' },
+    { id: 'k2', name: 'Knie Liegestütze', sets: 1, ziel: '6 bis 10, aufhören wenn noch 2 gehen würden', pause: 30, einheit: 'Wdh', soll: 6, kg: false, how: 'Knie am Boden, Hände etwas breiter als die Schultern, von den Knien bis zum Kopf eine gerade Linie. Brust bis knapp über den Boden. Hör auf, solange noch 2 Wiederholungen gehen würden. Es soll sich leicht anfühlen.', easy: 'Hände auf die Bettkante.', vid: 'knee push up proper form', bild: 'Pushups', bildHinweis: 'Das Bild zeigt Liegestütze auf den Füssen. Du machst sie auf den Knien.', mus: 'Brust, Trizeps, Schultern vorne' },
+    { id: 'k3', name: 'Unterarmstütz', sets: 1, ziel: '20 s', pause: 0, einheit: 'Sek', soll: 20, kg: false, how: 'Unterarme am Boden, Ellbogen unter den Schultern, Körper gerade wie ein Brett, Po weder hoch noch durchhängend. Ruhig weiteratmen.', easy: 'Auf den Knien.', vid: 'forearm plank form', bild: 'Plank', mus: 'Bauch, Rumpf' }
+  ] },
+  { id: 'W', name: 'Wochenende', title: '15 Minuten, ganzer Körper', wds: [6], ex: [
+    { id: 'w0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute full body warm up', bild: 'Arm_Circles', mus: 'ganzer Körper' },
+    { id: 'w1', name: 'Kniebeugen', sets: 2, ziel: '12', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Füsse schulterbreit, Po nach hinten und runter, bis die Oberschenkel waagrecht sind. Langsam runter, normal hoch.', easy: 'Nur halb so tief runter.', vid: 'bodyweight squat form', bild: 'Bodyweight_Squat', mus: 'Beine, Po' },
+    { id: 'w2', name: 'Knie Liegestütze', sets: 2, ziel: '6 bis 10, aufhören wenn noch 2 gehen würden', pause: 60, einheit: 'Wdh', soll: 6, kg: false, how: 'Wie beim Mini Training: Knie am Boden, Körper gerade, Brust bis knapp über den Boden. Aufhören, solange noch 2 gehen würden.', easy: 'Hände auf die Bettkante.', vid: 'knee push up proper form', bild: 'Pushups', bildHinweis: 'Das Bild zeigt Liegestütze auf den Füssen. Du machst sie auf den Knien.', mus: 'Brust, Trizeps' },
+    { id: 'w3', name: 'Rucksack Rudern', sets: 2, ziel: '10, Rucksack etwa 5 kg', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 5, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Gut gegen die Gaming Haltung.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack.', mus: 'Rücken, Bizeps' },
+    { id: 'w4', name: 'Glute Bridge', sets: 2, ziel: '15', pause: 45, einheit: 'Wdh', soll: 15, kg: false, how: 'Rückenlage, Füsse aufgestellt, Hüfte hoch bis der Körper von den Knien bis zu den Schultern gerade ist, oben 1 s halten.', easy: '', vid: 'glute bridge form', bild: 'Butt_Lift_Bridge', mus: 'Po, Oberschenkel hinten' },
+    { id: 'w5', name: 'Unterarmstütz', sets: 2, ziel: '25 s', pause: 45, einheit: 'Sek', soll: 25, kg: false, how: 'Unterarme am Boden, Körper gerade wie ein Brett, ruhig weiteratmen.', easy: 'Auf den Knien.', vid: 'forearm plank form', bild: 'Plank', mus: 'Bauch, Rumpf' }
+  ] },
+  { id: 'A', name: 'Tag A', title: 'Brust und Schultern', wds: [], ex: [
     { id: 'a0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups', bild: 'Arm_Circles', mus: 'Schultern, ganzer Körper' },
     { id: 'a1', name: 'Liegestütze', sets: 3, ziel: '8 bis 12, Satz 1 und 2 nicht bis zum Anschlag', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Hände etwas breiter als die Schultern, Körper gerade wie ein Brett, Brust bis knapp über den Boden. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss. Weniger Wiederholungen in Satz 2 und 3 sind normal. Schaffst du 3 Mal 12, machst du alle Sätze mit den Füssen auf dem Bett.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps, Schultern vorne' },
     { id: 'a3', name: 'Pike Liegestütze', sets: 3, ziel: '5 bis 8', pause: 90, einheit: 'Wdh', soll: 5, kg: false, how: 'Po hoch, Körper wie ein umgedrehtes V, Kopf zwischen die Hände Richtung Boden senken. Langsam runter, kontrolliert hoch.', easy: 'Nur halb so tief runter.', vid: 'pike push up tutorial', bild: '', mus: 'Schultern, Trizeps', figur: 'pike' },
@@ -1144,7 +1158,7 @@ const DEFAULT_PLAN = { v: PLAN_V, days: [
     { id: 'a6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
     { id: 'a7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] }
   ] },
-  { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wds: [3], ex: [
+  { id: 'B', name: 'Tag B', title: 'Beine und Rücken', wds: [], ex: [
     { id: 'b0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, Bein vor und zurück pendeln 10 Mal pro Bein, 15 Kniebeugen ohne Gewicht, 10 Glute Bridges. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute lower body warm up', bild: 'Bodyweight_Squat', mus: 'Beine, Hüfte' },
     { id: 'b1', name: 'Bulgarian Split Squat', sets: 3, ziel: '8 bis 10 pro Bein', pause: 75, einheit: 'Wdh', soll: 8, kg: false, how: 'Hinterer Fuss auf Bett oder Sofa, vorderer Fuss weit vorne, hinteres Knie Richtung Boden senken. Erst alle Wiederholungen mit einem Bein, dann direkt das andere. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Normaler Ausfallschritt ohne Erhöhung.', vid: 'bulgarian split squat form', bild: 'Suspended_Split_Squat', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Schlaufen, du legst den hinteren Fuss aufs Bett oder Sofa.' },
     { id: 'b2', name: 'Rucksack Rudern', sets: 3, ziel: '10 bis 12, Rucksack 8 bis 12 kg', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 8, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Schaffst du 3 Mal 12 sauber, kommt 1 kg mehr in den Rucksack.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', mus: 'Rücken Mitte, Latissimus, Bizeps', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack mit beiden Händen.' },
@@ -1153,7 +1167,7 @@ const DEFAULT_PLAN = { v: PLAN_V, days: [
     { id: 'b5', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
     { id: 'b6', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] }
   ] },
-  { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wds: [5], ex: [
+  { id: 'C', name: 'Tag C', title: 'Ganzkörper und Bauch', wds: [], ex: [
     { id: 'c0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: '30 s auf der Stelle marschieren, 10 Mal Armkreisen vorwärts und 10 Mal rückwärts, 10 Kniebeugen ohne Gewicht, 10 Liegestütze auf den Knien. Ruhig, nicht bis zur Erschöpfung.', easy: '', vid: '2 minute warm up before push ups', bild: 'Arm_Circles', mus: 'Schultern, ganzer Körper' },
     { id: 'c1', name: 'Rucksack Kniebeugen', sets: 3, ziel: '12 bis 15', pause: 75, einheit: 'Wdh', soll: 12, kg: true, kgSoll: 8, how: 'Rucksack vorne vor der Brust halten, Füsse schulterbreit, runter bis die Oberschenkel waagrecht sind. Satz 1 und 2 mit 1 bis 2 Wiederholungen Reserve.', easy: 'Ohne Rucksack.', vid: 'goblet squat form', bild: 'Goblet_Squat', mus: 'Oberschenkel vorne, Po', bildHinweis: 'Bild mit Kettlebell, du hältst den Rucksack vor der Brust.' },
     { id: 'c2', name: 'Liegestütze', sets: 3, ziel: '8 bis 12', pause: 90, einheit: 'Wdh', soll: 8, kg: false, how: 'Gleich wie Tag A. In Satz 1 und 2 hörst du auf, wenn noch 1 bis 2 Wiederholungen gehen würden. Nur der letzte Satz geht bis zum Schluss.', easy: 'Hände auf die Bettkante.', vid: 'push up proper form', bild: 'Pushups', mus: 'Brust, Trizeps, Schultern vorne' },
@@ -1163,7 +1177,7 @@ const DEFAULT_PLAN = { v: PLAN_V, days: [
     { id: 'c6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
     { id: 'c7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] }
   ] },
-  { id: 'J', name: 'Beweglichkeit', title: 'Füsse, Beine, Rücken', wds: [2, 4], ex: [
+  { id: 'J', name: 'Beweglichkeit', title: 'Füsse, Beine, Rücken', wds: [], ex: [
     { id: 'j0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: 'Auf der Stelle marschieren, Arme locker kreisen, Schultern hoch und runter, Hüfte kreisen. Nur warm werden, nicht ausser Atem.', easy: '', vid: 'gentle warm up before stretching', bild: 'Arm_Circles', mus: 'ganzer Körper' },
     { id: 'j1', name: 'Fussgelenke kreisen und Zehen spreizen', sets: 1, ziel: '10 Kreise pro Richtung und Fuss, dann 10 Mal Zehen spreizen', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Auf die Bettkante sitzen, einen Fuss anheben und langsam grosse Kreise machen, 10 in jede Richtung. Dann Zehen so weit wie möglich auseinander spreizen und wieder einkrallen. Anderer Fuss.', easy: '', vid: 'ankle circles and toe spreading exercise', bild: 'Ankle_Circles', mus: 'Fussgelenke, Füsse' },
     { id: 'j2', name: 'Wadendehnung an der Wand', sets: 2, ziel: '30 s pro Bein', pause: 10, einheit: 'Sek', soll: 30, kg: false, how: 'Hände an die Wand, ein Bein weit nach hinten, Ferse bleibt am Boden, Bein gestreckt. Satz 1 mit gestrecktem Bein, Satz 2 mit leicht gebeugtem hinterem Knie, dann dehnt es tiefer unten an der Achillessehne.', easy: 'Kleinerer Schritt nach hinten.', vid: 'calf stretch against wall straight and bent knee', bild: 'Calf_Stretch_Hands_Against_Wall', mus: 'Waden, Achillessehne' },
@@ -1178,7 +1192,7 @@ const DEFAULT_PLAN = { v: PLAN_V, days: [
     { id: 'j11', name: 'Kinn zurückziehen', sets: 1, ziel: '10 Mal, je 2 s halten', pause: 0, einheit: 'Wdh', soll: 10, kg: false, how: 'Aufrecht sitzen, Blick nach vorne. Kinn gerade nach hinten schieben, als würdest du ein Doppelkinn machen, der Kopf kippt dabei nicht. 2 s halten, lösen. Gut gegen den Kopf, der beim Gamen nach vorne wandert.', easy: '', vid: 'chin tuck exercise posture', bild: '', mus: 'Nacken, Haltung', figur: 'kinn' },
     { id: 'j12', name: 'Nacken seitlich dehnen', sets: 1, ziel: '30 s pro Seite', pause: 0, einheit: 'Sek', soll: 30, kg: false, how: 'Ohr Richtung Schulter neigen, mit der Hand auf der Kopfseite nur ganz leicht nachhelfen. Die andere Schulter bleibt unten. 30 s, dann Seite wechseln.', easy: '', vid: 'neck side stretch', bild: 'Side_Neck_Stretch', mus: 'Nacken seitlich' }
   ] },
-  { id: 'L', name: 'Spaziergang', title: '7000 Schritte', wds: [6, 0], ex: [
+  { id: 'L', name: 'Spaziergang', title: '7000 Schritte', wds: [0], ex: [
     { id: 'l1', name: 'Spaziergang', sets: 1, ziel: '7000 Schritte, etwa 60 Min', pause: 0, einheit: 'Min', soll: 60, kg: false, how: 'Zügig gehen, Handy in der Tasche. Am Sonntag nur, wenn du keinen Pflichttag nachholen musst.', easy: '', vid: '', bild: '', mus: 'Ausdauer', figur: 'gehen' }
   ] },
   { id: 'M', name: 'Minimum', title: '15 Minuten, wenn gar nichts geht', wds: [], ex: [
@@ -1214,9 +1228,12 @@ function migratePlan(p) {
   /* Version 8: Rudern an Tag A (Gleichgewicht Drücken und Ziehen), Ausfallschritte mit Spanne für die Steigerung */
   if ((p.v || 1) < 8) {
     const a = p.days.find(x => x.id === 'A');
-    if (a && !a.ex.some(x => x.id === 'a8')) { const i = a.ex.findIndex(x => x.id === 'a5'); a.ex.splice(i >= 0 ? i : a.ex.length, 0, clone(DEFAULT_PLAN.days[0].ex.find(x => x.id === 'a8'))); }
+    if (a && !a.ex.some(x => x.id === 'a8')) { const i = a.ex.findIndex(x => x.id === 'a5'); a.ex.splice(i >= 0 ? i : a.ex.length, 0, clone(DEFAULT_PLAN.days.find(x => x.id === 'A').ex.find(x => x.id === 'a8'))); }
     const c = p.days.find(x => x.id === 'C'); const c3 = c && c.ex.find(x => x.id === 'c3'); if (c3 && c3.ziel === '10 pro Bein') c3.ziel = '10 bis 12 pro Bein';
   }
+  if ((p.v || 1) < 9) ['W', 'K'].forEach(id => { const i = p.days.findIndex(x => x.id === id); if (i > 0) p.days.unshift(p.days.splice(i, 1)[0]); });
+  /* Version 9: Mini Training Mo bis Fr und Wochenend Training. Tag A, B, C und Beweglichkeit bleiben als freiwillige Tage ohne Wochentag.
+     Die Wochentage übernimmt die Schleife oben schon aus dem Standard. */
   p.v = PLAN_V;
   return p;
 }
@@ -1230,7 +1247,8 @@ function savePlan() { LS.set('plan', plan); }
 function saveSessions() { LS.set('sess', sessions); }
 
 function dayById(id) { return plan.days.find(d => d.id === id) || plan.days[0]; }
-const PFLICHT = ['A', 'B', 'C'];
+/* Am Sonntag nachholbar: das Wochenend Training */
+const PFLICHT = ['W'];
 function wochenStart() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d; }
 /* Pflichttage, die diese Woche noch nicht gespeichert sind */
 function offenePflicht() {
@@ -1587,90 +1605,88 @@ const ABEND_GEL = 'PC aus. Gesicht nur mit Wasser, trocknen, CeraVe Gel dünn. G
 /* Vitamin D nur Oktober bis März, Omega 3 das ganze Jahr. Beides zum Essen, weil es mit Fett besser aufgenommen wird. */
 const SUPP = (() => { const m = new Date().getMonth(); return (m >= 9 || m <= 2) ? '2 Tropfen Vitamin D und 1 Omega 3 Kapsel' : '1 Omega 3 Kapsel'; })();
 /* Arbeitstage Mo bis Mi: 06:30 bis 16:00, um 17:00 zuhause */
-const MORGEN_ARBEIT = (training) => [
-  ['04:30', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
-  ['04:35', training, 'training'],
-  ['05:07', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
-  ['05:17', 'Anziehen, Shake in die Flasche, Mittag und Eier einpacken', 'essen'],
-  ['05:22', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
+/* Zwei Wecker: Die Uhr weckt (Vibration), das Handy klingelt 2 Minuten später auf der anderen Seite des Zimmers.
+   Ausschalten geht nur im Stehen, dort beginnt direkt das Mini Training. */
+const WECKER = (z, h) => [z, `Uhr vibriert. Um ${h} klingelt das Handy auf der anderen Seite des Zimmers: aufstehen und dort ausschalten`, 'schlaf'];
+const MORGEN = (auf, handy, start, rest) => [WECKER(auf, handy),
+  [start, 'Licht an, Glas Wasser trinken, dann direkt Mini Training beim Handy', 'training']].concat(rest);
+/* Arbeitstage Mo bis Mi: 06:30 bis 16:00, um 17:00 zuhause */
+const MORGEN_ARBEIT = () => MORGEN('04:50', '04:52', '04:53', [
+  ['05:00', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
+  ['05:10', 'Anziehen. Whey mit Milch in die Flasche, Skyr für den Nachmittag einpacken', 'essen'],
+  ['05:15', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
+  ['05:21', 'Puffer: Zähne, Schuhe, Tasche', 'frei'],
   ['05:28', 'Raus, 8 Min zum Bahnhof', 'arbeit'],
-  ['05:38', 'Zug, Shake trinken', 'essen'],
-  ['06:30', 'Arbeit', 'arbeit']
-];
+  ['05:38', 'Zug: Shake trinken, das ist dein Frühstück. Kokoswasser höchstens dazu. Am Fenster sitzen, Licht macht wach', 'essen'],
+  ['06:30', 'Arbeit', 'arbeit']]);
+/* Schultage Do und Fr: 06:30 raus */
+const MORGEN_SCHULE = einpacken => MORGEN('05:20', '05:22', '05:23', [
+  ['05:30', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
+  ['05:40', 'Anziehen, Shake mit Milch trinken, das ist dein Frühstück. ' + einpacken + ' einpacken', 'essen'],
+  ['05:45', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
+  ['05:52', 'Zeit für dich. Heute fährst du später', 'frei'],
+  ['06:30', 'Raus zur Berufsschule', 'arbeit'],
+  ['07:30', 'Schule', 'arbeit']]);
+const DESSERT = 'Dessert: eine kleine Schüssel, nie die Packung. Am Samstag egal';
 const ABEND = (heim, lichtAus, pc, notiz) => [
   [heim, 'Zuhause. Freizeit', 'frei'],
-  ['18:00', 'Gaming mit den Jungs. Snack Schüssel vorher füllen, dazu Peperoni Sticks mit Quark Dip', 'frei'],
-  ['19:00', 'Abendessen mit der Familie, Game pausieren. Dazu ' + SUPP, 'essen'],
+  ['18:00', 'Gaming mit den Jungs', 'frei'],
+  ['19:00', 'Abendessen mit der Familie, Game pausieren. Dazu ' + SUPP + '. ' + DESSERT, 'essen'],
   ['19:40', 'Gaming oder Freizeit', 'frei'],
-  [pc, ABEND_GEL, 'pflege'],
+  [pc, ABEND_GEL + '. Handy für den Wecker auf die andere Seite des Zimmers', 'pflege'],
   [lichtAus, 'Licht aus' + (notiz ? '. ' + notiz : ''), 'schlaf']
 ];
 const MITTAG_ARBEIT = [
-  ['11:30', 'Mittag, Kantine oder Coop Liste', 'essen'],
+  ['11:30', 'Kantine: das Menü mit Fleisch, lieber ohne Panade, Reis oder Kartoffeln statt Pommes. Im Tagebuch kurz "Kantine" eintragen', 'essen'],
   ['12:00', 'Arbeit', 'arbeit'],
-  ['15:00', 'Snack: 2 Pic Nic Eier', 'essen'],
+  ['15:00', 'Snack: Skyr statt Schokomilch', 'essen'],
   ['15:10', 'Arbeit', 'arbeit'],
   ['16:00', 'Feierabend, ab nach Hause', 'arbeit']];
 const WOCHE = [
-  { k: 'Mo', name: 'Montag', art: 'Tag A', items: MORGEN_ARBEIT('Training Tag A: Brust und Schultern').concat(MITTAG_ARBEIT,
-      ABEND('17:00', '20:30', '20:10', '8 Stunden bis 04:30')) },
-  { k: 'Di', name: 'Dienstag', art: 'Beweglichkeit', items: MORGEN_ARBEIT('Beweglichkeit: Füsse, Beine, Rücken').concat(MITTAG_ARBEIT,
-      ABEND('17:00', '20:30', '20:10', '8 Stunden bis 04:30')) },
-  { k: 'Mi', name: 'Mittwoch', art: 'Tag B', items: MORGEN_ARBEIT('Training Tag B: Beine und Rücken').concat(MITTAG_ARBEIT,
-      ABEND('17:00', '21:00', '20:40', '8 Stunden bis 05:00')) },
-  { k: 'Do', name: 'Donnerstag', art: 'Beweglichkeit', items: [
-      ['05:00', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
-      ['05:05', 'Beweglichkeit: Füsse, Beine, Rücken', 'training'],
-      ['05:37', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
-      ['05:47', 'Anziehen, Shake trinken, Mittag einpacken', 'essen'],
-      ['05:52', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
-      ['06:00', 'Zeit für dich. Heute fährst du später', 'frei'],
-      ['06:30', 'Raus zur Berufsschule', 'arbeit'],
-      ['07:30', 'Schule', 'arbeit'],
+  { k: 'Mo', name: 'Montag', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
+      ABEND('17:00', '20:30', '20:10', '8 Stunden 20 bis 04:50')) },
+  { k: 'Di', name: 'Dienstag', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
+      ABEND('17:00', '20:30', '20:10', '8 Stunden 20 bis 04:50')) },
+  { k: 'Mi', name: 'Mittwoch', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
+      ABEND('17:00', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
+  { k: 'Do', name: 'Donnerstag', art: 'Mini', items: MORGEN_SCHULE('Mittag und Skyr').concat([
       ['12:00', 'Mittag in der Pause', 'essen'],
-      ['12:45', 'Schule', 'arbeit']].concat(ABEND('17:30', '21:00', '20:40', 'Morgen Tag C')) },
-  { k: 'Fr', name: 'Freitag', art: 'Tag C', items: [
-      ['05:00', 'Aufstehen, sofort das Glas Wasser vom Nachttisch trinken', 'schlaf'],
-      ['05:05', 'Training Tag C: Ganzkörper und Bauch', 'training'],
-      ['05:37', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
-      ['05:47', 'Anziehen, Shake trinken, Snack einpacken', 'essen'],
-      ['05:52', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
-      ['06:00', 'Zeit für dich. Heute fährst du später', 'frei'],
-      ['06:30', 'Raus zur Berufsschule', 'arbeit'],
-      ['07:30', 'Schule', 'arbeit'],
-      ['09:30', 'Snack in der Pause: 2 Pic Nic Eier', 'essen'],
+      ['12:45', 'Schule', 'arbeit']], ABEND('17:30', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
+  { k: 'Fr', name: 'Freitag', art: 'Mini', items: MORGEN_SCHULE('Skyr').concat([
+      ['09:30', 'Snack in der Pause: Skyr', 'essen'],
       ['09:40', 'Schule', 'arbeit'],
       ['11:45', 'Schulschluss, ab nach Hause', 'arbeit'],
       ['12:45', 'Zuhause, Mittag', 'essen'],
       ['13:30', 'Freizeit, Wochenende fängt an', 'frei'],
       ['18:00', 'Gaming mit den Jungs', 'frei'],
-      ['19:00', 'Abendessen, Game pausieren. Dazu ' + SUPP, 'essen'],
+      ['19:00', 'Abendessen, Game pausieren. Dazu ' + SUPP + '. ' + DESSERT, 'essen'],
       ['19:40', 'Gaming', 'frei'],
       ['00:40', ABEND_GEL, 'pflege'],
-      ['01:00', 'Licht aus. Morgen ausschlafen bis 10:00', 'schlaf']] },
-  { k: 'Sa', name: 'Samstag', art: 'Cheat Day', items: [
+      ['01:00', 'Licht aus. Morgen ausschlafen bis 10:00', 'schlaf']]) },
+  { k: 'Sa', name: 'Samstag', art: 'Wochenende', items: [
       ['10:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
       ['10:05', 'Gesicht mit der Reinigungslotion, trocknen, rasieren', 'pflege'],
       ['10:30', 'Cheat Day: iss, worauf du Lust hast', 'essen'],
-      ['11:30', 'Freizeit', 'frei'],
-      ['14:00', 'Raus, 7000 Schritte. Danach duschen', 'training'],
+      ['11:00', 'Wochenend Training: 15 Min, ganzer Körper', 'training'],
+      ['11:20', 'Duschen, dann Freizeit', 'frei'],
+      ['14:00', 'Raus, 7000 Schritte', 'training'],
       ['16:00', 'Freizeit und Gaming', 'frei'],
       ['19:00', 'Abendessen. Dazu ' + SUPP, 'essen'],
       ['19:40', 'Freizeit und Gaming', 'frei'],
       ['23:40', ABEND_GEL, 'pflege'],
       ['00:00', 'Licht aus. Morgen 09:00', 'schlaf']] },
-  { k: 'So', name: 'Sonntag', art: 'Nachholen', items: [
+  { k: 'So', name: 'Sonntag', art: 'Spaziergang', items: [
       ['09:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
       ['09:30', 'Erste Mahlzeit mit Protein. Ab heute wieder normal essen', 'essen'],
-      ['10:00', 'Pflichttag verpasst? Jetzt nachholen. Sonst 7000 Schritte', 'training'],
+      ['10:00', 'Wochenend Training verpasst? Jetzt nachholen. Sonst 7000 Schritte', 'training'],
       ['11:00', 'Duschen, Gesicht waschen, danach trocken rasieren', 'pflege'],
       ['11:30', 'Freizeit', 'frei'],
-      ['18:00', 'Foto von der Stirn. Einkaufsliste an die Eltern', 'pflege'],
+      ['18:00', 'Foto von der Stirn. Einkaufsliste an die Eltern: Milch und Skyr für die Woche', 'pflege'],
       ['18:15', 'Freizeit', 'frei'],
       ['19:00', 'Abendessen. Dazu ' + SUPP, 'essen'],
       ['19:40', 'Freizeit', 'frei'],
-      ['20:10', ABEND_GEL, 'pflege'],
-      ['20:30', 'Licht aus. Morgen 04:30', 'schlaf']] }
+      ['20:10', ABEND_GEL + '. Handy für den Wecker auf die andere Seite des Zimmers', 'pflege'],
+      ['20:30', 'Licht aus. Morgen 04:50', 'schlaf']] }
 ];
 const zeitVon = (d, f) => { const t = d.items.find(f); return t ? t[0] : null; };
 const lichtAus = d => zeitVon(d, x => /^Licht aus/.test(x[1]));
@@ -1796,7 +1812,7 @@ function renderPlan() {
       <li><b>Ein Tag, kein Wochenende.</b> Sonntag ab der ersten Mahlzeit wieder normal.</li>
       <li><b>Geniessen, nicht stopfen.</b> Pizza, Döner, Burger, Dessert: ja. Essen bis es weh tut: nein.</li>
       <li><b>Ein Shake über den Tag</b> und 7000 Schritte bleiben, beides kostet dich nichts.</li>
-      <li><b>Wiegen am Montag, nie am Sonntag.</b> Nach dem Cheat Day zeigt die Waage Wasser und Salz, nicht Fett.</li>
+      <li><b>Bauch messen am Montag, nie am Sonntag.</b> Nach dem Cheat Day hält der Körper Wasser und Salz, der Bauch ist dann dicker, ohne dass es Fett ist.</li>
       <li><b>Ein schlechter Tag unter der Woche ist kein zweiter Cheat Day.</b> Abhaken und mit der nächsten Mahlzeit weiter.</li>
     </ol></div>`;
   $('#main').innerHTML = h;
@@ -1836,7 +1852,8 @@ function renderTraining() {
   if (!editMode) h += streakKarte(true);
   h += `<div class="card daycard"><div class="ring" style="--p:${pct}" role="img" aria-label="${done} von ${total} Sätzen erledigt"><span>${done}/${total}</span></div>
     <div><div class="lab">${heuteHinweis(day)}</div><h2>${esc(day.name)}: ${esc(day.title)}</h2>
-    <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="stats">Verlauf und Statistik</button></div></div></div>`;
+    <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="stats">Verlauf und Statistik</button></div>
+    ${day.id === 'K' ? miniStufeText() : ''}</div></div>`;
   if (!editMode && done) h += `<button class="btn wide abschluss ${done >= total ? 'primary' : ''}" data-act="finish">${done >= total ? 'Training abschliessen' : `Abschliessen · ${done} von ${total} Sätzen`}</button>`;
   const aktivIdx = done ? day.ex.findIndex(x => s.sets[x.id].some(st => !st.d)) : 0;
   day.ex.forEach((ex, xi) => {
@@ -2044,7 +2061,35 @@ function trainingSpeichern(day, s, opt) {
   history.push(e);
   if (!LS.set('history', history)) { history.pop(); return null; }
   delete sessions[day.id]; saveSessions();
+  if (day.id === 'K') miniAnpassen(true);
   return e;
+}
+/* Mini Training wächst mit: alle 8 vollständigen Mini Trainings eine Stufe mehr, höchstens Stufe 4 mit etwa 15 Minuten.
+   Erst wird das Aufstehen zur Gewohnheit, dann wird daraus Schritt für Schritt echtes Krafttraining. Es wird nur gesteigert, nie gekürzt. */
+const MINI_PRO_STUFE = 8;
+const MINI_STUFEN = [
+  { saetze: 1, rudern: 0, pause: 30, min: 5, txt: 'je 1 Satz' },
+  { saetze: 2, rudern: 0, pause: 45, min: 8, txt: 'je 2 Sätze' },
+  { saetze: 2, rudern: 2, pause: 45, min: 11, txt: 'je 2 Sätze plus Rucksack Rudern' },
+  { saetze: 3, rudern: 2, pause: 60, min: 15, txt: 'je 3 Sätze plus Rucksack Rudern' }];
+const MINI_RUDERN = { id: 'k4', name: 'Rucksack Rudern', sets: 2, ziel: '10, Rucksack etwa 5 kg', pause: 45, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 5, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Gleicht die vielen Liegestütze aus und hilft gegen die Gaming Haltung.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack.', mus: 'Rücken, Bizeps' };
+function miniVoll() { return history.filter(h => h.dayId === 'K' && h.voll !== false).length; }
+function miniStufe() { return Math.min(MINI_STUFEN.length, 1 + Math.floor(miniVoll() / MINI_PRO_STUFE)); }
+function miniStufeText() {
+  const st = miniStufe(); if (st >= MINI_STUFEN.length) return `<div class="sub">Stufe ${st} von ${MINI_STUFEN.length}, die höchste. Bereit für Tag A, B und C.</div>`;
+  const fehlt = MINI_PRO_STUFE - miniVoll() % MINI_PRO_STUFE;
+  return `<div class="sub">Stufe ${st} von ${MINI_STUFEN.length}. Noch ${fehlt} komplette Mini ${fehlt === 1 ? 'Training' : 'Trainings'} bis Stufe ${st + 1}: ${esc(MINI_STUFEN[st].txt)}.</div>`;
+}
+function miniAnpassen(melden) {
+  const k = plan.days.find(d => d.id === 'K'); if (!k) return;
+  const st = miniStufe(); if (k.stufe && k.stufe >= st) return;
+  const S = MINI_STUFEN[st - 1];
+  ['k1', 'k2', 'k3'].forEach(id => { const e = k.ex.find(x => x.id === id); if (e) { e.sets = S.saetze; e.pause = id === 'k3' ? 0 : S.pause; } });
+  let r = k.ex.find(x => x.id === 'k4');
+  if (S.rudern && !r) { r = clone(MINI_RUDERN); const i = k.ex.findIndex(x => x.id === 'k3'); k.ex.splice(i >= 0 ? i : k.ex.length, 0, r); }
+  if (r && S.rudern) { r.sets = S.rudern; r.pause = S.pause; }
+  k.title = `${S.min} Minuten nach dem Aufstehen`; k.stufe = st; savePlan();
+  if (melden && st > 1) toast(`Mini Training Stufe ${st}: ab jetzt ${S.txt}, etwa ${S.min} Min`);
 }
 /* Nicht abgeschlossene Trainings von früheren Tagen werden nicht vergessen: mit mindestens einem Satz automatisch gespeichert */
 function alteTrainingsSichern() {
@@ -2105,6 +2150,8 @@ function tagKey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).pad
 function keyDatum(k) { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d, 12); }
 function planIdFuer(datum) { const wd = datum.getDay(); const d = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0); return d ? d.id : null; }
 function zaehltFuer(h) {
+  /* Notbremse: Beim Mini Training hält schon ein Satz die Kette am Leben */
+  if (h.dayId === 'K' && (h.fertig || 0) >= 1 && h.dayId === planIdFuer(new Date(h.date))) return true;
   if (h.voll === false) return false;
   const datum = new Date(h.date);
   return PFLICHT.indexOf(h.dayId) >= 0 || h.dayId === planIdFuer(datum);
@@ -2158,7 +2205,7 @@ function streakKarte(kompakt) {
 }
 /* Für das Widget auf dem Startbildschirm (nur in der APK) */
 /* Englische Namen fürs Widget, eigene Tage fallen auf ihren Titel zurück. */
-const WIDGET_PLAN_EN = { A: 'Chest & shoulders', B: 'Legs & back', C: 'Full body', J: 'Mobility', L: 'Walk' };
+const WIDGET_PLAN_EN = { A: 'Chest & shoulders', B: 'Legs & back', C: 'Full body', J: 'Mobility', L: 'Walk', K: 'Mini workout', W: 'Weekend workout' };
 function streakAnsWidget() {
   try {
     if (!NATIVE || typeof NATIVE.setStreak !== 'function') return;
@@ -2875,7 +2922,7 @@ $('#btnStat').addEventListener('click', () => zeigeStats());
    Rezepte, Open Food Facts und eigene Lebensmittel. Alles bleibt auf dem Handy und ist in der Sicherung dabei. */
 const MAHL = [['morgen', 'Morgen'], ['mittag', 'Mittag'], ['abend', 'Abend'], ['snack', 'Snacks']];
 const MAHL_NAME = { morgen: 'Morgen', mittag: 'Mittag', abend: 'Abend', snack: 'Snacks' };
-const ZIELE_START = { k: 2300, pr: 150, kh: 265, f: 70 };
+const ZIELE_START = { k: 2200, pr: 130, kh: 265, f: 70 };
 const KCAL_MIN = 2200;
 /* Wer noch die alte Empfehlung 2400 gespeichert hat, bekommt die neue. Eigene Werte bleiben. */
 (() => { const z = LS.get('ziele', null); if (z && z.k === 2400 && z.pr === 150 && z.kh === 290 && z.f === 70) LS.del('ziele'); })();
@@ -2887,6 +2934,18 @@ const SRC_NAME = { migros: 'Migros', coop: 'Coop', rezept: 'Rezept', off: 'Open 
 let tb = LS.get('tb', {});
 let foods = LS.get('foods', {});
 let ziele = Object.assign({}, ZIELE_START, LS.get('ziele', {}));
+/* 28.10.: Ziel realistisch gemacht: 2200 kcal und 130 g Protein, etwa 1,6 g pro kg. Die alte Empfehlung 2300 und 150 wird einmal umgestellt,
+   eigene Werte bleiben. Alte Tage werden weiter am alten Ziel gemessen. */
+(() => {
+  if (LS.get('ziel2200', false)) return; LS.set('ziel2200', true);
+  const z = LS.get('ziele', null);
+  if (z && !(z.k === 2300 && z.pr === 150)) return;
+  ziele = Object.assign({}, ZIELE_START); LS.set('ziele', ziele);
+  const heute = tagKey(new Date());
+  const h = LS.get('zielHist', []).filter(x => x.d !== heute);
+  if (!h.length) h.push({ d: '2000-01-01', k: 2300, pr: 150 });
+  h.push({ d: heute, k: ziele.k, pr: ziele.pr }); LS.set('zielHist', h.slice(-60));
+})();
 let gewicht = LS.get('gewicht', {});
 let tbTag = null;
 let tbDatenIdx = null, tbCodes = null, tbFrisch = null, tbFrischT = 0;
@@ -3568,9 +3627,9 @@ function openZiele() {
     <button class="btn primary wide" id="zOk">Speichern</button>
     <button class="btn wide" id="zStd" style="margin-top:10px">Empfehlung: ${ZIELE_START.k} kcal, ${ZIELE_START.pr} g Protein</button>
     <details class="how" style="margin-top:14px"><summary>Warum diese Zahlen?</summary>
-      <p><b>${ZIELE_START.k} kcal.</b> Bei 180 cm, rund 79 kg, Bürojob, Training um 30 Minuten und 7000 Schritten verbrauchst du geschätzt 2600 bis 2800 kcal. Mit ${ZIELE_START.k} verlierst du etwa 0,35 kg Fett pro Woche. Das ist das Tempo, bei dem Muskeln bleiben und Kraft weiter steigt. Schneller kostet Muskeln, und mit 16 oder 17 wächst du noch. Darum geht die App nie unter ${KCAL_MIN}.</p>
+      <p><b>${ZIELE_START.k} kcal.</b> Bei 180 cm, rund 79 kg, Bürojob, kurzem Training und 7000 Schritten verbrauchst du geschätzt 2600 bis 2800 kcal. Mit ${ZIELE_START.k} bist du klar im Minus und verlierst Fett, grob ein halbes Kilo pro Woche. Mehr musst du nicht essen, wenn du das Protein schaffst. Weniger lohnt sich nicht: Muskeln bleiben und Kraft weiter steigt. Schneller kostet Muskeln, und mit 16 oder 17 wächst du noch. Darum geht die App nie unter ${KCAL_MIN}.</p>
       <p>Das ist eine Schätzung. Sobald du zwei Wochen gewogen und eingetragen hast, misst die App deinen echten Verbrauch und schlägt dir eine Anpassung vor.</p>
-      <p><b>${ZIELE_START.pr} g Protein.</b> Knapp 2 g pro kg Körpergewicht. Das schützt deine Muskeln, während du Fett verlierst, und baut neue auf.</p>
+      <p><b>${ZIELE_START.pr} g Protein.</b> Etwa 1,6 g pro kg Körpergewicht. Eine grosse Auswertung vieler Studien fand, dass mehr Protein darüber hinaus beim Muskelaufbau im Schnitt kaum noch zusätzlich bringt. Mit Fleisch am Mittag und Abend, dem Shake am Morgen und einem Skyr am Nachmittag kommst du hin.</p>
       <p><b>${ZIELE_START.f} g Fett.</b> Genug für deine Hormone. Nicht darunter gehen.</p>
       <p><b>${ZIELE_START.kh} g Kohlenhydrate.</b> Der Rest. Treibstoff fürs Training am Morgen.</p>
       <p>Fett an der Brust und am Bauch verschwindet nicht gezielt dort, sondern mit deinem gesamten Körperfett. Genau dafür ist das leichte Minus da.</p></details>`);
@@ -3763,7 +3822,7 @@ $('#main').addEventListener('click', e => {
 
 /* ---------- Training */
 function histNachTag() { const m = {}; history.forEach(h => { const k = tagKey(new Date(h.date)); (m[k] || (m[k] = [])).push(h); }); return m; }
-const PFLICHT_PLUS = ['A', 'B', 'C', 'J'];
+const PFLICHT_PLUS = ['K', 'W'];
 function trainingStatus(k, hm, start) {
   const hs = hm[k] || [];
   if (hs.some(h => h.voll !== false)) return 'komplett';
@@ -4397,7 +4456,7 @@ function wocheDaten(m) {
   const meist = Object.entries(ausgelassen).sort((a, b) => b[1] - a[1])[0];
   A.training = { name: 'Training', w: gepl.length ? (kompl + teil * 0.5) / gepl.length : null, wert: `${kompl} von ${gepl.length} komplett`,
     punkte: tage.map(k => { const s = trainingStatus(k, hm, start); return { k, c: s === 'komplett' ? 'gut' : s === 'teil' ? 'knapp' : s === 'verpasst' ? 'mies' : '' }; }),
-    tipp: () => gepl.length - kompl === 0 ? '' : (tst.some(x => x.s === 'verpasst') ? `Verpasst: ${tst.filter(x => x.s === 'verpasst').map(x => WT[keyDatum(x.k).getDay()]).join(', ')}. Am Sonntag kannst du einen Pflichttag nachholen. ` : '') + (meist ? `Am meisten ausgelassen hast du ${meist[0]} (${meist[1]} ${meist[1] === 1 ? 'Satz' : 'Sätze'}). Mach diese Woche zuerst die ganze Einheit, lieber langsamer.` : '') };
+    tipp: () => gepl.length - kompl === 0 ? '' : (tst.some(x => x.s === 'verpasst') ? `Verpasst: ${tst.filter(x => x.s === 'verpasst').map(x => WT[keyDatum(x.k).getDay()]).join(', ')}. Kein Drama: Morgen reichen wieder 5 Minuten, und das Wochenend Training holst du am Sonntag nach. ` : '') + (meist ? `Am meisten ausgelassen hast du ${meist[0]} (${meist[1]} ${meist[1] === 1 ? 'Satz' : 'Sätze'}). Mach diese Woche zuerst die ganze Einheit, lieber langsamer.` : '') };
   /* Essen: nur abgeschlossene Tage ausser Samstag */
   const ess = fertig.filter(k => keyDatum(k).getDay() !== 6);
   const erf = ess.filter(k => (tb[k] || []).length);
@@ -4409,7 +4468,7 @@ function wocheDaten(m) {
   const prFehlt = sums.length ? sums.reduce((a, x) => a + Math.max(0, x.z.pr - x.s.pr), 0) / sums.length : 0;
   A.protein = { name: 'Protein', w: sums.length ? prOk / sums.length : null, wert: `Ziel an ${prOk} von ${sums.length} Tagen`,
     punkte: tage.map(k => { const x = sums.find(y => y.k === k); return { k, c: !x ? '' : x.s.pr >= x.z.pr ? 'gut' : x.s.pr >= x.z.pr * 0.8 ? 'knapp' : 'mies' }; }),
-    tipp: () => `Dir fehlen im Schnitt ${fz(prFehlt)} g Protein pro Tag. Ein zweiter Shake mit deinem Whey bringt etwa 20 g, Magerquark als Dip etwa 12 g pro 100 g.` };
+    tipp: () => `Dir fehlen im Schnitt ${fz(prFehlt)} g Protein pro Tag. Der Shake am Morgen mit Milch bringt etwa 25 bis 30 g, ein Skyr am Nachmittag etwa 15 g. Beides ohne mehr zu essen.` };
   const kOk = sums.filter(x => Math.abs(x.s.k - x.z.k) <= x.z.k * 0.1).length;
   const kDev = sums.length ? sums.reduce((a, x) => a + (x.s.k - x.z.k), 0) / sums.length : 0;
   A.kalorien = { name: 'Kalorien', w: sums.length ? kOk / sums.length : null, wert: `im Ziel an ${kOk} von ${sums.length} Tagen`,
@@ -5146,13 +5205,6 @@ function openSettings() {
   let b = `<h3 style="margin-top:0">Datenstand</h3>
     <p class="muted small">Gebaut: ${DATA && DATA.stand ? datumZeit(DATA.stand) : 'noch keine Daten'}${EMBEDDED ? ' · Daten sind in dieser Datei eingebettet' : ''}</p>
     ${line('Migros', 'migros')}${line('Coop über Open Food Facts', 'coop')}${line('Rezepte', 'rezepte')}
-    <h3>GitHub Zugang</h3>
-    <p class="muted small">Damit lädt die App die Daten aus deinem privaten Repository. Der Token bleibt nur auf diesem Handy.</p>
-    <label class="field"><span>GitHub Benutzername</span><input type="text" id="sOwner" value="${esc(s.owner)}" autocapitalize="off" autocomplete="off"></label>
-    <label class="field"><span>Repository mit den Daten</span><input type="text" id="sRepo" value="${esc(s.repo || 'fitapp-daten')}" autocapitalize="off" autocomplete="off"></label>
-    <label class="field"><span>Token (nur Lesen)</span><input type="password" id="sToken" value="${esc(s.token)}" autocomplete="off"></label>
-    <button class="btn primary wide" id="sSave">Speichern und Daten laden</button>
-    <p class="muted small" id="sMsg">${LS.get('syncAt', 0) ? 'Zuletzt geladen: ' + datumZeit(new Date(LS.get('syncAt', 0)).toISOString()) : ''}</p>
     <h3>Samsung Health</h3>
     <p class="muted small">Schritte, Schlaf, Puls, aktive Kalorien und Trainings von Handy und Uhr. Gelesen über Health Connect, gespeichert nur auf diesem Handy.</p>
     <div id="hcBox">${hcBoxHtml()}</div>
@@ -5161,15 +5213,32 @@ function openSettings() {
     <div class="edit-grid"><button class="btn" id="sExport">Export</button><button class="btn" id="sImport">Import</button></div>
     <h3>Trainingsplan</h3>
     <button class="btn danger wide" id="sResetPlan">Plan auf Standard zurücksetzen</button>
-    <p class="muted small">Dein Verlauf bleibt dabei erhalten.</p>`;
+    <p class="muted small">Dein Verlauf bleibt dabei erhalten.</p>
+    <h3>Datenzugang</h3>
+    <div id="ghBox">${ghBoxHtml(false)}</div>`;
   openSheet('Einstellungen', b);
   $('#sheetBody').onclick = async e => {
     if (e.target.closest('#sSave')) {
-      const cfg = { owner: $('#sOwner').value.trim(), repo: $('#sRepo').value.trim() || 'fitapp-daten', token: $('#sToken').value.trim() };
+      /* Leere Felder behalten den gespeicherten Wert, der Token wird nie wieder angezeigt */
+      const alt = LS.get('sync', { owner: '', repo: 'fitapp-daten', token: '' });
+      const cfg = { owner: $('#sOwner').value.trim() || alt.owner, repo: $('#sRepo').value.trim() || alt.repo || 'fitapp-daten', token: $('#sToken').value.trim() || alt.token };
       LS.set('sync', cfg);
+      $('#ghBox').innerHTML = ghBoxHtml(false);
       $('#sMsg').textContent = 'Lade Daten…';
       const r = await syncData(true);
+      $('#ghBox').innerHTML = ghBoxHtml(false);
       $('#sMsg').textContent = r.msg;
+    } else if (e.target.closest('#sLaden')) {
+      $('#sMsg').textContent = 'Lade Daten…';
+      const r = await syncData(true);
+      $('#ghBox').innerHTML = ghBoxHtml(false);
+      $('#sMsg').textContent = r.msg;
+    } else if (e.target.closest('#sAendern')) { $('#ghBox').innerHTML = ghBoxHtml(true); }
+    else if (e.target.closest('#sAbbruch')) { $('#ghBox').innerHTML = ghBoxHtml(false); }
+    else if (e.target.closest('#sLoeschen')) {
+      const b3 = e.target.closest('#sLoeschen');
+      if (b3.dataset.sure) { LS.set('sync', { owner: '', repo: 'fitapp-daten', token: '' }); $('#ghBox').innerHTML = ghBoxHtml(false); toast('Zugang von diesem Handy gelöscht'); }
+      else { b3.dataset.sure = '1'; b3.textContent = 'Wirklich löschen? Nochmals tippen'; }
     } else if (e.target.closest('[data-hc]')) hcKlick(e.target.closest('[data-hc]').dataset.hc);
     else if (e.target.closest('#sExport')) exportData();
     else if (e.target.closest('#sImport')) $('#importFile').click();
@@ -5179,6 +5248,23 @@ function openSettings() {
       else { b2.dataset.sure = '1'; b2.textContent = 'Wirklich? Nochmals tippen'; }
     }
   };
+}
+/* Datenzugang: eingerichtet nur eine Zeile. Benutzername, Repository und Token erscheinen nie im Klartext,
+   der Token kommt nach dem Speichern nicht mehr ins Formular zurück. */
+function ghBoxHtml(bearbeiten) {
+  const s = LS.get('sync', { owner: '', repo: 'fitapp-daten', token: '' });
+  const da = !!(s.owner && s.token);
+  const zuletzt = LS.get('syncAt', 0) ? 'zuletzt geladen ' + datumZeit(new Date(LS.get('syncAt', 0)).toISOString()) : 'noch nie geladen';
+  if (da && !bearbeiten) return `<p class="small" style="margin:0 0 10px"><b>Eingerichtet.</b> <span class="muted">Daten ${esc(zuletzt)}.</span></p>
+    <div class="edit-grid"><button class="btn" id="sLaden">Daten jetzt laden</button><button class="btn" id="sAendern">Zugang ändern</button></div>
+    <p class="muted small" id="sMsg"></p>`;
+  return `<p class="muted small">${da ? 'Leere Felder behalten den gespeicherten Wert.' : 'Einmal einrichten, dann lädt die App die Daten selbst.'} Alles bleibt nur auf diesem Handy.</p>
+    <label class="field"><span>GitHub Benutzername</span><input type="text" id="sOwner" value="" placeholder="${da ? 'gespeichert' : ''}" autocapitalize="off" autocomplete="off" spellcheck="false"></label>
+    <label class="field"><span>Repository mit den Daten</span><input type="text" id="sRepo" value="" placeholder="${da ? 'gespeichert' : 'fitapp-daten'}" autocapitalize="off" autocomplete="off" spellcheck="false"></label>
+    <label class="field"><span>Token (nur Lesen)</span><input type="password" id="sToken" value="" placeholder="${da ? 'gespeichert' : ''}" autocomplete="off" spellcheck="false"></label>
+    <button class="btn primary wide" id="sSave">Speichern und Daten laden</button>
+    ${da ? '<div class="edit-grid" style="margin-top:8px"><button class="btn" id="sAbbruch">Abbrechen</button><button class="btn danger" id="sLoeschen">Zugang löschen</button></div>' : ''}
+    <p class="muted small" id="sMsg"></p>`;
 }
 $('#btnSet').addEventListener('click', openSettings);
 
@@ -5248,6 +5334,7 @@ async function start() {
   } catch (e) { DATA = null; }
   if (!DATA) DATA = await IDB.get('data');
   if (alteTrainingsSichern()) curDay = todayDayId();
+  miniAnpassen(false);
   setTab(tab);
   if (hcBruecke()) { try { NATIVE.healthCheck(); } catch (e) {} }
   Timer.render();
