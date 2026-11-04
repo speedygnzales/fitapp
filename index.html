@@ -11,6 +11,10 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FitApp">
 <title>FitApp</title>
 <style>
 :root {
@@ -942,6 +946,11 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 .wb-ohne { margin: 0; padding: 10px 0 12px; border-top: 1px solid var(--hair); font-size: .8rem; color: var(--muted); line-height: 1.45; }
 .wb-ampel .wb-ohne:first-child { border-top: 0; }
 
+/* Profil */
+#pIn, #kopTxt { width: 100%; box-sizing: border-box; background: var(--fill); color: var(--ink); border: 1px solid var(--line2); border-radius: 12px; padding: 12px; font: 16px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; }
+/* 16px, sonst zoomt Safari auf dem iPhone beim Antippen hinein */
+.prof-w { background: var(--fill); border-color: var(--line2); border-radius: 20px; }
+.prof-w .schritte li { margin-bottom: 4px; }
 /* ======================================================= Bewegung
    Kurz, ruhig, mit Zweck: Eintritt beim Tab Wechsel, Blätter von unten, Druck Feedback, Haken, Fortschritt.
    Wer im System weniger Bewegung eingestellt hat, bekommt keine. */
@@ -1133,7 +1142,8 @@ const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', ri
 
 /* ======================================================= Trainingsplan */
 const PLAN_V = 9;
-const DEFAULT_PLAN = { v: PLAN_V, days: [
+/* Bisheriger Plan, Grundlage für das alte Profil und das Beispiel */
+const PLAN_OMAR_TAGE = [
   /* Ab 28.10.: Der grosse Plan war für den Anfang zu viel. Zuerst wird das Aufstehen zur Gewohnheit, dann die Muskeln. */
   { id: 'K', name: 'Mini', title: '5 Minuten nach dem Aufstehen', wds: [1, 2, 3, 4, 5], ex: [
     { id: 'k1', name: 'Kniebeugen', sets: 1, ziel: '10, langsam', pause: 30, einheit: 'Wdh', soll: 10, kg: false, how: 'Direkt dort, wo das Handy liegt, noch bevor du nachdenkst. Füsse schulterbreit, Po nach hinten und runter, bis die Oberschenkel waagrecht sind, Fersen bleiben am Boden. Langsam runter, normal hoch.', easy: 'Nur halb so tief runter.', vid: 'bodyweight squat form', bild: 'Bodyweight_Squat', mus: 'Beine, Po' },
@@ -1200,7 +1210,198 @@ const DEFAULT_PLAN = { v: PLAN_V, days: [
     { id: 'm2', name: 'Kniebeugen', sets: 3, ziel: '15', pause: 30, einheit: 'Wdh', soll: 15, kg: false, how: '', easy: '', vid: 'bodyweight squat form', bild: 'Bodyweight_Squat', mus: 'Beine, Po' },
     { id: 'm3', name: 'Unterarmstütz', sets: 3, ziel: '30 s', pause: 30, einheit: 'Sek', soll: 30, kg: false, how: '', easy: '', vid: 'forearm plank form', bild: 'Plank', mus: 'Bauch, Rumpf' }
   ] }
-] };
+];
+/* ======================================================= Stundenplan (bisher), Grundlage für das alte Profil */
+/* Gel jeden Abend, er verträgt es (19.10.). Brennt oder schuppt die Haut: 3 Tage Pause, dann jeden zweiten Abend. */
+const ABEND_GEL = 'PC aus. Gesicht nur mit Wasser, trocknen, CeraVe Gel dünn. Glas Wasser ans Bett';
+/* Arbeitstage Mo bis Mi: 06:30 bis 16:00, um 17:00 zuhause */
+/* Zwei Wecker: Die Uhr weckt (Vibration), das Handy klingelt 2 Minuten später auf der anderen Seite des Zimmers.
+   Ausschalten geht nur im Stehen, dort beginnt direkt das Mini Training. */
+const WECKER = (z, h) => [z, `Uhr vibriert. Um ${h} klingelt das Handy auf der anderen Seite des Zimmers: aufstehen und dort ausschalten`, 'schlaf'];
+const MORGEN = (auf, handy, start, rest) => [WECKER(auf, handy),
+  [start, 'Licht an, Glas Wasser trinken, dann direkt Mini Training beim Handy', 'training']].concat(rest);
+/* Arbeitstage Mo bis Mi: 06:30 bis 16:00, um 17:00 zuhause */
+const MORGEN_ARBEIT = () => MORGEN('04:50', '04:52', '04:53', [
+  ['05:00', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
+  ['05:10', 'Anziehen. Whey mit Milch in die Flasche, Skyr für den Nachmittag einpacken', 'essen'],
+  ['05:15', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
+  ['05:21', 'Puffer: Zähne, Schuhe, Tasche', 'frei'],
+  ['05:28', 'Raus, 8 Min zum Bahnhof', 'arbeit'],
+  ['05:38', 'Zug: Shake trinken, das ist dein Frühstück. Kokoswasser höchstens dazu. Am Fenster sitzen, Licht macht wach', 'essen'],
+  ['06:30', 'Arbeit', 'arbeit']]);
+/* Schultage Do und Fr: 06:30 raus */
+const MORGEN_SCHULE = einpacken => MORGEN('05:20', '05:22', '05:23', [
+  ['05:30', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
+  ['05:40', 'Anziehen, Shake mit Milch trinken, das ist dein Frühstück. ' + einpacken + ' einpacken', 'essen'],
+  ['05:45', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
+  ['05:52', 'Zeit für dich. Heute fährst du später', 'frei'],
+  ['06:30', 'Raus zur Berufsschule', 'arbeit'],
+  ['07:30', 'Schule', 'arbeit']]);
+const DESSERT = 'Dessert: eine kleine Schüssel, nie die Packung. Am Samstag egal';
+const ABEND = (heim, lichtAus, pc, notiz) => [
+  [heim, 'Zuhause. Freizeit', 'frei'],
+  ['18:00', 'Gaming mit den Jungs', 'frei'],
+  ['19:00', 'Abendessen mit der Familie, Game pausieren. Dazu {supps}. ' + DESSERT, 'essen'],
+  ['19:40', 'Gaming oder Freizeit', 'frei'],
+  [pc, ABEND_GEL + '. Handy für den Wecker auf die andere Seite des Zimmers', 'pflege'],
+  [lichtAus, 'Licht aus' + (notiz ? '. ' + notiz : ''), 'schlaf']
+];
+const MITTAG_ARBEIT = [
+  ['11:30', 'Kantine: das Menü mit Fleisch, lieber ohne Panade, Reis oder Kartoffeln statt Pommes. Im Tagebuch kurz "Kantine" eintragen', 'essen'],
+  ['12:00', 'Arbeit', 'arbeit'],
+  ['15:00', 'Snack: Skyr statt Schokomilch', 'essen'],
+  ['15:10', 'Arbeit', 'arbeit'],
+  ['16:00', 'Feierabend, ab nach Hause', 'arbeit']];
+const OMAR_WOCHE = [
+  { k: 'Mo', name: 'Montag', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
+      ABEND('17:00', '20:30', '20:10', '8 Stunden 20 bis 04:50')) },
+  { k: 'Di', name: 'Dienstag', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
+      ABEND('17:00', '20:30', '20:10', '8 Stunden 20 bis 04:50')) },
+  { k: 'Mi', name: 'Mittwoch', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
+      ABEND('17:00', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
+  { k: 'Do', name: 'Donnerstag', art: 'Mini', items: MORGEN_SCHULE('Mittag und Skyr').concat([
+      ['12:00', 'Mittag in der Pause', 'essen'],
+      ['12:45', 'Schule', 'arbeit']], ABEND('17:30', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
+  { k: 'Fr', name: 'Freitag', art: 'Mini', items: MORGEN_SCHULE('Skyr').concat([
+      ['09:30', 'Snack in der Pause: Skyr', 'essen'],
+      ['09:40', 'Schule', 'arbeit'],
+      ['11:45', 'Schulschluss, ab nach Hause', 'arbeit'],
+      ['12:45', 'Zuhause, Mittag', 'essen'],
+      ['13:30', 'Freizeit, Wochenende fängt an', 'frei'],
+      ['18:00', 'Gaming mit den Jungs', 'frei'],
+      ['19:00', 'Abendessen, Game pausieren. Dazu {supps}. ' + DESSERT, 'essen'],
+      ['19:40', 'Gaming', 'frei'],
+      ['00:40', ABEND_GEL, 'pflege'],
+      ['01:00', 'Licht aus. Morgen ausschlafen bis 10:00', 'schlaf']]) },
+  { k: 'Sa', name: 'Samstag', art: 'Wochenende', items: [
+      ['10:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
+      ['10:05', 'Gesicht mit der Reinigungslotion, trocknen, rasieren', 'pflege'],
+      ['10:30', 'Cheat Day: iss, worauf du Lust hast', 'essen'],
+      ['11:00', 'Wochenend Training: 15 Min, ganzer Körper', 'training'],
+      ['11:20', 'Duschen, dann Freizeit', 'frei'],
+      ['14:00', 'Raus, 7000 Schritte', 'training'],
+      ['16:00', 'Freizeit und Gaming', 'frei'],
+      ['19:00', 'Abendessen. Dazu {supps}', 'essen'],
+      ['19:40', 'Freizeit und Gaming', 'frei'],
+      ['23:40', ABEND_GEL, 'pflege'],
+      ['00:00', 'Licht aus. Morgen 09:00', 'schlaf']] },
+  { k: 'So', name: 'Sonntag', art: 'Spaziergang', items: [
+      ['09:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
+      ['09:30', 'Erste Mahlzeit mit Protein. Ab heute wieder normal essen', 'essen'],
+      ['10:00', 'Wochenend Training verpasst? Jetzt nachholen. Sonst 7000 Schritte', 'training'],
+      ['11:00', 'Duschen, Gesicht waschen, danach trocken rasieren', 'pflege'],
+      ['11:30', 'Freizeit', 'frei'],
+      ['18:00', 'Foto von der Stirn. Einkaufsliste an die Eltern: Milch und Skyr für die Woche', 'pflege'],
+      ['18:15', 'Freizeit', 'frei'],
+      ['19:00', 'Abendessen. Dazu {supps}', 'essen'],
+      ['19:40', 'Freizeit', 'frei'],
+      ['20:10', ABEND_GEL + '. Handy für den Wecker auf die andere Seite des Zimmers', 'pflege'],
+      ['20:30', 'Licht aus. Morgen 04:50', 'schlaf']] }
+];
+const STEIG_ALT = {
+  a1: { rmin: 8, rmax: 12, stufe: 'Füsse aufs Bett legen' }, c2: { rmin: 8, rmax: 12, stufe: 'Füsse aufs Bett legen' },
+  a3: { rmin: 5, rmax: 8, stufe: 'Füsse aufs Bett, Hüfte höher' }, a4: { rmin: 6, rmax: 12, stufe: 'alle Wiederholungen auf den Füssen, ohne Knie' },
+  a8: { rmin: 10, rmax: 12, kg: 1 }, b2: { rmin: 10, rmax: 12, kg: 1 }, b3: { rmin: 10, rmax: 12, kg: 1 }, c4: { rmin: 10, rmax: 12, kg: 1 }, c1: { rmin: 12, rmax: 15, kg: 1 },
+  b1: { rmin: 8, rmax: 10, stufe: 'Rucksack auf den Rücken' }, b4: { rmin: 15, rmax: 20, stufe: 'einbeinige Bridge' },
+  c3: { rmin: 10, rmax: 12, stufe: 'Rucksack auf den Rücken' }, c5: { rmin: 12, rmax: 15, stufe: 'Beine langsamer senken, 3 s runter' }
+};
+const MINI_RUDERN_ALT = { id: 'k4', name: 'Rucksack Rudern', sets: 2, ziel: '10, Rucksack etwa 5 kg', pause: 45, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 5, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Gleicht die vielen Liegestütze aus und hilft gegen die Gaming Haltung.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack.', mus: 'Rücken, Bizeps' };
+/* ======================================================= Profil
+   Alles Persönliche steht im Profil, nicht im Code: Person, Ziele, Trainingsplan, Tagesplan, Pflege und Gewohnheiten.
+   Gespeichert nur auf diesem Handy (LS profil). Ein Profil kommt als JSON, zum Beispiel von Claude, und wird streng geprüft.
+   Wer die App schon vorher benutzt hat, bekommt beim ersten Start einmal sein bisheriges Profil (alt). */
+const PROFIL_FORMAT = 'fitapp-profil';
+const WT_LANG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+const WO_KURZ = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+const WO_LANG = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+const KINDS = ['training', 'essen', 'arbeit', 'frei', 'schlaf', 'pflege'];
+const FIGUR_IDS = ['gehen', 'hocke', 'kinn', 'kniewand', 'openbook', 'pike', '9090'];
+const EN_ALT = { A: 'Chest & shoulders', B: 'Legs & back', C: 'Full body', J: 'Mobility', L: 'Walk', K: 'Mini workout', W: 'Weekend workout' };
+
+function altProfil() {
+  const woche = {};
+  OMAR_WOCHE.forEach(d => {
+    woche[d.k] = { art: d.art, items: d.items.map(it => {
+      const t = it[1];
+      const g = it[2] === 'training' ? null : /\{supps\}/.test(t) ? 'supp' : t.indexOf(ABEND_GEL) === 0 ? 'gel' : /Foto von der Stirn/.test(t) ? 'foto' : /Glas Wasser/.test(t) && it[2] === 'schlaf' ? 'wasser' : null;
+      return g ? [it[0], t, it[2], g] : [it[0], t, it[2]];
+    }) };
+  });
+  const tage = clone(PLAN_OMAR_TAGE);
+  tage.forEach(d => {
+    if (EN_ALT[d.id]) d.en = EN_ALT[d.id];
+    if (d.id === 'K') { d.pflicht = true; d.minSaetze = 1; }
+    if (d.id === 'W') d.pflicht = true;
+    d.ex.forEach(ex => { if (STEIG_ALT[ex.id]) ex.steig = clone(STEIG_ALT[ex.id]); });
+  });
+  return {
+    format: PROFIL_FORMAT, version: 1, id: 'alt', name: 'Mein Profil',
+    person: { alter: 17, groesse: 180, gewicht: 79 },
+    ziele: { k: 2200, pr: 130, f: 70, kh: 265, kcalMin: 2200, schritte: 7000, schlaf: 480, erklaerung: [
+      'Bei 180 cm, rund 79 kg, Bürojob, kurzem Training und 7000 Schritten verbrauchst du geschätzt 2600 bis 2800 kcal. Mit 2200 bist du klar im Minus und verlierst Fett, grob ein halbes Kilo pro Woche. Weniger lohnt sich nicht: Muskeln brauchen Energie, und du wächst noch.',
+      'Das ist eine Schätzung. Mit Bauchumfang und Kraft prüft die App alle zwei Wochen, ob das Ziel passt.',
+      '130 g Protein sind etwa 1,6 g pro kg Körpergewicht. Eine grosse Auswertung vieler Studien fand, dass mehr Protein darüber hinaus beim Muskelaufbau im Schnitt kaum noch zusätzlich bringt.',
+      '70 g Fett sind genug für deine Hormone. Die Kohlenhydrate sind der Rest, Treibstoff fürs Training.',
+      'Fett an Brust und Bauch verschwindet nicht gezielt dort, sondern mit deinem gesamten Körperfett. Genau dafür ist das Minus da.'] },
+    cheatTag: 6,
+    supplements: [{ text: '2 Tropfen Vitamin D', monate: [10, 11, 12, 1, 2, 3] }, { text: '1 Omega 3 Kapsel' }],
+    gewohnheiten: { wasser: 'Glas Wasser am Morgen', supp: 'Vitamin D und Omega 3', gel: 'Gel und Wasser ans Bett', foto: 'Foto der Stirn' },
+    training: { days: tage, nachholen: ['W'], nachholTag: 0, stufen: {
+      tag: 'K', proStufe: 8, stufen: [
+        { min: 5, txt: 'je 1 Satz', pause: 30, titel: '5 Minuten nach dem Aufstehen', sets: { k1: 1, k2: 1, k3: 1 } },
+        { min: 8, txt: 'je 2 Sätze', pause: 45, titel: '8 Minuten nach dem Aufstehen', sets: { k1: 2, k2: 2, k3: 2 } },
+        { min: 11, txt: 'je 2 Sätze plus Rucksack Rudern', pause: 45, titel: '11 Minuten nach dem Aufstehen', sets: { k1: 2, k2: 2, k4: 2, k3: 2 } },
+        { min: 15, txt: 'je 3 Sätze plus Rucksack Rudern', pause: 60, titel: '15 Minuten nach dem Aufstehen', sets: { k1: 3, k2: 3, k4: 2, k3: 3 } }],
+      extra: [Object.assign({ vor: 'k3' }, MINI_RUDERN_ALT)] } },
+    woche
+  };
+}
+/* Beispiel für alle ohne eigenes Profil: klein anfangen, alles austauschbar */
+function beispielProfil() {
+  const tage = clone(PLAN_OMAR_TAGE).filter(d => ['K', 'W', 'L'].indexOf(d.id) >= 0);
+  tage.forEach(d => { d.en = EN_ALT[d.id]; if (d.id === 'K') { d.pflicht = true; d.minSaetze = 1; d.title = '5 Minuten am Morgen'; } if (d.id === 'W') d.pflicht = true; });
+  const wt = [['07:00', 'Aufstehen, ein Glas Wasser trinken', 'schlaf', 'wasser'], ['07:05', 'Mini Training, 5 Minuten', 'training'], ['07:15', 'Frühstück mit Protein', 'essen'],
+    ['08:00', 'Arbeit oder Schule', 'arbeit'], ['12:00', 'Mittagessen', 'essen'], ['12:45', 'Arbeit oder Schule', 'arbeit'], ['17:00', 'Freizeit', 'frei'],
+    ['19:00', 'Abendessen', 'essen'], ['19:30', 'Freizeit', 'frei'], ['22:00', 'Handy weg, Zähne putzen', 'pflege'], ['22:30', 'Licht aus', 'schlaf']];
+  const we = (training) => [['09:00', 'Aufstehen, ein Glas Wasser trinken', 'schlaf', 'wasser'], ['09:30', 'Frühstück mit Protein', 'essen'], ['10:00', training, 'training'],
+    ['10:30', 'Freizeit', 'frei'], ['12:30', 'Mittagessen', 'essen'], ['13:00', 'Freizeit', 'frei'], ['19:00', 'Abendessen', 'essen'], ['19:30', 'Freizeit', 'frei'], ['22:30', 'Licht aus', 'schlaf']];
+  const woche = {}; ['Mo', 'Di', 'Mi', 'Do', 'Fr'].forEach(k => { woche[k] = { art: 'Mini', items: wt }; });
+  woche.Sa = { art: 'Wochenende', items: we('Wochenend Training, 15 Minuten') }; woche.So = { art: 'Spaziergang', items: we('Spaziergang oder Training nachholen') };
+  return {
+    format: PROFIL_FORMAT, version: 1, id: 'beispiel', name: 'Beispiel', beispiel: true, person: null,
+    ziele: { k: 2200, pr: 120, f: 70, kh: khRestRoh(2200, 120, 70), kcalMin: 1800, schritte: 7000, schlaf: 480, erklaerung: ['Das sind Beispielwerte. Erstelle dein eigenes Profil, dann stimmen die Zahlen für dich.'] },
+    cheatTag: null, supplements: [], gewohnheiten: { wasser: 'Glas Wasser am Morgen' },
+    training: { days: tage, nachholen: ['W'], nachholTag: 0, stufen: altProfilStufen() }, woche
+  };
+}
+function altProfilStufen() { return clone(altProfil().training.stufen); }
+function khRestRoh(k, pr, f) { return Math.max(0, Math.round((k - 4 * pr - 9 * f) / 4 / 5) * 5); }
+function profilLaden() {
+  const p = LS.get('profil', null);
+  /* Jedes gespeicherte Profil wird beim Start nochmals geprüft, auch eins aus einer Sicherung */
+  if (p && p.format === PROFIL_FORMAT) { const r = profilPruefen(p); if (r.p) { r.p.id = p.id === 'alt' ? 'alt' : 'eigen'; if (p.id === 'alt') r.p.name = p.name; return r.p; } }
+  /* Schon benutzt, aber noch ohne Profil: das bisherige Profil einmal übernehmen */
+  const da = k => { const v = LS.get(k, null); return v && (Array.isArray(v) ? v.length > 0 : typeof v === 'object' && Object.keys(v).length > 0); };
+  if (da('history') || da('plan') || da('tb')) { const a = altProfil(); LS.set('profil', a); return a; }
+  return beispielProfil();
+}
+let profil = profilLaden();
+const CHEAT = typeof profil.cheatTag === 'number' ? profil.cheatTag : null;
+function istCheat(k) { return CHEAT != null && keyDatum(k).getDay() === CHEAT; }
+const NACHHOL_TAG = typeof profil.training.nachholTag === 'number' ? profil.training.nachholTag : 0;
+const STUFEN = profil.training.stufen || null;
+/* Steigerung pro Übung steht im Profil (steig). */
+function steigVon(exId) {
+  for (const d of profil.training.days) { const e = d.ex.find(x => x.id === exId); if (e && e.steig) return e.steig; }
+  const x = STUFEN && (STUFEN.extra || []).find(e => e.id === exId); return x && x.steig ? x.steig : null;
+}
+function steigIds() {
+  const s = new Set(); profil.training.days.forEach(d => d.ex.forEach(e => { if (e.steig) s.add(e.id); }));
+  ((STUFEN && STUFEN.extra) || []).forEach(e => { if (e.steig) s.add(e.id); });
+  return Array.from(s);
+}
+function profilTag(id) { return profil.training.days.find(d => d.id === id) || null; }
+const DEFAULT_PLAN = { v: PLAN_V, days: clone(profil.training.days) };
 
 /* Alte gespeicherte Pläne (ohne Version) auf den neuen Stand bringen, eigene Änderungen bleiben */
 function migratePlan(p) {
@@ -1247,8 +1448,8 @@ function savePlan() { LS.set('plan', plan); }
 function saveSessions() { LS.set('sess', sessions); }
 
 function dayById(id) { return plan.days.find(d => d.id === id) || plan.days[0]; }
-/* Am Sonntag nachholbar: das Wochenend Training */
-const PFLICHT = ['W'];
+/* Am Nachholtag nachholbar, laut Profil */
+const PFLICHT = (profil.training.nachholen || []).slice();
 function wochenStart() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return d; }
 /* Pflichttage, die diese Woche noch nicht gespeichert sind */
 function offenePflicht() {
@@ -1259,7 +1460,7 @@ function offenePflicht() {
 /* Welcher Tag laut Stundenplan heute dran ist */
 function planDayId() {
   const wd = new Date().getDay();
-  if (wd === 0) { const o = offenePflicht(); if (o.length) return o[0]; }
+  if (wd === NACHHOL_TAG) { const o = offenePflicht(); if (o.length) return o[0]; }
   const d = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0);
   return d ? d.id : plan.days[0].id;
 }
@@ -1290,19 +1491,12 @@ function lastValues(exId, i) {
 }
 /* Steigerung (doppelte Progression): erst Wiederholungen bis zum oberen Ende der Spanne, dann mehr Gewicht
    oder die schwerere Variante und wieder unten anfangen. Ohne steigende Last wächst kein Muskel. */
-const STEIG = {
-  a1: { rmin: 8, rmax: 12, stufe: 'Füsse aufs Bett legen' }, c2: { rmin: 8, rmax: 12, stufe: 'Füsse aufs Bett legen' },
-  a3: { rmin: 5, rmax: 8, stufe: 'Füsse aufs Bett, Hüfte höher' }, a4: { rmin: 6, rmax: 12, stufe: 'alle Wiederholungen auf den Füssen, ohne Knie' },
-  a8: { rmin: 10, rmax: 12, kg: 1 }, b2: { rmin: 10, rmax: 12, kg: 1 }, b3: { rmin: 10, rmax: 12, kg: 1 }, c4: { rmin: 10, rmax: 12, kg: 1 }, c1: { rmin: 12, rmax: 15, kg: 1 },
-  b1: { rmin: 8, rmax: 10, stufe: 'Rucksack auf den Rücken' }, b4: { rmin: 15, rmax: 20, stufe: 'einbeinige Bridge' },
-  c3: { rmin: 10, rmax: 12, stufe: 'Rucksack auf den Rücken' }, c5: { rmin: 12, rmax: 15, stufe: 'Beine langsamer senken, 3 s runter' }
-};
 function letzteUebung(exId) {
   for (let h = history.length - 1; h >= 0; h--) { const e = (history[h].ex || []).find(x => x.id === exId); if (e && e.sets && e.sets.length) return e; }
   return null;
 }
 function steigerung(ex) {
-  const st = STEIG[ex.id]; if (!st || ex.einheit !== 'Wdh') return null;
+  const st = steigVon(ex.id); if (!st || ex.einheit !== 'Wdh') return null;
   const e = letzteUebung(ex.id); if (!e) return null;
   const rs = e.sets.map(x => parseInt(x.r, 10) || 0);
   const w = ex.kg ? parseFloat(String(e.sets[0].w || '').replace(',', '.')) : NaN;
@@ -1597,97 +1791,12 @@ function render() {
   updateBadge();
 }
 
-/* ======================================================= Stundenplan */
+/* ======================================================= Stundenplan, aus dem Profil */
+function suppsText() { const m = new Date().getMonth() + 1; return (profil.supplements || []).filter(x => !x.monate || x.monate.indexOf(m) >= 0).map(x => x.text).join(' und ') || 'nichts'; }
+const WOCHE = WO_KURZ.map((k, i) => { const w = (profil.woche || {})[k] || {}; const items = w.items && w.items.length ? w.items : [['07:00', 'Aufstehen', 'schlaf']];
+  return { k, name: WO_LANG[i], art: w.art || '', items: items.map(it => [it[0], String(it[1]).replace(/\{supps\}/g, suppsText()), it[2], it[3] || null]) }; });
 /* k: training, essen, arbeit, frei, schlaf, pflege */
 /* Jeder Eintrag gilt, bis der nächste beginnt. Darum folgt auf kurze Dinge (Essen, Snack) wieder die Hauptsache. */
-/* Gel jeden Abend, er verträgt es (19.10.). Brennt oder schuppt die Haut: 3 Tage Pause, dann jeden zweiten Abend. */
-const ABEND_GEL = 'PC aus. Gesicht nur mit Wasser, trocknen, CeraVe Gel dünn. Glas Wasser ans Bett';
-/* Vitamin D nur Oktober bis März, Omega 3 das ganze Jahr. Beides zum Essen, weil es mit Fett besser aufgenommen wird. */
-const SUPP = (() => { const m = new Date().getMonth(); return (m >= 9 || m <= 2) ? '2 Tropfen Vitamin D und 1 Omega 3 Kapsel' : '1 Omega 3 Kapsel'; })();
-/* Arbeitstage Mo bis Mi: 06:30 bis 16:00, um 17:00 zuhause */
-/* Zwei Wecker: Die Uhr weckt (Vibration), das Handy klingelt 2 Minuten später auf der anderen Seite des Zimmers.
-   Ausschalten geht nur im Stehen, dort beginnt direkt das Mini Training. */
-const WECKER = (z, h) => [z, `Uhr vibriert. Um ${h} klingelt das Handy auf der anderen Seite des Zimmers: aufstehen und dort ausschalten`, 'schlaf'];
-const MORGEN = (auf, handy, start, rest) => [WECKER(auf, handy),
-  [start, 'Licht an, Glas Wasser trinken, dann direkt Mini Training beim Handy', 'training']].concat(rest);
-/* Arbeitstage Mo bis Mi: 06:30 bis 16:00, um 17:00 zuhause */
-const MORGEN_ARBEIT = () => MORGEN('04:50', '04:52', '04:53', [
-  ['05:00', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
-  ['05:10', 'Anziehen. Whey mit Milch in die Flasche, Skyr für den Nachmittag einpacken', 'essen'],
-  ['05:15', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
-  ['05:21', 'Puffer: Zähne, Schuhe, Tasche', 'frei'],
-  ['05:28', 'Raus, 8 Min zum Bahnhof', 'arbeit'],
-  ['05:38', 'Zug: Shake trinken, das ist dein Frühstück. Kokoswasser höchstens dazu. Am Fenster sitzen, Licht macht wach', 'essen'],
-  ['06:30', 'Arbeit', 'arbeit']]);
-/* Schultage Do und Fr: 06:30 raus */
-const MORGEN_SCHULE = einpacken => MORGEN('05:20', '05:22', '05:23', [
-  ['05:30', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
-  ['05:40', 'Anziehen, Shake mit Milch trinken, das ist dein Frühstück. ' + einpacken + ' einpacken', 'essen'],
-  ['05:45', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
-  ['05:52', 'Zeit für dich. Heute fährst du später', 'frei'],
-  ['06:30', 'Raus zur Berufsschule', 'arbeit'],
-  ['07:30', 'Schule', 'arbeit']]);
-const DESSERT = 'Dessert: eine kleine Schüssel, nie die Packung. Am Samstag egal';
-const ABEND = (heim, lichtAus, pc, notiz) => [
-  [heim, 'Zuhause. Freizeit', 'frei'],
-  ['18:00', 'Gaming mit den Jungs', 'frei'],
-  ['19:00', 'Abendessen mit der Familie, Game pausieren. Dazu ' + SUPP + '. ' + DESSERT, 'essen'],
-  ['19:40', 'Gaming oder Freizeit', 'frei'],
-  [pc, ABEND_GEL + '. Handy für den Wecker auf die andere Seite des Zimmers', 'pflege'],
-  [lichtAus, 'Licht aus' + (notiz ? '. ' + notiz : ''), 'schlaf']
-];
-const MITTAG_ARBEIT = [
-  ['11:30', 'Kantine: das Menü mit Fleisch, lieber ohne Panade, Reis oder Kartoffeln statt Pommes. Im Tagebuch kurz "Kantine" eintragen', 'essen'],
-  ['12:00', 'Arbeit', 'arbeit'],
-  ['15:00', 'Snack: Skyr statt Schokomilch', 'essen'],
-  ['15:10', 'Arbeit', 'arbeit'],
-  ['16:00', 'Feierabend, ab nach Hause', 'arbeit']];
-const WOCHE = [
-  { k: 'Mo', name: 'Montag', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
-      ABEND('17:00', '20:30', '20:10', '8 Stunden 20 bis 04:50')) },
-  { k: 'Di', name: 'Dienstag', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
-      ABEND('17:00', '20:30', '20:10', '8 Stunden 20 bis 04:50')) },
-  { k: 'Mi', name: 'Mittwoch', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
-      ABEND('17:00', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
-  { k: 'Do', name: 'Donnerstag', art: 'Mini', items: MORGEN_SCHULE('Mittag und Skyr').concat([
-      ['12:00', 'Mittag in der Pause', 'essen'],
-      ['12:45', 'Schule', 'arbeit']], ABEND('17:30', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
-  { k: 'Fr', name: 'Freitag', art: 'Mini', items: MORGEN_SCHULE('Skyr').concat([
-      ['09:30', 'Snack in der Pause: Skyr', 'essen'],
-      ['09:40', 'Schule', 'arbeit'],
-      ['11:45', 'Schulschluss, ab nach Hause', 'arbeit'],
-      ['12:45', 'Zuhause, Mittag', 'essen'],
-      ['13:30', 'Freizeit, Wochenende fängt an', 'frei'],
-      ['18:00', 'Gaming mit den Jungs', 'frei'],
-      ['19:00', 'Abendessen, Game pausieren. Dazu ' + SUPP + '. ' + DESSERT, 'essen'],
-      ['19:40', 'Gaming', 'frei'],
-      ['00:40', ABEND_GEL, 'pflege'],
-      ['01:00', 'Licht aus. Morgen ausschlafen bis 10:00', 'schlaf']]) },
-  { k: 'Sa', name: 'Samstag', art: 'Wochenende', items: [
-      ['10:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
-      ['10:05', 'Gesicht mit der Reinigungslotion, trocknen, rasieren', 'pflege'],
-      ['10:30', 'Cheat Day: iss, worauf du Lust hast', 'essen'],
-      ['11:00', 'Wochenend Training: 15 Min, ganzer Körper', 'training'],
-      ['11:20', 'Duschen, dann Freizeit', 'frei'],
-      ['14:00', 'Raus, 7000 Schritte', 'training'],
-      ['16:00', 'Freizeit und Gaming', 'frei'],
-      ['19:00', 'Abendessen. Dazu ' + SUPP, 'essen'],
-      ['19:40', 'Freizeit und Gaming', 'frei'],
-      ['23:40', ABEND_GEL, 'pflege'],
-      ['00:00', 'Licht aus. Morgen 09:00', 'schlaf']] },
-  { k: 'So', name: 'Sonntag', art: 'Spaziergang', items: [
-      ['09:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
-      ['09:30', 'Erste Mahlzeit mit Protein. Ab heute wieder normal essen', 'essen'],
-      ['10:00', 'Wochenend Training verpasst? Jetzt nachholen. Sonst 7000 Schritte', 'training'],
-      ['11:00', 'Duschen, Gesicht waschen, danach trocken rasieren', 'pflege'],
-      ['11:30', 'Freizeit', 'frei'],
-      ['18:00', 'Foto von der Stirn. Einkaufsliste an die Eltern: Milch und Skyr für die Woche', 'pflege'],
-      ['18:15', 'Freizeit', 'frei'],
-      ['19:00', 'Abendessen. Dazu ' + SUPP, 'essen'],
-      ['19:40', 'Freizeit', 'frei'],
-      ['20:10', ABEND_GEL + '. Handy für den Wecker auf die andere Seite des Zimmers', 'pflege'],
-      ['20:30', 'Licht aus. Morgen 04:50', 'schlaf']] }
-];
 const zeitVon = (d, f) => { const t = d.items.find(f); return t ? t[0] : null; };
 const lichtAus = d => zeitVon(d, x => /^Licht aus/.test(x[1]));
 const WOCHE_SPALTEN = [
@@ -1713,16 +1822,8 @@ const KIND_ICON = {
 };
 /* Kleine tägliche Gewohnheiten zum Abhaken. Training zählt automatisch aus dem Verlauf. */
 const ICON_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
-const GEW_NAMEN = { wasser: 'Glas Wasser am Morgen', training: 'Training', supp: 'Vitamin D und Omega 3', gel: 'Gel und Wasser ans Bett', foto: 'Foto der Stirn' };
-function gewohnheitVon(it) {
-  const t = it[1];
-  if (/Glas Wasser vom Nachttisch/.test(t)) return 'wasser';
-  if (/Vitamin D|Omega 3/.test(t)) return 'supp';
-  if (t === ABEND_GEL) return 'gel';
-  if (/Foto von der Stirn/.test(t)) return 'foto';
-  if (it[2] === 'training') return 'training';
-  return null;
-}
+const GEW_NAMEN = Object.assign({ training: 'Training' }, profil.gewohnheiten || {});
+function gewohnheitVon(it) { if (it[3] && GEW_NAMEN[it[3]]) return it[3]; return it[2] === 'training' ? 'training' : null; }
 function gewHeute() { const alle = LS.get('gew', {}); return alle[tagKey(new Date())] || {}; }
 function gewToggle(k) {
   const alle = LS.get('gew', {}); const key = tagKey(new Date());
@@ -1745,7 +1846,7 @@ function renderPlan() {
   /* Zeiten nach Mitternacht gehören zum Abend davor */
   if (isToday) d.items.forEach((it, i) => { let m = toMin(it[0]); if (m != null && m < start) m += 1440; if (m != null && m <= nowMin) cur = i; });
   const next = isToday ? d.items[cur + 1] : null;
-  let h = '<div class="chips" role="tablist">' + WOCHE.map((x, i) =>
+  let h = profilWillkommen() + '<div class="chips" role="tablist">' + WOCHE.map((x, i) =>
     `<button class="chip" data-pday="${i}" aria-pressed="${i === planDay}">${x.k}${i === todayIdx ? ' · heute' : ''}</button>`).join('') + '</div>';
   const mins = d.items.map(it => { let m = toMin(it[0]); if (m != null && m < start) m += 1440; return m; });
   const nm = nowMin;
@@ -1806,14 +1907,14 @@ function renderPlan() {
   });
   h += '</tbody></table></div><p class="muted small">Tippe oben auf einen Tag für den ganzen Ablauf.</p></div>';
 
-  h += `<div class="card cheat"><h3>Cheat Day: Samstag</h3>
-    <p class="small">Du baust Muskeln auf und Fett ab, aber nicht ohne Freude. Am Samstag isst du, worauf du Lust hast, ohne Zählen und ohne schlechtes Gewissen.</p>
+  if (CHEAT != null) h += `<div class="card cheat"><h3>Cheat Day: ${WT_LANG[CHEAT]}</h3>
+    <p class="small">Du baust Muskeln auf und Fett ab, aber nicht ohne Freude. Am ${WT_LANG[CHEAT]} isst du, worauf du Lust hast, ohne Zählen und ohne schlechtes Gewissen.</p>
     <ol class="small">
-      <li><b>Ein Tag, kein Wochenende.</b> Sonntag ab der ersten Mahlzeit wieder normal.</li>
+      <li><b>Ein Tag, kein Wochenende.</b> Am Tag danach ab der ersten Mahlzeit wieder normal.</li>
       <li><b>Geniessen, nicht stopfen.</b> Pizza, Döner, Burger, Dessert: ja. Essen bis es weh tut: nein.</li>
-      <li><b>Ein Shake über den Tag</b> und 7000 Schritte bleiben, beides kostet dich nichts.</li>
-      <li><b>Bauch messen am Montag, nie am Sonntag.</b> Nach dem Cheat Day hält der Körper Wasser und Salz, der Bauch ist dann dicker, ohne dass es Fett ist.</li>
-      <li><b>Ein schlechter Tag unter der Woche ist kein zweiter Cheat Day.</b> Abhaken und mit der nächsten Mahlzeit weiter.</li>
+      <li><b>Protein und Schritte bleiben</b>, beides kostet dich nichts.</li>
+      <li><b>Nie am Tag nach dem Cheat Day messen.</b> Dann hält der Körper Wasser und Salz, ohne dass es Fett ist.</li>
+      <li><b>Ein schlechter Tag ist kein zweiter Cheat Day.</b> Abhaken und mit der nächsten Mahlzeit weiter.</li>
     </ol></div>`;
   $('#main').innerHTML = h;
   tbAnimieren();
@@ -1838,7 +1939,7 @@ setInterval(() => { if (tab === 'plan' && document.visibilityState === 'visible'
 function heuteHinweis(day) {
   const wd = new Date().getDay();
   if (day.id !== planDayId()) return 'Selbst gewählt';
-  if (wd === 0 && PFLICHT.indexOf(day.id) >= 0) return 'Verpasst, heute nachholen';
+  if (wd === NACHHOL_TAG && PFLICHT.indexOf(day.id) >= 0) return 'Verpasst, heute nachholen';
   return 'Heute laut Stundenplan';
 }
 function renderTraining() {
@@ -1853,7 +1954,7 @@ function renderTraining() {
   h += `<div class="card daycard"><div class="ring" style="--p:${pct}" role="img" aria-label="${done} von ${total} Sätzen erledigt"><span>${done}/${total}</span></div>
     <div><div class="lab">${heuteHinweis(day)}</div><h2>${esc(day.name)}: ${esc(day.title)}</h2>
     <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="stats">Verlauf und Statistik</button></div>
-    ${day.id === 'K' ? miniStufeText() : ''}</div></div>`;
+    ${STUFEN && day.id === STUFEN.tag ? miniStufeText() : ''}</div></div>`;
   if (!editMode && done) h += `<button class="btn wide abschluss ${done >= total ? 'primary' : ''}" data-act="finish">${done >= total ? 'Training abschliessen' : `Abschliessen · ${done} von ${total} Sätzen`}</button>`;
   const aktivIdx = done ? day.ex.findIndex(x => s.sets[x.id].some(st => !st.d)) : 0;
   day.ex.forEach((ex, xi) => {
@@ -2061,35 +2162,31 @@ function trainingSpeichern(day, s, opt) {
   history.push(e);
   if (!LS.set('history', history)) { history.pop(); return null; }
   delete sessions[day.id]; saveSessions();
-  if (day.id === 'K') miniAnpassen(true);
+  if (STUFEN && day.id === STUFEN.tag) miniAnpassen(true);
   return e;
 }
-/* Mini Training wächst mit: alle 8 vollständigen Mini Trainings eine Stufe mehr, höchstens Stufe 4 mit etwa 15 Minuten.
-   Erst wird das Aufstehen zur Gewohnheit, dann wird daraus Schritt für Schritt echtes Krafttraining. Es wird nur gesteigert, nie gekürzt. */
-const MINI_PRO_STUFE = 8;
-const MINI_STUFEN = [
-  { saetze: 1, rudern: 0, pause: 30, min: 5, txt: 'je 1 Satz' },
-  { saetze: 2, rudern: 0, pause: 45, min: 8, txt: 'je 2 Sätze' },
-  { saetze: 2, rudern: 2, pause: 45, min: 11, txt: 'je 2 Sätze plus Rucksack Rudern' },
-  { saetze: 3, rudern: 2, pause: 60, min: 15, txt: 'je 3 Sätze plus Rucksack Rudern' }];
-const MINI_RUDERN = { id: 'k4', name: 'Rucksack Rudern', sets: 2, ziel: '10, Rucksack etwa 5 kg', pause: 45, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 5, how: 'Oberkörper fast waagrecht vorbeugen, Rücken gerade, Rucksack zum Bauchnabel ziehen und oben kurz halten. Gleicht die vielen Liegestütze aus und hilft gegen die Gaming Haltung.', easy: 'Weniger Gewicht im Rucksack.', vid: 'backpack bent over row', bild: 'Bent_Over_Two-Dumbbell_Row', bildHinweis: 'Bild mit Hanteln, du nimmst den Rucksack.', mus: 'Rücken, Bizeps' };
-function miniVoll() { return history.filter(h => h.dayId === 'K' && h.voll !== false).length; }
-function miniStufe() { return Math.min(MINI_STUFEN.length, 1 + Math.floor(miniVoll() / MINI_PRO_STUFE)); }
+/* Stufen aus dem Profil: alle proStufe kompletten Trainings des Tages eine Stufe mehr. Es wird nur gesteigert, nie gekürzt. */
+function miniVoll() { return STUFEN ? history.filter(h => h.dayId === STUFEN.tag && h.voll !== false).length : 0; }
+function miniStufe() { return STUFEN ? Math.min(STUFEN.stufen.length, 1 + Math.floor(miniVoll() / STUFEN.proStufe)) : 1; }
 function miniStufeText() {
-  const st = miniStufe(); if (st >= MINI_STUFEN.length) return `<div class="sub">Stufe ${st} von ${MINI_STUFEN.length}, die höchste. Bereit für Tag A, B und C.</div>`;
-  const fehlt = MINI_PRO_STUFE - miniVoll() % MINI_PRO_STUFE;
-  return `<div class="sub">Stufe ${st} von ${MINI_STUFEN.length}. Noch ${fehlt} komplette Mini ${fehlt === 1 ? 'Training' : 'Trainings'} bis Stufe ${st + 1}: ${esc(MINI_STUFEN[st].txt)}.</div>`;
+  if (!STUFEN) return ''; const n = STUFEN.stufen.length, st = miniStufe();
+  if (st >= n) return n > 1 ? `<div class="sub">Stufe ${st} von ${n}, die höchste.</div>` : '';
+  const fehlt = STUFEN.proStufe - miniVoll() % STUFEN.proStufe;
+  return `<div class="sub">Stufe ${st} von ${n}. Noch ${fehlt} komplette ${fehlt === 1 ? 'Training' : 'Trainings'} bis Stufe ${st + 1}: ${esc(STUFEN.stufen[st].txt)}.</div>`;
 }
 function miniAnpassen(melden) {
-  const k = plan.days.find(d => d.id === 'K'); if (!k) return;
+  if (!STUFEN) return; const k = plan.days.find(d => d.id === STUFEN.tag); if (!k) return;
   const st = miniStufe(); if (k.stufe && k.stufe >= st) return;
-  const S = MINI_STUFEN[st - 1];
-  ['k1', 'k2', 'k3'].forEach(id => { const e = k.ex.find(x => x.id === id); if (e) { e.sets = S.saetze; e.pause = id === 'k3' ? 0 : S.pause; } });
-  let r = k.ex.find(x => x.id === 'k4');
-  if (S.rudern && !r) { r = clone(MINI_RUDERN); const i = k.ex.findIndex(x => x.id === 'k3'); k.ex.splice(i >= 0 ? i : k.ex.length, 0, r); }
-  if (r && S.rudern) { r.sets = S.rudern; r.pause = S.pause; }
-  k.title = `${S.min} Minuten nach dem Aufstehen`; k.stufe = st; savePlan();
-  if (melden && st > 1) toast(`Mini Training Stufe ${st}: ab jetzt ${S.txt}, etwa ${S.min} Min`);
+  const S = STUFEN.stufen[st - 1];
+  Object.entries(S.sets).forEach(([id, n]) => {
+    let e = k.ex.find(x => x.id === id);
+    if (!e && n > 0) { const x = (STUFEN.extra || []).find(y => y.id === id); if (x) { e = clone(x); delete e.vor; const i = x.vor ? k.ex.findIndex(y => y.id === x.vor) : -1; k.ex.splice(i >= 0 ? i : k.ex.length, 0, e); } }
+    if (e && n > 0) e.sets = n;
+  });
+  k.ex = k.ex.filter(e => !(e.id in S.sets) || S.sets[e.id] > 0);
+  if (S.pause != null) k.ex.forEach((e, i) => { e.pause = i === k.ex.length - 1 ? 0 : S.pause; });
+  if (S.titel) k.title = S.titel; k.stufe = st; savePlan();
+  if (melden && st > 1) toast(`${k.name} Stufe ${st}: ab jetzt ${S.txt}, etwa ${S.min} Min`);
 }
 /* Nicht abgeschlossene Trainings von früheren Tagen werden nicht vergessen: mit mindestens einem Satz automatisch gespeichert */
 function alteTrainingsSichern() {
@@ -2150,8 +2247,9 @@ function tagKey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).pad
 function keyDatum(k) { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d, 12); }
 function planIdFuer(datum) { const wd = datum.getDay(); const d = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0); return d ? d.id : null; }
 function zaehltFuer(h) {
-  /* Notbremse: Beim Mini Training hält schon ein Satz die Kette am Leben */
-  if (h.dayId === 'K' && (h.fertig || 0) >= 1 && h.dayId === planIdFuer(new Date(h.date))) return true;
+  /* Notbremse: Tage mit minSaetze halten die Kette schon mit wenigen Sätzen am Leben */
+  const pt = profilTag(h.dayId);
+  if (pt && pt.minSaetze && (h.fertig || 0) >= pt.minSaetze && h.dayId === planIdFuer(new Date(h.date))) return true;
   if (h.voll === false) return false;
   const datum = new Date(h.date);
   return PFLICHT.indexOf(h.dayId) >= 0 || h.dayId === planIdFuer(datum);
@@ -2205,7 +2303,6 @@ function streakKarte(kompakt) {
 }
 /* Für das Widget auf dem Startbildschirm (nur in der APK) */
 /* Englische Namen fürs Widget, eigene Tage fallen auf ihren Titel zurück. */
-const WIDGET_PLAN_EN = { A: 'Chest & shoulders', B: 'Legs & back', C: 'Full body', J: 'Mobility', L: 'Walk', K: 'Mini workout', W: 'Weekend workout' };
 function streakAnsWidget() {
   try {
     if (!NATIVE || typeof NATIVE.setStreak !== 'function') return;
@@ -2225,7 +2322,7 @@ function streakAnsWidget() {
       const teile = [];
       for (let wd = 0; wd < 7; wd++) {
         const d = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0);
-        if (d) teile.push(wd + '=' + String(WIDGET_PLAN_EN[d.id] || d.title || d.name).replace(/[;=]/g, ' '));
+        if (d) teile.push(wd + '=' + String((profilTag(d.id) || {}).en || d.title || d.name).replace(/[;=]/g, ' '));
       }
       NATIVE.setPlanWoche(teile.join(';'));
     }
@@ -2922,10 +3019,10 @@ $('#btnStat').addEventListener('click', () => zeigeStats());
    Rezepte, Open Food Facts und eigene Lebensmittel. Alles bleibt auf dem Handy und ist in der Sicherung dabei. */
 const MAHL = [['morgen', 'Morgen'], ['mittag', 'Mittag'], ['abend', 'Abend'], ['snack', 'Snacks']];
 const MAHL_NAME = { morgen: 'Morgen', mittag: 'Mittag', abend: 'Abend', snack: 'Snacks' };
-const ZIELE_START = { k: 2200, pr: 130, kh: 265, f: 70 };
-const KCAL_MIN = 2200;
+const ZIELE_START = { k: profil.ziele.k, pr: profil.ziele.pr, kh: profil.ziele.kh, f: profil.ziele.f };
+const KCAL_MIN = profil.ziele.kcalMin || Math.round(profil.ziele.k * 0.9 / 50) * 50;
 /* Wer noch die alte Empfehlung 2400 gespeichert hat, bekommt die neue. Eigene Werte bleiben. */
-(() => { const z = LS.get('ziele', null); if (z && z.k === 2400 && z.pr === 150 && z.kh === 290 && z.f === 70) LS.del('ziele'); })();
+(() => { if (profil.id !== 'alt') return; const z = LS.get('ziele', null); if (z && z.k === 2400 && z.pr === 150 && z.kh === 290 && z.f === 70) LS.del('ziele'); })();
 const NWK = ['k', 'pr', 'kh', 'f'];
 const NW_NAME = { k: 'Kalorien', pr: 'Protein', kh: 'Kohlenhydrate', f: 'Fett' };
 const WT = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
@@ -2937,7 +3034,7 @@ let ziele = Object.assign({}, ZIELE_START, LS.get('ziele', {}));
 /* 28.10.: Ziel realistisch gemacht: 2200 kcal und 130 g Protein, etwa 1,6 g pro kg. Die alte Empfehlung 2300 und 150 wird einmal umgestellt,
    eigene Werte bleiben. Alte Tage werden weiter am alten Ziel gemessen. */
 (() => {
-  if (LS.get('ziel2200', false)) return; LS.set('ziel2200', true);
+  if (LS.get('ziel2200', false)) return; LS.set('ziel2200', true); if (profil.id !== 'alt') return;
   const z = LS.get('ziele', null);
   if (z && !(z.k === 2300 && z.pr === 150)) return;
   ziele = Object.assign({}, ZIELE_START); LS.set('ziele', ziele);
@@ -3166,13 +3263,13 @@ function renderTagebuch() {
   if (tbFrisch && Date.now() - tbFrischT > 1500) tbFrisch = null;
   const tag = tbAkt(), heute = tag === tbHeute();
   const s = tagSumme(tag);
-  const sams = keyDatum(tag).getDay() === 6;
+  const sams = istCheat(tag);
   const rest = ziele.k - s.k;
   const p = ziele.k > 0 ? s.k / ziele.k * 100 : 0;
   let h = `<div class="tb-datum"><button class="iconbtn" data-tbd="-1" aria-label="Einen Tag zurück">${I_LINKS}</button>
     <div><b>${esc(tagName(tag))}</b><span class="small muted">${esc(tagDatum(tag))}</span></div>
     <button class="iconbtn" data-tbd="1" aria-label="Einen Tag vor"${heute ? ' disabled' : ''}>${I_RECHTS}</button></div>`;
-  if (sams) h += '<div class="note"><b>Cheat Day.</b> Heute zählst du nicht. Eintragen kannst du trotzdem, der Samstag fliesst nicht in deinen Wochenschnitt.</div>';
+  if (sams) h += '<div class="note"><b>Cheat Day.</b> Heute zählst du nicht. Eintragen kannst du trotzdem, der Cheat Day fliesst nicht in deinen Wochenschnitt.</div>';
   const fehlt = Math.max(s.fehlt.kh, s.fehlt.f);
   const hinweis = [fehlt ? `Bei ${fehlt} ${fehlt === 1 ? 'Eintrag fehlen' : 'Einträgen fehlen'} Kohlenhydrate oder Fett, dort sind die Summen zu tief.` : '',
     s.khs ? 'Kohlenhydrate teils aus den Kalorien berechnet.' : ''].filter(Boolean).join(' ');
@@ -3212,11 +3309,11 @@ function eintragZeile(e) {
 }
 function wocheKarte() {
   const heute = tbHeute(); const tage = [];
-  for (let i = 6; i >= 0; i--) { const k = tagVerschoben(heute, -i); const d = keyDatum(k); tage.push({ k, d, s: tagSumme(k), sams: d.getDay() === 6 }); }
+  for (let i = 6; i >= 0; i--) { const k = tagVerschoben(heute, -i); const d = keyDatum(k); tage.push({ k, d, s: tagSumme(k), sams: istCheat(k) }); }
   const max = Math.max(ziele.k * 1.3, ...tage.map(t => t.s.k)) || 1;
   const zaehlt = tage.filter(t => t.s.n && !t.sams);
   const akt = tbAkt();
-  let h = `<div class="card tb-wo"><div class="spread"><h3>Letzte 7 Tage</h3><span class="small muted">Samstag zählt nicht</span></div>
+  let h = `<div class="card tb-wo"><div class="spread"><h3>Letzte 7 Tage</h3><span class="small muted">${CHEAT == null ? '' : 'Cheat Day zählt nicht'}</span></div>
     <div class="tb-chart"><div class="tb-ziel" style="bottom:${Math.round(ziele.k / max * 1000) / 10}%"></div>
     ${tage.map((t, i) => `<button class="tb-tag${t.k === akt ? ' akt' : ''}${t.sams ? ' cheat' : ''}" data-tbtag="${t.k}" aria-label="${esc(tagDatum(t.k))}: ${fz(t.s.k)} kcal"><i ${anim('tbw' + i, 'h', t.s.n ? Math.max(3, t.s.k / max * 100) : 0)}></i></button>`).join('')}</div>
     <div class="tb-tage">${tage.map(t => `<span class="${t.k === akt ? 'akt' : ''}"><i class="${t.s.n && t.s.pr >= ziele.pr ? 'an' : ''}"></i>${WT[t.d.getDay()]}</span>`).join('')}</div>`;
@@ -3277,7 +3374,7 @@ function gewichtKarte(tag) {
   return h;
 }
 function tbHeuteKarte() {
-  const s = tagSumme(tbHeute()); const sams = new Date().getDay() === 6;
+  const s = tagSumme(tbHeute()); const sams = istCheat(tbHeute());
   const p = ziele.k > 0 ? s.k / ziele.k * 100 : 0;
   return `<button class="card tb-mini" data-goto="tagebuch"><span class="tb-ring klein">${ringSvg('tbmini', p)}</span>
     <span class="t"><span class="lab">Essen heute${sams ? ' · Cheat Day' : ''}</span><b class="num">${fz(s.k)} <small>von ${fz(ziele.k)} kcal</small></b><span class="small muted">Protein ${fz(s.pr)} von ${fz(ziele.pr)} g</span></span>${I_RECHTS}</button>`;
@@ -3627,17 +3724,13 @@ function openZiele() {
     <button class="btn primary wide" id="zOk">Speichern</button>
     <button class="btn wide" id="zStd" style="margin-top:10px">Empfehlung: ${ZIELE_START.k} kcal, ${ZIELE_START.pr} g Protein</button>
     <details class="how" style="margin-top:14px"><summary>Warum diese Zahlen?</summary>
-      <p><b>${ZIELE_START.k} kcal.</b> Bei 180 cm, rund 79 kg, Bürojob, kurzem Training und 7000 Schritten verbrauchst du geschätzt 2600 bis 2800 kcal. Mit ${ZIELE_START.k} bist du klar im Minus und verlierst Fett, grob ein halbes Kilo pro Woche. Mehr musst du nicht essen, wenn du das Protein schaffst. Weniger lohnt sich nicht: Muskeln bleiben und Kraft weiter steigt. Schneller kostet Muskeln, und mit 16 oder 17 wächst du noch. Darum geht die App nie unter ${KCAL_MIN}.</p>
-      <p>Das ist eine Schätzung. Sobald du zwei Wochen gewogen und eingetragen hast, misst die App deinen echten Verbrauch und schlägt dir eine Anpassung vor.</p>
-      <p><b>${ZIELE_START.pr} g Protein.</b> Etwa 1,6 g pro kg Körpergewicht. Eine grosse Auswertung vieler Studien fand, dass mehr Protein darüber hinaus beim Muskelaufbau im Schnitt kaum noch zusätzlich bringt. Mit Fleisch am Mittag und Abend, dem Shake am Morgen und einem Skyr am Nachmittag kommst du hin.</p>
-      <p><b>${ZIELE_START.f} g Fett.</b> Genug für deine Hormone. Nicht darunter gehen.</p>
-      <p><b>${ZIELE_START.kh} g Kohlenhydrate.</b> Der Rest. Treibstoff fürs Training am Morgen.</p>
-      <p>Fett an der Brust und am Bauch verschwindet nicht gezielt dort, sondern mit deinem gesamten Körperfett. Genau dafür ist das leichte Minus da.</p></details>`);
+      ${(profil.ziele.erklaerung || []).map(x => `<p>${esc(x)}</p>`).join('') || '<p>Die Zahlen kommen aus deinem Profil.</p>'}
+      <p>Unter ${KCAL_MIN} kcal speichert die App nicht.</p></details>`);
   const pruefe = () => {
     const v = {}; ['k', 'pr', 'kh', 'f'].forEach(k => { v[k] = zahlEin($('#z_' + k).value); });
     const rechn = v.pr != null && v.kh != null && v.f != null ? v.pr * 4 + v.kh * 4 + v.f * 9 : null;
     const w = [];
-    if (v.k != null && v.k < KCAL_MIN) w.push(`<b>Unter ${KCAL_MIN} kcal speichert die App nicht.</b> Mit 16 oder 17 wächst du noch und trainierst fast täglich. Darunter verlierst du Muskeln und Kraft statt Fett.`);
+    if (v.k != null && v.k < KCAL_MIN) w.push(`<b>Unter ${KCAL_MIN} kcal speichert die App nicht.</b> ${profil.person && profil.person.alter < 18 ? 'Du wächst noch und trainierst fast täglich. ' : ''}Darunter verlierst du Muskeln und Kraft statt Fett.`);
     if (v.f != null && v.f < 50) w.push('<b>Unter 50 g Fett</b> leidet dein Hormonhaushalt.');
     if (v.pr != null && v.pr < 110) w.push('<b>Unter 110 g Protein</b> verlierst du im Defizit eher Muskeln.');
     if (rechn != null && v.k != null) w.push(`Protein, Kohlenhydrate und Fett ergeben zusammen <b>${fz(rechn)} kcal</b>${Math.abs(rechn - v.k) > 100 ? ', das weicht von deinem Kalorienziel ab' : ''}.`);
@@ -3661,7 +3754,7 @@ function openGewicht(tag) {
   const vorher = Object.entries(gewicht).sort((a, b) => a[0] < b[0] ? 1 : -1)[0];
   openSheet('Gewicht', `<p class="small muted" style="margin-top:0">${esc(tagName(tag))}, ${esc(tagDatum(tag))}</p>
     <div class="mg-step"><label class="feld" style="flex:1"><input id="gKg" inputmode="decimal" autocomplete="off" value="${alt != null ? fz(alt, 1) : vorher ? fz(vorher[1], 1) : ''}" aria-label="Gewicht in kg"><span>kg</span></label></div>
-    <p class="small muted">Am besten montags am Morgen, nach dem WC, vor dem Essen und Trinken. Nie am Sonntag nach dem Cheat Day: dann zeigt die Waage Wasser und Salz, nicht Fett.</p>
+    <p class="small muted">Am besten montags am Morgen, nach dem WC, vor dem Essen und Trinken. Nie am Tag nach dem Cheat Day: dann zeigt die Waage Wasser und Salz, nicht Fett.</p>
     <button class="btn primary wide mg-ok" id="gOk">Speichern</button>
     ${alt != null ? '<button class="btn danger wide" id="gDel" style="margin-top:10px">Löschen</button>' : ''}`);
   const i = $('#gKg'); i.style.width = '5ch';
@@ -3822,7 +3915,7 @@ $('#main').addEventListener('click', e => {
 
 /* ---------- Training */
 function histNachTag() { const m = {}; history.forEach(h => { const k = tagKey(new Date(h.date)); (m[k] || (m[k] = [])).push(h); }); return m; }
-const PFLICHT_PLUS = ['K', 'W'];
+const PFLICHT_PLUS = profil.training.days.filter(d => d.pflicht).map(d => d.id);
 function trainingStatus(k, hm, start) {
   const hs = hm[k] || [];
   if (hs.some(h => h.voll !== false)) return 'komplett';
@@ -3898,7 +3991,7 @@ function statTraining(tage, teil) {
   if (geschaetzt) a += '<p class="st-hw">Ältere Trainings speicherten das Soll noch nicht. Dort zählen nur Übungen, die du bis zu diesem Tag schon gemacht hast. Ab jetzt speichert die App das Soll genau.</p>';
   if (!teil || teil === 'aus') h += karte('Was du auslässt', a);
   /* Kraft: Verlauf der wichtigsten Übungen */
-  const reihen = Object.keys(STEIG).map(id => {
+  const reihen = steigIds().map(id => {
     const pts = hs.map(x => { const e = (x.ex || []).find(y => y.id === id); if (!e || !e.sets.length) return null;
       let best = null; e.sets.forEach(s => { const r = parseInt(s.r, 10) || 0, w = parseFloat(String(s.w || '').replace(',', '.')) || 0; const wert = w ? w * (1 + r / 30) : r; if (!best || wert > best.wert) best = { r, w, wert }; });
       return { k: tagKey(new Date(x.date)), name: e.name, ...best }; }).filter(Boolean);
@@ -3962,7 +4055,7 @@ function qualStufe(q) {
 function qualVon(e) { return qualStufe(e.q || (e.fk && foods[e.fk] ? qualDaten(foods[e.fk]) : null)); }
 function gramm(e) { return e.e && e.e.g ? e.e.g * e.x : null; }
 function statEssen(tage, nurExtra) {
-  const rows = tage.filter(k => (tb[k] || []).length).map(k => { const s = tagSumme(k); const z = zielFuer(k); return { k, s, z, sams: keyDatum(k).getDay() === 6, dev: s.k - z.k, laeuft: k === tbHeute() }; });
+  const rows = tage.filter(k => (tb[k] || []).length).map(k => { const s = tagSumme(k); const z = zielFuer(k); return { k, s, z, sams: istCheat(k), dev: s.k - z.k, laeuft: k === tbHeute() }; });
   if (!rows.length) return karte('', leer('In diesem Zeitraum hast du noch nichts eingetragen.') + `<button class="btn primary wide" data-stgo="tagebuch">Zum Tagebuch</button>`);
   let zl = rows.filter(r => !r.sams && !r.laeuft);
   if (nurExtra && (!zl.length || tage.length === 1)) zl = rows;
@@ -3973,7 +4066,7 @@ function statEssen(tage, nurExtra) {
   let h = '';
   const diff = ak != null ? ak - az : null;
   if (!nurExtra) h += karte('', `<div class="lab">Kalorien im Schnitt</div><div class="st-hero">${ak != null ? fz(ak) : KA}<small> kcal</small></div>
-    <p class="st-sub">${diff == null ? (rows.some(r => r.laeuft) ? 'Bisher nur heute erfasst. Der Tag läuft noch und zählt ab morgen.' : 'Nur Samstage erfasst, die zählen nicht.') : `${fz(Math.abs(diff))} kcal ${diff > 0 ? 'über' : 'unter'} deinem Ziel${zl.every(r => r.z.k === zl[0].z.k) ? ' von ' + fz(az) + ' kcal' : ', das im Zeitraum im Schnitt ' + fz(az) + ' kcal war'}`}</p>
+    <p class="st-sub">${diff == null ? (rows.some(r => r.laeuft) ? 'Bisher nur heute erfasst. Der Tag läuft noch und zählt ab morgen.' : 'Nur Cheat Days erfasst, die zählen nicht.') : `${fz(Math.abs(diff))} kcal ${diff > 0 ? 'über' : 'unter'} deinem Ziel${zl.every(r => r.z.k === zl[0].z.k) ? ' von ' + fz(az) + ' kcal' : ', das im Zeitraum im Schnitt ' + fz(az) + ' kcal war'}`}</p>
     <div class="st-kacheln innen">${kachel(`${imZiel}<small> von ${zl.length}</small>`, 'Tage im Ziel ±10 %')}${kachel(`${protOk}<small> von ${zl.length}</small>`, 'Tage Protein Ziel')}${kachel(ap != null ? fz(ap) + '<small> g</small>' : KA, 'Protein im Schnitt')}</div>
     ${zl.length ? stapel([{ l: 'Im Ziel', v: imZiel, c: 'c1' }, { l: 'Darüber', v: drueber, c: 'c2' }, { l: 'Darunter', v: drunter, c: 'c3' }], 'ste') : ''}
     ${chartInfo('Tippe auf einen Teil des Balkens.')}`);
@@ -3982,23 +4075,23 @@ function statEssen(tage, nurExtra) {
   const punkte = woche
     ? Object.values(tage.reduce((m, k) => { const w = montagVon(k); (m[w] || (m[w] = { k: w, l: [] })).l.push(rows.find(r => r.k === k)); return m; }, {}))
       .map(w => { const l = w.l.filter(r => r && !r.sams && !r.laeuft); return { k: w.k, dev: l.length ? avg(l, r => r.dev) : null, n: l.length, k2: l.length ? avg(l, r => r.s.k) : null, pr: l.length ? avg(l, r => r.s.pr) : null, z: l.length ? avg(l, r => r.z.k) : null }; })
-    : tage.map(k => { const r = rows.find(x => x.k === k); return { k, dev: r ? r.dev : null, sams: keyDatum(k).getDay() === 6, laeuft: k === tbHeute(), k2: r ? r.s.k : null, pr: r ? r.s.pr : null, z: r ? r.z.k : null }; });
+    : tage.map(k => { const r = rows.find(x => x.k === k); return { k, dev: r ? r.dev : null, sams: istCheat(k), laeuft: k === tbHeute(), k2: r ? r.s.k : null, pr: r ? r.s.pr : null, z: r ? r.z.k : null }; });
   while (punkte.length > 7 && punkte[0].dev == null) punkte.shift();
   const mx = Math.max(250, Math.ceil(Math.max(0, ...punkte.map(p => Math.abs(p.dev || 0))) / 250) * 250);
   const band = Math.min(100, (az || ziele.k) * 0.1 / mx * 100);
   if (!nurExtra) h += karte('Wie nah am Ziel', `<div class="st-div" style="--band:${band}%"><div class="st-band"></div><div class="st-null"></div>
       <span class="st-y o">+${fz(mx)}</span><span class="st-y m">Ziel</span><span class="st-y u">−${fz(mx)}</span>
       <div class="st-dv-cols">${punkte.map((p, i) => {
-        const tip = p.dev == null ? `${woche ? 'Woche ab ' : ''}${tagLang(p.k)}: ${p.laeuft ? 'heute, noch nichts eingetragen' : p.sams ? 'Samstag, Cheat Day' : 'nicht erfasst'}`
+        const tip = p.dev == null ? `${woche ? 'Woche ab ' : ''}${tagLang(p.k)}: ${p.laeuft ? 'heute, noch nichts eingetragen' : p.sams ? 'Cheat Day' : 'nicht erfasst'}`
           : p.laeuft ? `Heute bisher ${fz(p.k2)} kcal. Der Tag läuft noch, noch ${fz(Math.max(0, -p.dev))} kcal offen.`
           : `${woche ? 'Woche ab ' + kurzDatum(p.k) + ', Schnitt' : tagLang(p.k)}: ${fz(p.k2)} kcal, ${vz(p.dev)} zum Ziel ${fz(p.z)}${p.sams ? ', Cheat Day' : ''}`;
         const o = p.dev > 0 ? p.dev / mx * 100 : 0, u = p.dev < 0 ? -p.dev / mx * 100 : 0;
         return `<button class="st-dv${p.sams ? ' cheat' : ''}${p.laeuft ? ' laeuft' : ''}${p.dev == null ? ' ohne' : ''}" data-tip="${esc(tip)}" aria-label="${esc(tip)}"><span class="ob"><i ${anim('stdo' + i, 'h', o)}></i></span><span class="un"><i ${anim('stdu' + i, 'h', u)}></i></span></button>`;
       }).join('')}</div></div>
     <div class="st-achse"><span>${esc(kurzDatum(punkte[0].k))}</span><span>${esc(kurzDatum(punkte[punkte.length - 1].k))}</span></div>
-    <div class="st-leg"><span><i class="c1"></i>über dem Ziel</span><span><i class="c2"></i>darunter</span><span><i class="band"></i>im Ziel ±10 %</span>${woche ? '' : '<span><i class="cx"></i>Samstag</span><span><i class="laeuft"></i>heute, läuft noch</span>'}</div>
-    ${chartInfo(woche ? 'Pro Woche der Schnitt ohne Samstag. Tippe auf einen Balken.' : 'Tippe auf einen Tag.')}
-    ${tabelle(['Tag', 'kcal', 'Ziel', 'Abweichung'], rows.slice().reverse().map(r => [tagLang(r.k) + (r.sams ? ' (Sa)' : ''), fz(r.s.k), fz(r.z.k), vz(r.dev)]))}`,
+    <div class="st-leg"><span><i class="c1"></i>über dem Ziel</span><span><i class="c2"></i>darunter</span><span><i class="band"></i>im Ziel ±10 %</span>${woche ? '' : '<span><i class="cx"></i>Cheat Day</span><span><i class="laeuft"></i>heute, läuft noch</span>'}</div>
+    ${chartInfo(woche ? 'Pro Woche der Schnitt ohne Cheat Day. Tippe auf einen Balken.' : 'Tippe auf einen Tag.')}
+    ${tabelle(['Tag', 'kcal', 'Ziel', 'Abweichung'], rows.slice().reverse().map(r => [tagLang(r.k) + (r.sams ? ' (Cheat Day)' : ''), fz(r.s.k), fz(r.z.k), vz(r.dev)]))}`,
     `<span class="small muted">${woche ? 'pro Woche' : 'pro Tag'}</span>`);
   /* Protein */
   const pp = punkte;
@@ -4026,7 +4119,7 @@ function statEssen(tage, nurExtra) {
   }));
   const qsum = qs.gut + qs.mittel + qs.schwach + qs.unbekannt;
   const schwachTop = Object.values(proFood).filter(p => p.q === 'schwach').sort((a, b) => b.k - a.k).slice(0, 3);
-  h += karte('Wie gesund', `${qsum ? stapel(QUAL.map(([k, l, c]) => ({ l, v: qs[k], c, tip: fz(qs[k]) + ' kcal' })), 'stg') : leer('Keine Kalorien ausserhalb von Samstagen.')}
+  h += karte('Wie gesund', `${qsum ? stapel(QUAL.map(([k, l, c]) => ({ l, v: qs[k], c, tip: fz(qs[k]) + ' kcal' })), 'stg') : leer('Keine Kalorien ausserhalb vom Cheat Day.')}
     <p class="st-sub" style="margin-top:12px">${qsum ? `<b>${pct(qs.gut, qsum)} %</b> deiner Kalorien kamen aus guten Lebensmitteln, <b>${pct(qs.schwach, qsum)} %</b> aus schwachen.` : ''}${zuckBekannt ? ` Zucker, wo bekannt: im Schnitt ${fz(zuck / Math.max(1, zl.length))} g pro Tag.` : ''}</p>
     ${schwachTop.length ? `<div class="lab st-unterlab">Die grössten schwachen Quellen</div>` + schwachTop.map(p => `<div class="st-li">${tbBild(p.img, p.n)}<div class="t"><b>${esc(p.n)}</b><span>${p.mal} Mal eingetragen</span></div><span class="num st-wert">${fz(p.k)} kcal</span></div>`).join('') : ''}
     ${chartInfo('Tippe auf einen Teil des Balkens.')}
@@ -4035,20 +4128,20 @@ function statEssen(tage, nurExtra) {
       <p><b>Schwach:</b> Nutri-Score D oder E, mehr als 15 g Zucker pro 100 g, oder über 400 kcal pro 100 g bei weniger als 3 g Protein pro 100 kcal. Typisch: Schokoriegel, Chips, Gebäck.</p>
       <p><b>Mittel:</b> alles dazwischen. Stark verarbeitete Produkte (NOVA 4) sind höchstens mittel, ausser sie liefern sehr viel Protein.</p>
       <p><b>Unbekannt:</b> Einträge mit nur Kalorien, zum Beispiel das Kantinen Menü. Rezepte zählen nach Protein pro Kalorie.</p>
-      <p>Gewichtet nach Kalorien, Samstag und der laufende Tag zählen nicht. Das ist eine grobe Einordnung, keine medizinische Bewertung.</p></details>`);
+      <p>Gewichtet nach Kalorien, Cheat Day und der laufende Tag zählen nicht. Das ist eine grobe Einordnung, keine medizinische Bewertung.</p></details>`);
   /* Top Quellen */
   const alleFood = Object.values(proFood);
   const topK = alleFood.slice().sort((a, b) => b.k - a.k).slice(0, 5), topP = alleFood.filter(p => p.pr > 0).sort((a, b) => b.pr - a.pr).slice(0, 5);
   const gesK = alleFood.reduce((a, p) => a + p.k, 0) || 1, gesP = alleFood.reduce((a, p) => a + p.pr, 0) || 1;
   h += karte('Deine grössten Quellen', `<div class="lab st-unterlab" style="margin-top:0">Kalorien</div>${topK.map((p, i) => balkenZeile(p.n, fz(p.k) + ' kcal', p.k / topK[0].k * 100, 'stk' + i, `${pct(p.k, gesK)} % aller Kalorien · ${p.mal} Mal`)).join('')}
     ${topP.length ? `<div class="lab st-unterlab">Protein</div>${topP.map((p, i) => balkenZeile(p.n, fz(p.pr) + ' g', p.pr / topP[0].pr * 100, 'stpq' + i, `${pct(p.pr, gesP)} % deines Proteins · ${p.mal} Mal`)).join('')}` : ''}`,
-    '<span class="small muted">inklusive Samstag</span>');
+    '<span class="small muted">inklusive Cheat Day</span>');
   /* Mahlzeiten */
   const mz = { morgen: 0, mittag: 0, abend: 0, snack: 0 }; zl.forEach(r => (tb[r.k] || []).forEach(e => { mz[e.m] = (mz[e.m] || 0) + (nwMal(e.pu, e.x).k || 0); }));
   const msum = Object.values(mz).reduce((a, b) => a + b, 0) || 1; const mmax = Math.max(1, ...Object.values(mz));
   h += karte('Wann du isst', MAHL.map(([m, l], i) => balkenZeile(l, pct(mz[m], msum) + ' %', mz[m] / mmax * 100, 'stmh' + i, `${fz(mz[m] / Math.max(1, zl.length))} kcal pro Tag`)).join('')
     + (mz.snack / msum > 0.3 ? `<p class="st-sub" style="margin-top:10px"><b>${pct(mz.snack, msum)} % deiner Kalorien sind Snacks.</b> Dort lässt sich am leichtesten sparen, ohne zu hungern.</p>` : ''));
-  if (!nurExtra || tage.length > 1) h += `<p class="st-hw" style="margin:0 2px 14px">${rows.length} Tage mit Einträgen, ${eintr} Einträge. Samstage (Cheat Day) und der laufende Tag zählen beim Schnitt, beim Ziel und bei der Qualität nicht.</p>`;
+  if (!nurExtra || tage.length > 1) h += `<p class="st-hw" style="margin:0 2px 14px">${rows.length} Tage mit Einträgen, ${eintr} Einträge. Cheat Days und der laufende Tag zählen beim Schnitt, beim Ziel und bei der Qualität nicht.</p>`;
   return h;
 }
 
@@ -4096,7 +4189,7 @@ function statGewicht(tage) {
     ${kachel(vb && vb.kcal ? fz(vb.kcal) + '<small> kcal</small>' : KA, 'Dein Verbrauch, gemessen')}${kachel(fz(ziele.k) + '<small> kcal</small>', 'Dein Ziel')}</div>`;
   let erk = '';
   if (vb && vb.kcal) erk = `<p class="st-sub" style="margin:0">Du hast an ${vb.tage} Tagen im Schnitt <b>${fz(vb.essen)} kcal</b> gegessen und dabei ${fz(Math.abs(vb.proWoche), 2)} kg pro Woche ${vb.proWoche < 0 ? 'verloren' : 'zugenommen'}. Daraus ergibt sich ein Verbrauch von etwa <b>${fz(vb.kcal)} kcal</b>. ${vb.kcal > ziele.k ? `Dein Ziel von ${fz(ziele.k)} kcal liegt ${fz(vb.kcal - ziele.k)} kcal darunter, das sind etwa <b>${fz((vb.kcal - ziele.k) * 7 / 7700, 2)} kg Fett pro Woche</b>, wenn du es triffst.` : `Dein Ziel von ${fz(ziele.k)} kcal liegt nicht darunter. So nimmst du nicht ab.`}</p>
-    <p class="st-hw">Stimmt nur, wenn du an den erfassten Tagen wirklich alles einträgst. Nicht erfasste Samstage fehlen in der Rechnung.</p>`;
+    <p class="st-hw">Stimmt nur, wenn du an den erfassten Tagen wirklich alles einträgst. Nicht erfasste Cheat Days fehlen in der Rechnung.</p>`;
   else if (vb && vb.fehlt) erk = `<p class="st-sub" style="margin:0">Noch ${vb.fehlt} Tage mit Einträgen in den letzten 4 Wochen, dann rechnet die App deinen echten Verbrauch aus Essen und Gewicht.</p>`;
   else erk = '<p class="st-sub" style="margin:0">Mit drei Messungen über zwei Wochen und zehn erfassten Tagen rechnet die App deinen echten Verbrauch aus. Das ist genauer als jede Formel.</p>';
   h += karte('Was dein Körper verbraucht', erk);
@@ -4110,7 +4203,7 @@ function statGewicht(tage) {
    Alles wird hier pro Tag gespeichert, so wächst die Geschichte mit, auch über die 30 Tage von Health Connect hinaus. */
 let health = LS.get('health', {});
 let hcStatus = null, hcFehler = '';
-const SCHRITT_ZIEL = 7000, SCHLAF_ZIEL = 480;
+const SCHRITT_ZIEL = profil.ziele.schritte || 7000, SCHLAF_ZIEL = profil.ziele.schlaf || 480;
 const hcBruecke = () => !!(NATIVE && typeof NATIVE.healthRead === 'function');
 function saubereHealth(v) {
   const z = x => (typeof x === 'number' && isFinite(x) && x >= 0 && x < 1e6) ? Math.round(x * 10) / 10 : null;
@@ -4308,7 +4401,7 @@ function tagDetail(k, fx) {
   }
   if (f === 'alles' || f === 'essen') {
     const l = tb[k] || [];
-    if (!l.length) teil('Essen', `<p class="st-dp">${heute ? 'Noch nichts eingetragen.' : keyDatum(k).getDay() === 6 ? 'Cheat Day, nichts eingetragen.' : 'Nichts eingetragen.'}</p>`);
+    if (!l.length) teil('Essen', `<p class="st-dp">${heute ? 'Noch nichts eingetragen.' : istCheat(k) ? 'Cheat Day, nichts eingetragen.' : 'Nichts eingetragen.'}</p>`);
     else {
       const s = tagSumme(k); const z = zielFuer(k);
       const qs = { gut: 0, mittel: 0, schwach: 0, unbekannt: 0 }; l.forEach(e => { qs[qualVon(e)] += nwMal(e.pu, e.x).k || 0; }); const qsum = Object.values(qs).reduce((a, b) => a + b, 0) || 1;
@@ -4350,7 +4443,7 @@ function statJederTag() {
       woche = m;
       const wt = []; for (let i = 0; i < 7; i++) { const x = tagVerschoben(m, i); if (x >= start && x <= heute) wt.push(x); }
       const st = wt.map(x => trainingStatus(x, hm, start)); const kompl = st.filter(x => x === 'komplett').length, gepl = st.filter(x => ['komplett', 'teil', 'verpasst'].indexOf(x) >= 0).length;
-      const ess = wt.filter(x => x < heute && (tb[x] || []).length && keyDatum(x).getDay() !== 6).map(tagSumme);
+      const ess = wt.filter(x => x < heute && (tb[x] || []).length && !istCheat(x)).map(tagSumme);
       const avg = (l, f) => l.length ? l.reduce((a, b) => a + f(b), 0) / l.length : null;
       const hs = wt.filter(x => x < heute).map(x => health[x] || {});
       const stp = avg(hs.filter(x => x.st != null), x => x.st), slp = avg(hs.filter(x => x.sm != null), x => x.sm);
@@ -4380,7 +4473,7 @@ function bauchTrend() {
 /* Kraft der letzten 14 Tage gegen die 14 davor, über alle Übungen mit Steigerung */
 function kraftTrend() {
   const heute = keyDatum(tbHeute()).getTime(); let hoch = 0, runter = 0;
-  Object.keys(STEIG).forEach(id => {
+  steigIds().forEach(id => {
     const best = (von, bis) => { let b = 0; history.forEach(h => { const t = new Date(h.date).getTime(); if (t < heute - von * 864e5 || t >= heute - bis * 864e5) return;
       const e = (h.ex || []).find(x => x.id === id); if (!e) return; e.sets.forEach(s => { const r = parseInt(s.r, 10) || 0, w = parseFloat(String(s.w || '').replace(',', '.')) || 0; b = Math.max(b, w ? w * (1 + r / 30) : r); }); }); return b; };
     const neu = best(14, -1), alt = best(28, 14);
@@ -4458,12 +4551,12 @@ function wocheDaten(m) {
     punkte: tage.map(k => { const s = trainingStatus(k, hm, start); return { k, c: s === 'komplett' ? 'gut' : s === 'teil' ? 'knapp' : s === 'verpasst' ? 'mies' : '' }; }),
     tipp: () => gepl.length - kompl === 0 ? '' : (tst.some(x => x.s === 'verpasst') ? `Verpasst: ${tst.filter(x => x.s === 'verpasst').map(x => WT[keyDatum(x.k).getDay()]).join(', ')}. Kein Drama: Morgen reichen wieder 5 Minuten, und das Wochenend Training holst du am Sonntag nach. ` : '') + (meist ? `Am meisten ausgelassen hast du ${meist[0]} (${meist[1]} ${meist[1] === 1 ? 'Satz' : 'Sätze'}). Mach diese Woche zuerst die ganze Einheit, lieber langsamer.` : '') };
   /* Essen: nur abgeschlossene Tage ausser Samstag */
-  const ess = fertig.filter(k => keyDatum(k).getDay() !== 6);
+  const ess = fertig.filter(k => !istCheat(k));
   const erf = ess.filter(k => (tb[k] || []).length);
   const sums = erf.map(k => ({ k, s: tagSumme(k), z: zielFuer(k) }));
   A.erfassung = { name: 'Eingetragen', w: ess.length ? erf.length / ess.length : null, wert: `${erf.length} von ${ess.length} Tagen`,
-    punkte: tage.map(k => ({ k, c: k >= heute || keyDatum(k).getDay() === 6 ? '' : (tb[k] || []).length ? 'gut' : 'mies' })),
-    tipp: () => `Du hast nur an ${erf.length} von ${ess.length} Tagen eingetragen. Ohne Einträge stimmt hier keine Zahl. Trag diese Woche jeden Tag ausser Samstag ein, auch wenn es nur das Kantinen Menü ist.` };
+    punkte: tage.map(k => ({ k, c: k >= heute || istCheat(k) ? '' : (tb[k] || []).length ? 'gut' : 'mies' })),
+    tipp: () => `Du hast nur an ${erf.length} von ${ess.length} Tagen eingetragen. Ohne Einträge stimmt hier keine Zahl. Trag diese Woche jeden Tag ein, auch wenn es nur ein Menü mit geschätzten Kalorien ist.` };
   const prOk = sums.filter(x => x.s.pr >= x.z.pr).length;
   const prFehlt = sums.length ? sums.reduce((a, x) => a + Math.max(0, x.z.pr - x.s.pr), 0) / sums.length : 0;
   A.protein = { name: 'Protein', w: sums.length ? prOk / sums.length : null, wert: `Ziel an ${prOk} von ${sums.length} Tagen`,
@@ -4487,7 +4580,7 @@ function wocheDaten(m) {
   if (sl.length) { const avg = sl.reduce((a, b) => a + b, 0) / sl.length; const ein = tage.map(k => (health[k] || {}).sv).filter(Boolean);
     A.schlaf = { name: 'Schlaf', w: Math.max(0, Math.min(1, (avg - 300) / 180)), wert: `${dauerHM(avg)} pro Nacht`,
       punkte: tage.map(k => { const v = (health[k] || {}).sm; return { k, c: v == null ? '' : v >= 450 ? 'gut' : v >= 390 ? 'knapp' : 'mies' }; }),
-      tipp: () => `Im Schnitt ${dauerHM(avg)} Schlaf${ein.length ? `, eingeschlafen meist gegen ${ein.sort()[Math.floor(ein.length / 2)]}` : ''}. Dein Plan sagt Licht aus um 20:30. Leg das Handy 15 Minuten früher weg.` }; }
+      tipp: () => `Im Schnitt ${dauerHM(avg)} Schlaf${ein.length ? `, eingeschlafen meist gegen ${ein.sort()[Math.floor(ein.length / 2)]}` : ''}. ${lichtAus(WOCHE[(new Date().getDay() + 6) % 7]) ? 'Dein Plan sagt Licht aus um ' + lichtAus(WOCHE[(new Date().getDay() + 6) % 7]) + '. ' : ''}Leg das Handy 15 Minuten früher weg.` }; }
   const st = fertig.map(k => (health[k] || {}).st).filter(v => v != null);
   if (st.length) { const avg = st.reduce((a, b) => a + b, 0) / st.length;
     A.schritte = { name: 'Schritte', w: Math.min(1, avg / SCHRITT_ZIEL), wert: `${fz(avg)} pro Tag`,
@@ -4500,7 +4593,7 @@ function wocheDaten(m) {
 /* Persönliche Rekorde in dieser Woche: bester Satz besser als je zuvor */
 function rekorde(m) {
   const bis = tagVerschoben(m, 7); const out = [];
-  Object.keys(STEIG).forEach(id => {
+  steigIds().forEach(id => {
     let vorher = null, jetzt = null, name = '', tagN = (plan.days.find(d => d.ex.some(e => e.id === id)) || {}).name || '';
     history.forEach(h => { const k = tagKey(new Date(h.date)); const e = (h.ex || []).find(x => x.id === id); if (!e) return; name = e.name;
       e.sets.forEach(s => { const r = parseInt(s.r, 10) || 0, w = parseFloat(String(s.w || '').replace(',', '.')) || 0; const wert = w ? w * (1 + r / 30) : r; const b = { wert, r, w };
@@ -4601,7 +4694,7 @@ function shTag(id, k) {
 }
 function shTagRoh(id, k, c) {
   if (k > c.heute) return null;
-  const sams = keyDatum(k).getDay() === 6, laeuft = k === c.heute;
+  const sams = istCheat(k), laeuft = k === c.heute;
   if (id === 'training') {
     if (k < c.start) return null;
     const s = trainingStatus(k, c.hm, c.start); const hs = c.hm[k] || [];
@@ -4702,7 +4795,7 @@ function shKachel(id, wert, sub, unten, leise) {
     <span class="w${leise ? ' leise' : ''}">${wert}</span><span class="s">${sub}</span>${unten || ''}</button>`;
 }
 function shKraftReihen() {
-  return Object.keys(STEIG).map(id => {
+  return steigIds().map(id => {
     const pts = history.slice().sort((a, b) => a.date < b.date ? -1 : 1).map(x => { const e = (x.ex || []).find(y => y.id === id); if (!e || !e.sets.length) return null;
       let best = 0; e.sets.forEach(s => { const r = parseInt(s.r, 10) || 0, w = parseFloat(String(s.w || '').replace(',', '.')) || 0; best = Math.max(best, w ? w * (1 + r / 30) : r); });
       return { name: e.name, wert: best }; }).filter(Boolean);
@@ -4794,10 +4887,10 @@ function shGrossBlock(id, b, v) {
     const e = id === 'kalorien' ? ' kcal' : id === 'protein' ? ' g' : '';
     if (id === 'kalorien' || id === 'protein') {
       if (t) gs = v.laeuft ? (v.v < v.z ? `Noch ${fz(v.z - v.v)}${e} bis zum Ziel von ${fz(v.z)}${e}. Der Tag läuft noch.` : id === 'kalorien' && v.v > v.z * 1.1 ? `${fz(v.v - v.z)} kcal über dem Ziel von ${fz(v.z)}. Der Tag läuft noch.` : `Ziel von ${fz(v.z)}${e} erreicht.`)
-        : v.cheat ? 'Samstag, Cheat Day. Zählt nicht in den Schnitt.'
+        : v.cheat ? 'Cheat Day. Zählt nicht in den Schnitt.'
         : id === 'protein' ? (v.ok ? `Ziel von ${fz(v.z)} g erreicht.` : `${fz(v.z - v.v)} g unter dem Ziel von ${fz(v.z)} g.`)
         : `${fz(Math.abs(v.v - v.z))} kcal ${v.v > v.z ? 'über' : 'unter'} dem Ziel von ${fz(v.z)}${v.ok ? ', im Zielbereich.' : '.'}`;
-      else gs = v.nurLaufend ? 'Bisher nur heute oder am Samstag erfasst, das zählt nicht in den Schnitt.' : `Aus ${v.n === 1 ? 'einem Tag' : v.n + ' Tagen'}, ohne Samstag und heute. Ziel ${v.ok} von ${v.okVon} Mal erreicht.`;
+      else gs = v.nurLaufend ? 'Bisher nur heute oder am Cheat Day erfasst, das zählt nicht in den Schnitt.' : `Aus ${v.n === 1 ? 'einem Tag' : v.n + ' Tagen'}, ohne Cheat Day und heute. Ziel ${v.ok} von ${v.okVon} Mal erreicht.`;
     } else if (id === 'schritte') gs = t ? (v.laeuft ? `Heute bisher. Ziel ${fz(v.z)}.` : v.ok ? `Ziel von ${fz(v.z)} erreicht.` : `${fz(v.z - v.v)} unter dem Ziel von ${fz(v.z)}.`) : `Aus ${v.n === 1 ? 'einem Tag' : v.n + ' Tagen'}, ohne heute. Ziel an ${v.ok} von ${v.okVon} Tagen.`;
     else if (id === 'schlaf') gs = t ? `${v.h.sv && v.h.sb ? v.h.sv + ' bis ' + v.h.sb + '. ' : ''}${v.ok ? 'Genug geschlafen.' : `Ziel 8 h, es fehlen ${dauerHM(Math.max(0, 480 - v.v))}.`}` : `Aus ${v.n === 1 ? 'einer Nacht' : v.n + ' Nächten'}. Mindestens 7 h 30 in ${v.ok} von ${v.okVon}.`;
     else if (id === 'puls') gs = `${t ? (v.ruhe ? 'Ruhepuls' : 'Durchschnitt') : 'Ruhepuls im Schnitt'}. Spanne ${fz(v.lo)} bis ${fz(v.hi)} bpm.`;
@@ -4827,7 +4920,7 @@ function shChart(id, bs, vals, si) {
       return `<button class="sh-col${i === si ? ' sel' : ''}${v && v.laeuft && stf.m === 'tage' ? ' laeuft' : ''}${v && v.cheat && stf.m === 'tage' ? ' cheat' : ''}${v && v.s === 'verpasst' && stf.m === 'tage' ? ' verpasst' : ''}${!v && b.keys.length ? ' leer' : ''}" data-shsel="${b.key}" ${b.keys.length ? '' : 'disabled'} aria-label="${esc(lab(b, v))}" aria-pressed="${i === si}">
         <span class="sh-bar">${id === 'training' && v && v.z ? `<span class="sh-spur" style="height:${(v.z / max * 100).toFixed(1)}%"></span>` : ''}<i ${anim('shb' + i, 'h', v ? Math.min(100, v.v / max * 100) : 0)}></i></span><em>${esc(b.x)}</em></button>`; }).join('')}</div></div>
     ${id === 'training' ? '<div class="sh-cleg"><span><i class="voll"></i>gemachte Sätze</span><span><i class="sp"></i>geplant</span></div>'
-      : stf.m === 'tage' && (id === 'kalorien' || id === 'protein') ? '<div class="sh-cleg"><span><i class="lf"></i>heute, läuft noch</span><span><i class="ch"></i>Samstag</span></div>' : ''}`;
+      : stf.m === 'tage' && (id === 'kalorien' || id === 'protein') ? '<div class="sh-cleg"><span><i class="lf"></i>heute, läuft noch</span><span><i class="ch"></i>Cheat Day</span></div>' : ''}`;
 }
 function shZusammen(id, bs) {
   const c = shCache(); const keys = bs.flatMap(b => b.keys); const a = shAgg(id, keys);
@@ -4838,7 +4931,7 @@ function shZusammen(id, bs) {
     const mins = keys.flatMap(k => (c.hm[k] || []).map(h => h.min)).filter(x => x > 0);
     t = kachel(`${a.kompl}<small> von ${a.gepl}</small>`, 'Pflichttrainings komplett') + kachel(`${a.v}<small> von ${a.z}</small>`, 'Sätze gemacht') + kachel(mins.length ? fz(mins.reduce((x, y) => x + y, 0) / mins.length) + '<small> Min</small>' : 'offen', 'Dauer im Schnitt');
   } else if (id === 'kalorien' || id === 'protein') {
-    const moegl = keys.filter(k => k < c.heute && keyDatum(k).getDay() !== 6 && k >= c.start).length;
+    const moegl = keys.filter(k => k < c.heute && !istCheat(k) && k >= c.start).length;
     const best = Math.max(...a.pts.filter(x => !x.d.laeuft).map(x => x.d.v), 0);
     t = kachel(a.nurLaufend ? 'offen' : fz(a.v) + `<small> ${id === 'kalorien' ? 'kcal' : 'g'}</small>`, 'Schnitt pro Tag') + kachel(`${a.ok}<small> von ${a.okVon}</small>`, id === 'kalorien' ? 'Tage im Ziel' : 'Tage Ziel erreicht')
       + (id === 'kalorien' ? kachel(`${a.okVon}<small> von ${moegl}</small>`, 'Tage eingetragen') : kachel(best ? fz(best) + '<small> g</small>' : 'offen', 'bester Tag'));
@@ -4923,6 +5016,258 @@ function shKlick(e) {
 }
 /* Zurück Taste von Android: zuerst die Detailseite schliessen */
 window.fitZurueck = () => { if (tab === 'stats' && stf.d) { stf.d = null; renderStats(); window.scrollTo(0, 0); return true; } return false; };
+
+/* ======================================================= Profil: prüfen, einfügen, kopieren, Anleitung für Claude
+   Ein Profil ist fremder Text. Darum wird es Feld für Feld neu aufgebaut: nur bekannte Felder, feste Grenzen, Text gekürzt.
+   Angezeigt wird alles später nur über esc() oder textContent. */
+const PROFIL_BILDER = ['Pushups', 'Push-Ups_-_Close_Triceps_Position', 'Bodyweight_Squat', 'Goblet_Squat', 'Plank', 'Dead_Bug', 'Butt_Lift_Bridge',
+  'Bent_Over_Two-Dumbbell_Row', 'Romanian_Deadlift', 'Dumbbell_Rear_Lunge', 'Suspended_Split_Squat', 'Arm_Circles', 'Ankle_Circles', 'Cat_Stretch',
+  'Childs_Pose', 'Calf_Stretch_Hands_Against_Wall', 'Hamstring_Stretch', 'Kneeling_Hip_Flexor', 'Side_Neck_Stretch',
+  'Isometric_Neck_Exercise_-_Front_And_Back', 'Isometric_Neck_Exercise_-_Sides'];
+function profilPruefen(roh) {
+  const f = [];
+  let o;
+  if (roh && typeof roh === 'object') o = JSON.parse(JSON.stringify(roh));
+  else try {
+    let t = String(roh || '').trim();
+    const m = /```(?:json)?\s*([\s\S]*?)```/.exec(t); if (m) t = m[1].trim();
+    if (t.length > 200000) return { fehler: ['Das Profil ist zu gross.'] };
+    o = JSON.parse(t);
+  } catch (e) { return { fehler: ['Das ist kein gültiges JSON. Kopiere nur den Code Block, den Claude dir gegeben hat, vollständig.'] }; }
+  if (!o || typeof o !== 'object' || Array.isArray(o)) return { fehler: ['Das Profil muss ein JSON Objekt sein.'] };
+  if (o.format !== PROFIL_FORMAT) f.push('"format" muss "fitapp-profil" sein.');
+  const txt = (v, n) => typeof v === 'string' ? v.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n) : '';
+  const zahl = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi ? v : null;
+  const ganz = (v, lo, hi) => Number.isInteger(v) && v >= lo && v <= hi ? v : null;
+  const idOk = v => typeof v === 'string' && /^[A-Za-z0-9]{1,8}$/.test(v);
+  const p = { format: PROFIL_FORMAT, version: 1, id: 'eigen', name: txt(o.name, 30) || 'Mein Profil' };
+  /* Person */
+  const pe = o.person && typeof o.person === 'object' ? o.person : {};
+  p.person = { alter: ganz(pe.alter, 10, 99), groesse: zahl(pe.groesse, 120, 230), gewicht: zahl(pe.gewicht, 30, 250) };
+  if (p.person.alter == null) f.push('person.alter fehlt oder ist keine ganze Zahl zwischen 10 und 99.');
+  /* Ziele */
+  const z = o.ziele && typeof o.ziele === 'object' ? o.ziele : {};
+  const k = ganz(z.k, 1200, 5000), pr = ganz(z.pr, 30, 300), fe = z.f == null ? 70 : ganz(z.f, 20, 200);
+  if (k == null) f.push('ziele.k (Kalorien) fehlt oder liegt nicht zwischen 1200 und 5000.');
+  if (pr == null) f.push('ziele.pr (Protein in g) fehlt oder liegt nicht zwischen 30 und 300.');
+  if (fe == null) f.push('ziele.f (Fett in g) liegt nicht zwischen 20 und 200.');
+  let kmin = z.kcalMin == null ? (k ? Math.round(k * 0.9 / 50) * 50 : 0) : ganz(z.kcalMin, 1200, 5000);
+  if (kmin == null || (k && kmin > k)) { f.push('ziele.kcalMin muss eine ganze Zahl von 1200 bis zum Kalorienziel sein.'); kmin = k; }
+  p.ziele = { k, pr, f: fe, kh: k && pr && fe ? (z.kh == null ? khRestRoh(k, pr, fe) : (ganz(z.kh, 0, 800) ?? khRestRoh(k, pr, fe))) : 0, kcalMin: kmin,
+    schritte: z.schritte == null ? 7000 : ganz(z.schritte, 1000, 30000) ?? 7000, schlaf: z.schlaf == null ? 480 : ganz(z.schlaf, 300, 660) ?? 480,
+    erklaerung: Array.isArray(z.erklaerung) ? z.erklaerung.slice(0, 6).map(x => txt(x, 600)).filter(Boolean) : [] };
+  if (k && p.person.alter != null && p.person.alter < 18 && k < 1800) f.push('Unter 18 Jahren nimmt die App höchstens bis 1800 kcal runter. Lass Claude das Ziel erhöhen.');
+  /* Cheat Day, Supplements, Gewohnheiten */
+  p.cheatTag = o.cheatTag == null ? null : ganz(o.cheatTag, 0, 6);
+  if (o.cheatTag != null && p.cheatTag == null) f.push('cheatTag muss null oder 0 (Sonntag) bis 6 (Samstag) sein.');
+  p.supplements = (Array.isArray(o.supplements) ? o.supplements : []).slice(0, 8).map(s => ({ text: txt(s && s.text, 60),
+    monate: Array.isArray(s && s.monate) ? s.monate.filter(x => Number.isInteger(x) && x >= 1 && x <= 12).slice(0, 12) : undefined })).filter(s => s.text);
+  p.supplements.forEach(s => { if (!s.monate || !s.monate.length) delete s.monate; });
+  p.gewohnheiten = {};
+  if (o.gewohnheiten && typeof o.gewohnheiten === 'object' && !Array.isArray(o.gewohnheiten))
+    Object.entries(o.gewohnheiten).slice(0, 8).forEach(([id, n]) => { if (/^[a-z]{1,12}$/.test(id) && id !== 'training' && txt(n, 40)) p.gewohnheiten[id] = txt(n, 40); });
+  /* Training */
+  const tr = o.training && typeof o.training === 'object' ? o.training : {};
+  const uebung = (x, wo) => {
+    if (!x || typeof x !== 'object') { f.push(wo + ': Übung ist kein Objekt.'); return null; }
+    const e = { id: idOk(x.id) ? x.id : null, name: txt(x.name, 50), sets: ganz(x.sets, 1, 10), ziel: txt(x.ziel, 80), pause: x.pause == null ? 60 : ganz(x.pause, 0, 600),
+      einheit: ['Wdh', 'Sek', 'Min'].indexOf(x.einheit) >= 0 ? x.einheit : null, soll: zahl(x.soll, 1, 999), kg: x.kg === true,
+      how: txt(x.how, 700), easy: txt(x.easy, 200), vid: txt(x.vid, 80), mus: txt(x.mus, 80) };
+    if (!e.id) f.push(wo + ': "id" fehlt (1 bis 8 Buchstaben oder Ziffern).');
+    if (!e.name) f.push(wo + ': "name" fehlt.');
+    if (e.sets == null) f.push(wo + ' ' + e.name + ': "sets" muss 1 bis 10 sein.');
+    if (e.pause == null) f.push(wo + ' ' + e.name + ': "pause" muss 0 bis 600 Sekunden sein.');
+    if (!e.einheit) f.push(wo + ' ' + e.name + ': "einheit" muss "Wdh", "Sek" oder "Min" sein.');
+    if (e.soll == null) f.push(wo + ' ' + e.name + ': "soll" muss eine Zahl von 1 bis 999 sein.');
+    if (e.kg) e.kgSoll = zahl(x.kgSoll, 0, 200) ?? 0;
+    if (typeof x.bild === 'string' && /^[A-Za-z0-9_-]{1,60}$/.test(x.bild)) e.bild = x.bild; else e.bild = '';
+    if (typeof x.figur === 'string' && FIGUR_IDS.indexOf(x.figur) >= 0) e.figur = x.figur;
+    if (x.bildHinweis) e.bildHinweis = txt(x.bildHinweis, 150);
+    if (x.steig && typeof x.steig === 'object') {
+      const rmin = ganz(x.steig.rmin, 1, 100), rmax = ganz(x.steig.rmax, 1, 100);
+      if (rmin != null && rmax != null && rmax >= rmin) { e.steig = { rmin, rmax }; if (x.steig.kg != null && zahl(x.steig.kg, 0.5, 10) != null) e.steig.kg = x.steig.kg; if (txt(x.steig.stufe, 80)) e.steig.stufe = txt(x.steig.stufe, 80); }
+    }
+    if (Array.isArray(x.teile)) { const t = x.teile.slice(0, 6).map(y => ({ n: txt(y && y.n, 40), s: ganz(y && y.s, 1, 600) })).filter(y => y.n && y.s); if (t.length) e.teile = t; }
+    return e;
+  };
+  const tage = (Array.isArray(tr.days) ? tr.days : []).slice(0, 10).map((d, i) => {
+    const wo = 'Trainingstag ' + (i + 1);
+    if (!d || typeof d !== 'object') { f.push(wo + ' ist kein Objekt.'); return null; }
+    const t = { id: idOk(d.id) ? d.id : null, name: txt(d.name, 24), title: txt(d.title, 60), wds: Array.from(new Set((Array.isArray(d.wds) ? d.wds : []).filter(x => Number.isInteger(x) && x >= 0 && x <= 6))),
+      pflicht: d.pflicht === true, ex: [] };
+    if (!t.id) f.push(wo + ': "id" fehlt.'); if (!t.name) f.push(wo + ': "name" fehlt.');
+    if (d.minSaetze != null) { const m = ganz(d.minSaetze, 1, 20); if (m) t.minSaetze = m; }
+    if (txt(d.en, 30)) t.en = txt(d.en, 30);
+    if (!Array.isArray(d.ex) || !d.ex.length) f.push(wo + ' ' + t.name + ': keine Übungen.');
+    t.ex = (Array.isArray(d.ex) ? d.ex : []).slice(0, 20).map(x => uebung(x, t.name || wo)).filter(Boolean);
+    const ids = t.ex.map(x => x.id); if (new Set(ids).size !== ids.length) f.push(wo + ' ' + t.name + ': zwei Übungen haben die gleiche id.');
+    return t;
+  }).filter(Boolean);
+  if (!tage.length) f.push('training.days braucht mindestens einen Trainingstag.');
+  const tIds = tage.map(t => t.id); if (new Set(tIds).size !== tIds.length) f.push('Zwei Trainingstage haben die gleiche id.');
+  const belegt = {}; tage.forEach(t => t.wds.forEach(w => { if (belegt[w]) f.push(`${WT_LANG[w]} ist zwei Trainingstagen zugeteilt (${belegt[w]} und ${t.name}). Pro Wochentag nur einer.`); else belegt[w] = t.name; }));
+  p.training = { days: tage, nachholen: (Array.isArray(tr.nachholen) ? tr.nachholen : []).filter(id => tIds.indexOf(id) >= 0).slice(0, 5),
+    nachholTag: tr.nachholTag == null ? 0 : ganz(tr.nachholTag, 0, 6) ?? 0 };
+  if (tr.stufen && typeof tr.stufen === 'object') {
+    const s = tr.stufen; const tag = tage.find(t => t.id === s.tag);
+    const extra = (Array.isArray(s.extra) ? s.extra : []).slice(0, 10).map(x => { const e = uebung(x, 'Stufen Extra'); if (e && idOk(x.vor)) e.vor = x.vor; return e; }).filter(Boolean);
+    const exIds = tag ? tag.ex.map(e => e.id).concat(extra.map(e => e.id)) : [];
+    const st = (Array.isArray(s.stufen) ? s.stufen : []).slice(0, 6).map((x, i) => {
+      const sets = {}; Object.entries(x && x.sets && typeof x.sets === 'object' ? x.sets : {}).forEach(([id, n]) => { if (exIds.indexOf(id) >= 0 && ganz(n, 0, 10) != null) sets[id] = n; else f.push(`Stufe ${i + 1}: Übung "${txt(id, 20)}" gibt es im Tag nicht oder die Satzzahl ist nicht 0 bis 10.`); });
+      return { min: ganz(x && x.min, 1, 120) || 5, txt: txt(x && x.txt, 60), pause: x && x.pause != null ? ganz(x.pause, 0, 300) ?? undefined : undefined, titel: txt(x && x.titel, 60) || undefined, sets };
+    });
+    if (!tag) f.push('training.stufen.tag muss die id eines Trainingstags sein.');
+    else if (!st.length) f.push('training.stufen.stufen braucht mindestens eine Stufe.');
+    else p.training.stufen = { tag: tag.id, proStufe: ganz(s.proStufe, 2, 30) || 8, stufen: st, extra };
+  }
+  /* Tagesplan: 7 Tage, jeder mit mindestens einem Eintrag */
+  p.woche = {};
+  const ow = o.woche && typeof o.woche === 'object' ? o.woche : {};
+  WO_KURZ.forEach(kz => {
+    const w = ow[kz];
+    if (!w || !Array.isArray(w.items) || !w.items.length) { f.push(`woche.${kz} fehlt oder hat keine Einträge.`); return; }
+    const items = w.items.slice(0, 40).map((it, i) => {
+      if (!Array.isArray(it) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(it[0]) || !txt(it[1], 160) || KINDS.indexOf(it[2]) < 0) { f.push(`woche.${kz} Eintrag ${i + 1}: muss ["HH:MM", "Text", Art] sein, Art eine von ${KINDS.join(', ')}.`); return null; }
+      const r = [it[0], txt(it[1], 160), it[2]]; if (typeof it[3] === 'string' && p.gewohnheiten[it[3]]) r.push(it[3]); return r;
+    }).filter(Boolean);
+    p.woche[kz] = { art: txt(w.art, 20), items };
+  });
+  return f.length ? { fehler: f.slice(0, 12).concat(f.length > 12 ? [`Und ${f.length - 12} weitere Fehler.`] : []) } : { p, fehler: [] };
+}
+function profilAnwenden(p) {
+  const heute = tagKey(new Date());
+  const h = LS.get('zielHist', []).filter(x => x.d !== heute);
+  if (!h.length && (history.length || Object.keys(tb).length)) h.push({ d: '2000-01-01', k: ziele.k, pr: ziele.pr });
+  h.push({ d: heute, k: p.ziele.k, pr: p.ziele.pr });
+  LS.set('zielHist', h.slice(-60)); LS.set('profil', p); LS.del('plan'); LS.del('ziele'); LS.set('ziel2200', true); LS.set('sess', {});
+  location.reload();
+}
+function profilZusammenfassung(p) {
+  const tage = p.training.days.map(d => `${d.name}${d.wds.length ? ' (' + d.wds.map(w => WT_LANG[w].slice(0, 2)).join(', ') + ')' : ''}`).join(', ');
+  return `<div class="st-dr"><span>Name</span><span>${esc(p.name)}</span></div>
+    <div class="st-dr"><span>Ziel</span><span class="num">${fz(p.ziele.k)} kcal, ${p.ziele.pr} g Protein</span></div>
+    <div class="st-dr"><span>Training</span><span>${esc(tage)}</span></div>
+    <div class="st-dr"><span>Aufstehen Montag</span><span class="num">${esc(p.woche.Mo.items[0][0])}</span></div>
+    <div class="st-dr"><span>Cheat Day</span><span>${p.cheatTag == null ? 'keiner' : WT_LANG[p.cheatTag]}</span></div>`;
+}
+function openProfilImport() {
+  openSheet('Profil einfügen', `<p class="small muted" style="margin-top:0">Füge hier den ganzen Code Block ein, den Claude dir gegeben hat. Die App prüft alles, bevor sie etwas ändert.</p>
+    <textarea id="pIn" rows="9" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder='{ "format": "fitapp-profil", ... }'></textarea>
+    <button class="btn primary wide" id="pPruef" style="margin-top:10px">Prüfen</button>
+    <div id="pErg" aria-live="polite"></div>`);
+  let gut = null;
+  $('#sheetBody').onclick = ev => {
+    if (ev.target.closest('#pPruef')) {
+      const r = profilPruefen($('#pIn').value); gut = r.p || null;
+      $('#pErg').innerHTML = r.p ? `<div class="card" style="margin-top:14px"><div class="lab">Sieht gut aus</div>${profilZusammenfassung(r.p)}
+          <p class="small muted">Dein Trainingsplan, dein Tagesplan und deine Ziele werden ersetzt. Verlauf, Tagebuch und Messungen bleiben.</p>
+          <button class="btn primary wide" id="pOk">Profil übernehmen</button></div>`
+        : `<div class="card" style="margin-top:14px;border-color:#6B2B2B"><div class="lab">Noch nicht gültig</div><ol class="small">${r.fehler.map(x => `<li>${esc(x)}</li>`).join('')}</ol>
+          <p class="small muted">Kopiere die Fehler und schick sie Claude mit der Bitte, das Profil zu korrigieren.</p><button class="btn wide" id="pFehlerKopie">Fehler kopieren</button></div>`;
+      $('#pErg').dataset.fehler = r.fehler.join('\n');
+    } else if (ev.target.closest('#pOk') && gut) profilAnwenden(gut);
+    else if (ev.target.closest('#pFehlerKopie')) kopieren('Bitte korrigiere das Profil. Die App meldet:\n' + $('#pErg').dataset.fehler, 'Fehler kopiert');
+  };
+}
+async function kopieren(text, ok) {
+  try { await navigator.clipboard.writeText(text); toast(ok); return; } catch (e) {}
+  openSheet('Zum Kopieren', `<p class="small muted" style="margin-top:0">Kopieren ging automatisch nicht. Lang auf den Text drücken, alles auswählen, kopieren.</p><textarea rows="12" readonly id="kopTxt"></textarea>`);
+  const t = $('#kopTxt'); t.value = text; t.focus(); t.select();
+}
+function profilAnleitung() {
+  return `Du hilfst mir, ein Profil für meine Fitness App "FitApp" zu erstellen. Die App liest ein JSON Profil mit meinem Trainingsplan, meinem Tagesablauf und meinen Ernährungszielen. Alles bleibt nur auf meinem Handy.
+
+SO GEHST DU VOR
+1. Stell mir zuerst alle Fragen auf einmal, nummeriert: Alter, Grösse, Gewicht, Ziel (Muskeln aufbauen, Fett verlieren oder beides), Trainingserfahrung, an welchen Tagen und um welche Uhrzeit ich wie viele Minuten trainieren kann, was ich zuhause habe (nichts, Rucksack, Hanteln, Klimmzugstange ...), mein Ablauf an jedem Wochentag (Aufstehen, Arbeit oder Schule mit Zeiten, Essen, Schlafen), ob ich einen Cheat Day will und an welchem Tag, welche Supplements und Pflege ich täglich mache, und welche kleinen Gewohnheiten ich abhaken will.
+2. Erst nach meinen Antworten erstellst du das Profil. Gib es als genau einen JSON Code Block aus, ohne Kommentare im JSON, ohne Text darin ausserhalb der Werte.
+3. Meldet die App Fehler, schicke ich sie dir. Dann gibst du das ganze korrigierte Profil nochmals aus.
+
+REGELN FÜR EINEN GUTEN PLAN
+- Für Anfänger klein starten. Lieber 5 bis 15 Minuten, die wirklich passieren, als 45 Minuten, die nie passieren. Nutze "stufen", damit der Plan von selbst wächst.
+- Nur Übungen mit dem, was ich wirklich habe. Jede Übung mit kurzer, klarer Anleitung in "how" (ganze Sätze, jeder Satz endet mit Punkt) und einer leichteren Variante in "easy".
+- Kalorien realistisch: zum Abnehmen ein moderates Minus, kein Crash. Unter 18 Jahren nicht unter 1800 kcal, und "kcalMin" nicht zu tief, weil ich noch wachse. Protein etwa 1,6 g pro kg Körpergewicht.
+- Schlaf: Licht aus so planen, dass genug Schlaf bleibt (Jugendliche 8 bis 10 Stunden, Erwachsene 7 bis 9).
+- Tagesplan: Ein Eintrag gilt, bis der nächste beginnt. Nach kurzen Dingen (Essen, Snack) wieder die Hauptsache eintragen. Der erste Eintrag ist das Aufstehen, der letzte beginnt mit "Licht aus". Zeiten nach Mitternacht gehören zum Abend davor.
+- Schreib alles auf Deutsch, kurz und konkret.
+
+FORMAT (Beispiel, Werte anpassen)
+{
+  "format": "fitapp-profil",
+  "version": 1,
+  "name": "Max",
+  "person": { "alter": 17, "groesse": 178, "gewicht": 70 },
+  "ziele": { "k": 2500, "pr": 112, "f": 70, "kcalMin": 2300, "schritte": 7000, "schlaf": 510,
+    "erklaerung": ["Ein bis sechs kurze Sätze, warum diese Zahlen für mich passen."] },
+  "cheatTag": 6,
+  "supplements": [{ "text": "1 Omega 3 Kapsel" }, { "text": "2 Tropfen Vitamin D", "monate": [10, 11, 12, 1, 2, 3] }],
+  "gewohnheiten": { "wasser": "Glas Wasser am Morgen", "supp": "Supplements" },
+  "training": {
+    "days": [
+      { "id": "K", "name": "Mini", "title": "5 Minuten am Morgen", "wds": [1, 2, 3, 4, 5], "pflicht": true, "minSaetze": 1, "en": "Mini workout",
+        "ex": [
+          { "id": "k1", "name": "Kniebeugen", "sets": 1, "ziel": "10, langsam", "pause": 30, "einheit": "Wdh", "soll": 10, "kg": false,
+            "how": "Füsse schulterbreit. Po nach hinten und runter, bis die Oberschenkel waagrecht sind.", "easy": "Nur halb so tief.",
+            "vid": "bodyweight squat form", "bild": "Bodyweight_Squat", "mus": "Beine, Po", "steig": { "rmin": 10, "rmax": 15, "stufe": "Rucksack vor der Brust" } },
+          { "id": "k2", "name": "Unterarmstütz", "sets": 1, "ziel": "20 s", "pause": 0, "einheit": "Sek", "soll": 20, "kg": false,
+            "how": "Unterarme am Boden, Körper gerade wie ein Brett.", "easy": "Auf den Knien.", "vid": "forearm plank form", "bild": "Plank", "mus": "Bauch" }
+        ] },
+      { "id": "W", "name": "Wochenende", "title": "15 Minuten, ganzer Körper", "wds": [6], "pflicht": true, "ex": [ ... ] }
+    ],
+    "nachholen": ["W"],
+    "nachholTag": 0,
+    "stufen": { "tag": "K", "proStufe": 8, "stufen": [
+      { "min": 5, "txt": "je 1 Satz", "pause": 30, "titel": "5 Minuten am Morgen", "sets": { "k1": 1, "k2": 1 } },
+      { "min": 9, "txt": "je 2 Sätze", "pause": 45, "titel": "9 Minuten am Morgen", "sets": { "k1": 2, "k2": 2 } } ],
+      "extra": [] }
+  },
+  "woche": {
+    "Mo": { "art": "Mini", "items": [
+      ["06:30", "Aufstehen, Glas Wasser trinken", "schlaf", "wasser"],
+      ["06:35", "Mini Training", "training"],
+      ["06:45", "Frühstück mit Protein. Dazu {supps}", "essen", "supp"],
+      ["07:20", "Schule", "arbeit"],
+      ["22:00", "Licht aus", "schlaf"] ] },
+    "Di": { ... }, "Mi": { ... }, "Do": { ... }, "Fr": { ... }, "Sa": { ... }, "So": { ... }
+  }
+}
+
+FELDER GENAU
+- name: höchstens 30 Zeichen.
+- person.alter: ganze Zahl 10 bis 99, Pflicht. groesse in cm, gewicht in kg.
+- ziele.k: Kalorien pro Tag, ganze Zahl 1200 bis 5000. ziele.pr: Protein in g. ziele.f: Fett in g. ziele.kh weglassen, die App rechnet es aus. ziele.kcalMin: tiefster Wert, den die App je vorschlagen darf, höchstens so hoch wie k. ziele.schritte: Schritte pro Tag. ziele.schlaf: Schlafziel in Minuten (300 bis 660).
+- cheatTag: 0 Sonntag, 1 Montag, ... 6 Samstag, oder null für keinen. An diesem Tag zählt das Essen nicht in den Schnitt.
+- supplements: höchstens 8. "monate" (1 bis 12) nur, wenn es nur in bestimmten Monaten gilt. Im Tagesplan schreibst du {supps}, die App setzt dort die Supplements des Monats ein.
+- gewohnheiten: höchstens 8, Schlüssel nur Kleinbuchstaben a bis z. Ein Tagesplan Eintrag bekommt den Schlüssel als vierten Wert, dann kann ich ihn abhaken. Training wird automatisch abgehakt, dafür keinen Schlüssel.
+- training.days: 1 bis 10 Tage. id: 1 bis 8 Buchstaben oder Ziffern, eindeutig. wds: Wochentage 0 bis 6, jeder Wochentag gehört höchstens einem Trainingstag. Tage ohne wds sind freiwillig. pflicht: true, wenn ein verpasster Tag als verpasst zählt. minSaetze: ab so vielen Sätzen zählt der Tag für die Streak, auch wenn nicht alles geschafft ist. en: kurzer englischer Name fürs Android Widget.
+- Übung: id (1 bis 8 Buchstaben oder Ziffern, im Tag eindeutig), name, sets (1 bis 10), ziel (Text wie "8 bis 12" oder "30 s"), pause in Sekunden (0 bis 600), einheit "Wdh", "Sek" oder "Min", soll (Startwert als Zahl), kg (true, wenn mit Gewicht, dann kgSoll in kg), how, easy, vid (englischer Suchbegriff für YouTube), mus (Muskeln, mit Komma getrennt), steig (optional: rmin und rmax Wiederholungen; wenn alle Sätze rmax schaffen, schlägt die App mehr Gewicht vor, mit "kg" als Schritt in kg, oder die schwerere Variante in "stufe"). Bei einseitigen Übungen "pro Bein" oder "pro Seite" ins ziel schreiben.
+- bild: nur einer dieser Namen, sonst "bild" weglassen: ${PROFIL_BILDER.join(', ')}.
+- training.nachholen: Trainingstage, die am nachholTag (0 Sonntag bis 6 Samstag) nachgeholt werden können, wenn sie in der Woche verpasst wurden.
+- training.stufen (optional): tag ist die id des Tages, der wächst. Alle "proStufe" kompletten Trainings kommt die nächste Stufe. sets legt pro Übungs id die Sätze fest (0 heisst weglassen). Neue Übungen für spätere Stufen stehen in "extra", mit "vor": id der Übung, vor der sie eingefügt wird. titel ersetzt den Titel des Tages.
+- woche: alle sieben Tage Mo, Di, Mi, Do, Fr, Sa, So. art: kurzes Wort für den Tag (höchstens 20 Zeichen). items: Einträge ["HH:MM", "Text bis 160 Zeichen", Art, optional Gewohnheit]. Art ist eine von: ${KINDS.join(', ')}.`;
+}
+function profilBoxHtml() {
+  return `<p class="small" style="margin:0 0 10px">${profil.beispiel ? '<b>Noch kein eigenes Profil.</b> <span class="muted">Die App zeigt ein Beispiel.</span>' : `<b>${esc(profil.name)}</b> <span class="muted">· ${profil.training.days.length} Trainingstage · ${fz(profil.ziele.k)} kcal</span>`}</p>
+    <div class="edit-grid"><button class="btn" data-prof="anleitung">Anleitung für Claude</button><button class="btn" data-prof="import">Profil einfügen</button></div>
+    ${profil.beispiel ? '' : '<button class="btn wide" data-prof="export" style="margin-top:8px">Mein Profil kopieren</button>'}`;
+}
+function profilWillkommen() {
+  if (!profil.beispiel) return '';
+  return `<section class="card prof-w"><div class="lab">Willkommen bei FitApp</div><h3 style="margin:6px 0 8px">Erstell dein Profil mit Claude</h3>
+    <ol class="small schritte" style="margin:0 0 14px">
+      <li>Tippe auf "Anleitung kopieren".</li>
+      <li>Öffne Claude, füge die Anleitung ein und beantworte die Fragen.</li>
+      <li>Kopiere den Code Block, den Claude dir gibt.</li>
+      <li>Tippe auf "Profil einfügen" und füge ihn ein.</li></ol>
+    <div class="edit-grid"><button class="btn primary" data-prof="anleitung">Anleitung kopieren</button><button class="btn" data-prof="import">Profil einfügen</button></div>
+    <p class="small muted" style="margin:10px 0 0">Bis dahin siehst du einen Beispielplan.</p></section>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-prof]'); if (!b) return;
+  const w = b.dataset.prof;
+  if (w === 'anleitung') kopieren(profilAnleitung(), 'Anleitung kopiert. Jetzt in Claude einfügen');
+  else if (w === 'import') openProfilImport();
+  else if (w === 'export') { const p = clone(profil); delete p.beispiel; kopieren(JSON.stringify(p, null, 1), 'Profil kopiert'); }
+});
 
 /* ======================================================= Sheet */
 
@@ -5202,7 +5547,9 @@ function openSettings() {
   const q = (DATA && DATA.quellen) || {};
   const line = (name, k) => { const x = q[k]; if (!x) return `<div class="li"><div class="t">${name}<br><span class="muted small">${KA}</span></div></div>`;
     return `<div class="li"><div class="t">${name}: ${x.ok === false ? '<span style="color:var(--warn)">letzter Abruf fehlgeschlagen</span>' : 'OK'}<br><span class="muted small">Stand ${x.stand ? datumZeit(x.stand) : KA}${x.anzahl != null ? ' · ' + x.anzahl + ' Einträge' : ''}${x.fehler ? ' · ' + esc(x.fehler) : ''}</span></div></div>`; };
-  let b = `<h3 style="margin-top:0">Datenstand</h3>
+  let b = `<h3 style="margin-top:0">Profil</h3>
+    <div id="profBox">${profilBoxHtml()}</div>
+    <h3>Datenstand</h3>
     <p class="muted small">Gebaut: ${DATA && DATA.stand ? datumZeit(DATA.stand) : 'noch keine Daten'}${EMBEDDED ? ' · Daten sind in dieser Datei eingebettet' : ''}</p>
     ${line('Migros', 'migros')}${line('Coop über Open Food Facts', 'coop')}${line('Rezepte', 'rezepte')}
     <h3>Samsung Health</h3>
@@ -5323,6 +5670,8 @@ $('#importFile').addEventListener('change', async e => {
     zutaten = ladeZutaten(); nogo = LS.get('nogo', NOGO_DEFAULT); favs = LS.get('fav', {}); listen = LS.get('listen', { coop: [], migros: [] });
     sf = LS.get('snack', sf); rf = LS.get('rfilter', rf); tbLaden(); stf = Object.assign({ b: 'training', z: 30, v: 'woche', f: 'alles', w: 0 }, LS.get('statf', {})); health = LS.get('health', {}); bauch = LS.get('bauch', {});
     toast(n + ' Einträge importiert'); closeSheet();
+    /* Profil, Plan und Ziele hängen am Profil: neu laden, damit alles zusammenpasst */
+    setTimeout(() => location.reload(), 900);
   } catch (er) { toast('Import fehlgeschlagen: ' + er.message); }
 });
 
