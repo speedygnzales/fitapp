@@ -947,6 +947,8 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 .wb-ampel .wb-ohne:first-child { border-top: 0; }
 
 /* Profil */
+.hc-diag { margin-top: 14px; padding: 12px 14px 8px; border-radius: 12px; background: var(--fill); }
+.hc-diag .lab { margin-bottom: 4px; }
 #pIn, #kopTxt { width: 100%; box-sizing: border-box; background: var(--fill); color: var(--ink); border: 1px solid var(--line2); border-radius: 12px; padding: 12px; font: 16px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; }
 /* 16px, sonst zoomt Safari auf dem iPhone beim Antippen hinein */
 .prof-w { background: var(--fill); border-color: var(--line2); border-radius: 20px; }
@@ -4203,6 +4205,7 @@ function statGewicht(tage) {
    Alles wird hier pro Tag gespeichert, so wächst die Geschichte mit, auch über die 30 Tage von Health Connect hinaus. */
 let health = LS.get('health', {});
 let hcStatus = null, hcFehler = '';
+let hcDiag = LS.get('hcDiag', null);
 const SCHRITT_ZIEL = profil.ziele.schritte || 7000, SCHLAF_ZIEL = profil.ziele.schlaf || 480;
 const hcBruecke = () => !!(NATIVE && typeof NATIVE.healthRead === 'function');
 function saubereHealth(v) {
@@ -4225,6 +4228,13 @@ window.fitHealthDaten = json => {
   let d = null; try { d = JSON.parse(json); } catch (e) { return; }
   if (!d || typeof d !== 'object') return;
   hcFehler = d.fehler ? String(d.fehler).slice(0, 200) : '';
+  /* Diagnose aus der APK: wie viele Schlafsitzungen Health Connect geliefert hat, und von welchen Apps */
+  if (d.diag && typeof d.diag === 'object') {
+    const pk = x => Array.isArray(x) ? x.filter(y => typeof y === 'string' && /^[A-Za-z0-9._]{1,100}$/.test(y)).slice(0, 8) : [];
+    const n = Number(d.diag.schlaf);
+    hcDiag = { tage: Math.max(0, Math.min(60, Number(d.diag.tage) || 0)), schlaf: Number.isInteger(n) && n >= 0 ? n : null, schlafQ: pk(d.diag.schlafQ), schritteQ: pk(d.diag.schritteQ), zeit: Date.now() };
+    LS.set('hcDiag', hcDiag);
+  }
   Object.entries(d.tage || {}).forEach(([k, v]) => { if (/^\d{4}-\d{2}-\d{2}$/.test(k) && v && typeof v === 'object') health[k] = saubereHealth(v); });
   LS.set('health', health); LS.set('hcZuletzt', Date.now());
   hcUiNeu();
@@ -4248,7 +4258,7 @@ function hcBoxHtml() {
     const z = LS.get('hcZuletzt', 0); const tage = Object.keys(health).length;
     t = `<p class="small"><b>Verbunden.</b> ${st.anzahl} von ${st.von} Datenarten erlaubt${tage ? ` · ${tage} Tage gespeichert` : ''}${z ? ` · zuletzt ${datumZeit(new Date(z).toISOString())}` : ''}.</p>
       <div class="edit-grid"><button class="btn" data-hc="lesen">Jetzt laden</button><button class="btn" data-hc="einstellungen">Zugriff ändern</button></div>
-      ${st.anzahl < st.von ? '<button class="btn wide" data-hc="verbinden" style="margin-top:8px">Fehlende Datenarten erlauben</button>' : ''}`;
+      ${st.anzahl < st.von ? '<button class="btn wide" data-hc="verbinden" style="margin-top:8px">Fehlende Datenarten erlauben</button>' : ''}${hcDiagHtml()}`;
   } else t = `<ol class="small schritte" style="margin-top:0">
       <li>In Samsung Health: Einstellungen, Health Connect, und alles erlauben, was Samsung Health dort schreiben darf.</li>
       <li>Hier auf Verbinden tippen und Schritte, Schlaf, Puls, Kalorien und Training erlauben.</li></ol>
@@ -4256,6 +4266,15 @@ function hcBoxHtml() {
       <button class="btn wide" data-hc="einstellungen" style="margin-top:8px">Health Connect öffnen</button>
       <p class="small muted" style="margin:8px 0 0">Kommt nach dem Tippen keine Anfrage, öffne Health Connect und erlaube FitApp dort alle Datenarten von Hand.</p>`;
   return t + (hcFehler ? `<p class="small" style="color:#FF8A8A">Problem: ${esc(hcFehler)}</p>` : '');
+}
+const HC_QUELLE = { 'com.sec.android.app.shealth': 'Samsung Health', 'com.google.android.apps.fitness': 'Google Fit', 'com.google.android.apps.healthdata': 'Health Connect', 'android': 'Handy selbst' };
+function hcDiagHtml() {
+  if (!hcDiag) return '<p class="small muted" style="margin:10px 0 0">Die Diagnose, was Health Connect liefert, braucht die neueste APK.</p>';
+  const qn = l => l.length ? l.map(x => HC_QUELLE[x] || x).join(', ') : 'keiner App';
+  return `<div class="hc-diag"><div class="lab">Was Health Connect liefert, letzte ${hcDiag.tage} Tage</div>
+    <div class="st-dr"><span>Schlafsitzungen</span><span class="num">${hcDiag.schlaf == null ? 'unbekannt' : hcDiag.schlaf}${hcDiag.schlafQ.length ? ' von ' + esc(qn(hcDiag.schlafQ)) : ''}</span></div>
+    <div class="st-dr"><span>Schritte von</span><span>${esc(qn(hcDiag.schritteQ))}</span></div>
+    ${hcDiag.schlaf === 0 ? '<p class="small" style="margin:8px 0 0">Health Connect hat für diese Tage keinen einzigen Schlaf gespeichert, von keiner App. FitApp kann nur lesen, was dort liegt. Samsung Health schreibt den Schlaf also nicht nach Health Connect.</p>' : ''}</div>`;
 }
 function hcKlick(was) {
   if (!hcBruecke()) return;
@@ -4877,7 +4896,7 @@ function shGrossBlock(id, b, v) {
   const c = shCache(); const t = stf.m === 'tage';
   const lab = t ? (b.key === c.heute ? 'Heute' : tagDatum(b.key)) : stf.m === 'wochen' ? `${shD(b.von)} bis ${shD(b.bis)}` : shMonat(b.von);
   const art = t ? '' : id === 'training' ? ' · zusammen' : id === 'schlaf' ? ' · Schnitt pro Nacht' : ' · Schnitt pro Tag';
-  if (!v) return `<div class="sh-gl">${esc(lab)}</div><div class="sh-gw leer">Keine Daten</div><div class="sh-gs">${b.keys.length ? (id === 'kalorien' || id === 'protein' ? 'Nichts eingetragen.' : id === 'training' ? 'Kein Training geplant und keins gemacht.' : 'Samsung Health hat für diesen Zeitraum nichts geliefert.') : 'Vor deinem Start.'}</div>`;
+  if (!v) return `<div class="sh-gl">${esc(lab)}</div><div class="sh-gw leer">Keine Daten</div><div class="sh-gs">${b.keys.length ? (id === 'kalorien' || id === 'protein' ? 'Nichts eingetragen.' : id === 'training' ? 'Kein Training geplant und keins gemacht.' : 'Health Connect hat für diesen Zeitraum nichts geliefert.') : 'Vor deinem Start.'}</div>`;
   let gw, gs = '';
   if (id === 'training') {
     gw = `${v.v}<small>von ${v.z} Sätzen</small>`;

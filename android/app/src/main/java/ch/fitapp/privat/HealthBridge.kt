@@ -170,6 +170,12 @@ class HealthBridge(private val activity: Activity, private val web: WebView) {
                 val start = von.atStartOfDay()
                 val ende = heute.plusDays(1).atStartOfDay()
                 val bereich = TimeRangeFilter.between(start, ende)
+                /* Für einzelne Einträge exakte Zeitpunkte statt Ortszeit: Einträge ohne Zeitzone fallen sonst womöglich durch */
+                val bereichI = TimeRangeFilter.between(start.atZone(zone).toInstant(), ende.atZone(zone).toInstant())
+                /* Diagnose: was Health Connect wirklich liefert und von welcher App */
+                val diag = JSONObject().put("tage", n)
+                val schritteQ = sortedSetOf<String>()
+                val schlafQ = sortedSetOf<String>()
 
                 fun tag(d: LocalDate): JSONObject {
                     val k = d.toString()
@@ -185,6 +191,7 @@ class HealthBridge(private val activity: Activity, private val web: WebView) {
                 if (darf(erlaubt, StepsRecord::class)) try {
                     client.aggregateGroupByPeriod(AggregateGroupByPeriodRequest(setOf(StepsRecord.COUNT_TOTAL), bereich, Period.ofDays(1))).forEach { g ->
                         g.result[StepsRecord.COUNT_TOTAL]?.let { tag(g.startTime.toLocalDate()).put("st", it) }
+                        g.result.dataOrigins.forEach { schritteQ.add(it.packageName) }
                     }
                 } catch (e: Exception) {
                     probleme.add("Schritte " + e.javaClass.simpleName)
@@ -222,7 +229,10 @@ class HealthBridge(private val activity: Activity, private val web: WebView) {
                 /* Schlaf: die Nacht gehört zum Tag, an dem du aufwachst. Die längste Phase bestimmt die Uhrzeiten,
                    ein Mittagsschlaf zählt zur Dauer dazu. Wachphasen werden abgezogen. */
                 if (darf(erlaubt, SleepSessionRecord::class)) try {
-                    val r = client.readRecords(ReadRecordsRequest(SleepSessionRecord::class, TimeRangeFilter.between(start.minusHours(18), ende)))
+                    val r = client.readRecords(ReadRecordsRequest(SleepSessionRecord::class,
+                        TimeRangeFilter.between(start.minusHours(18).atZone(zone).toInstant(), ende.atZone(zone).toInstant())))
+                    diag.put("schlaf", r.records.size)
+                    r.records.forEach { schlafQ.add(it.metadata.dataOrigin.packageName) }
                     val laengste = HashMap<String, Long>()
                     for (s in r.records) {
                         val aufgewacht = s.endTime.atZone(zone)
@@ -264,7 +274,7 @@ class HealthBridge(private val activity: Activity, private val web: WebView) {
 
                 /* Trainings von Handy und Uhr */
                 if (darf(erlaubt, ExerciseSessionRecord::class)) try {
-                    val r = client.readRecords(ReadRecordsRequest(ExerciseSessionRecord::class, bereich))
+                    val r = client.readRecords(ReadRecordsRequest(ExerciseSessionRecord::class, bereichI))
                     for (x in r.records) {
                         val beginn = x.startTime.atZone(zone)
                         val d = beginn.toLocalDate()
@@ -289,6 +299,9 @@ class HealthBridge(private val activity: Activity, private val web: WebView) {
                 }
 
                 antwort.put("tage", tageJson)
+                diag.put("schritteQ", JSONArray().apply { schritteQ.forEach { put(it) } }).put("schlafQ", JSONArray().apply { schlafQ.forEach { put(it) } })
+                if (!darf(erlaubt, SleepSessionRecord::class)) diag.put("schlafErlaubt", false)
+                antwort.put("diag", diag)
                 if (probleme.isNotEmpty()) antwort.put("fehler", probleme.joinToString(", "))
             } catch (e: Exception) {
                 antwort.put("tage", tageJson)
