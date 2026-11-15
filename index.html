@@ -1150,7 +1150,10 @@ const COOP_MEALS = [
 const KATS = { chips: 'Chips & Salziges', nuesse: 'Nüsse & Trockenfrüchte', riegel: 'Riegel', protein: 'Proteinprodukte', suesses: 'Süsses', milch: 'Joghurt & Milchprodukte', fruechte: 'Früchte' };
 
 /* ======================================================= Trainingsplan */
-const PLAN_V = 9;
+const PLAN_V = 10;
+/* Nacken halten, gleich in allen Krafttagen */
+const NACKEN_VH = { id: 'a6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] };
+const NACKEN_S = { id: 'a7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] };
 /* Bisheriger Plan, Grundlage für das alte Profil und das Beispiel */
 const PLAN_OMAR_TAGE = [
   /* Ab 28.10.: Der grosse Plan war für den Anfang zu viel. Zuerst wird das Aufstehen zur Gewohnheit, dann die Muskeln. */
@@ -1195,6 +1198,28 @@ const PLAN_OMAR_TAGE = [
     { id: 'c5', name: 'Bauch Zirkel: Beinheben, Seitstütz, Dead Bug', sets: 2, ziel: '12 Beinheben, 25 s Seitstütz pro Seite, 8 Dead Bugs pro Seite', pause: 60, einheit: 'Wdh', soll: 12, kg: false, how: 'Beinheben: Rückenlage, Hände unter den Po, Beine gestreckt hoch und langsam runter. Dead Bug: gegenüberliegenden Arm und Bein langsam strecken, unterer Rücken bleibt am Boden.', easy: 'Beinheben mit angewinkelten Knien.', vid: 'lying leg raise side plank dead bug', bild: 'Dead_Bug', mus: 'Bauch, Rumpf', bildHinweis: 'Bild zeigt den Dead Bug.' },
     { id: 'c6', name: 'Nacken halten: vorne und hinten', sets: 1, ziel: '2 Mal 10 s vorne, 2 Mal 10 s hinten', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Aufrecht sitzen, Kopf gerade, Blick nach vorne. Beide Hände an die Stirn legen und den Kopf 10 s leicht nach vorne gegen die Hände drücken, ohne dass er sich bewegt. Dann Hände an den Hinterkopf und 10 s nach hinten drücken. Jede Richtung 2 Mal. Nur so viel Druck, dass es anstrengt, nie ruckartig, nie Schmerz.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise front and back', bild: 'Isometric_Neck_Exercise_-_Front_And_Back', mus: 'Nacken', teile: [{ n: 'Vorne' }, { n: 'Hinten' }, { n: 'Vorne' }, { n: 'Hinten' }] },
     { id: 'c7', name: 'Nacken halten: seitlich', sets: 1, ziel: '2 Mal 10 s pro Seite', pause: 0, einheit: 'Sek', soll: 10, kg: false, how: 'Linke Hand an die linke Kopfseite und den Kopf 10 s nach links gegen die Hand drücken, ohne dass er sich bewegt. Dann rechts. Jede Seite 2 Mal. Schultern bleiben locker unten.', easy: 'Weniger Druck, nur 5 s halten.', vid: 'isometric neck exercise sides', bild: 'Isometric_Neck_Exercise_-_Sides', mus: 'Nacken seitlich', teile: [{ n: 'Links' }, { n: 'Rechts' }, { n: 'Links' }, { n: 'Rechts' }] }
+  ] },
+  /* Schulfitness Do und Fr: Hanteln, Langhantel, Latzug, Klimmzugstange, Bank. Gewicht so wählen, dass in Satz 1 und 2 noch 1 bis 2 gehen würden.
+     Startgewichte sind geschätzt, beim ersten Mal anpassen. Verpasst? Dann zuhause der Ersatztag (ersatz). */
+  { id: 'GA', name: 'Gym A', title: 'Brust, Schultern, Rücken', wds: [], ersatz: 'A', ex: [
+    { id: 'ga0', name: 'Aufwärmen', sets: 1, ziel: '3 Min', pause: 0, einheit: 'Min', soll: 3, kg: false, how: '2 Min locker auf dem Velo oder Laufband, sonst auf der Stelle marschieren. 10 Mal Armkreisen vorwärts und 10 Mal rückwärts. Dann 1 leichter Satz Latzug mit 15 Wiederholungen.', easy: '', vid: 'upper body warm up gym', bild: 'Arm_Circles', mus: 'ganzer Körper' },
+    { id: 'ga1', name: 'Kurzhantel Bankdrücken', sets: 3, ziel: '8 bis 12, kg je Hand', pause: 90, einheit: 'Wdh', soll: 8, kg: true, kgSoll: 10, how: 'Rücken flach auf der Bank, Füsse fest am Boden. Hanteln über der Brust, Handflächen zeigen Richtung Füsse. Langsam bis auf Brusthöhe senken, Ellbogen etwa 45 Grad vom Körper weg. Kraftvoll hochdrücken. In Satz 1 und 2 aufhören, wenn noch 1 bis 2 gehen würden.', easy: 'Leichtere Hanteln oder Liegestütze.', vid: 'dumbbell bench press form', bild: 'Dumbbell_Bench_Press', mus: 'Brust, Trizeps, Schultern' },
+    { id: 'ga2', name: 'Latzug', sets: 3, ziel: '10 bis 12', pause: 90, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 30, how: 'Oberschenkel unter die Polster klemmen. Stange etwas breiter als schulterbreit greifen. Brust raus, Stange zur oberen Brust ziehen, Ellbogen nach unten und hinten. Langsam zurück, oben die Arme ganz strecken. Nicht mit dem Oberkörper schwingen.', easy: 'Weniger Gewicht.', vid: 'lat pulldown proper form', bild: 'Wide-Grip_Lat_Pulldown', mus: 'Rücken, Bizeps' },
+    { id: 'ga3', name: 'Kurzhantel Schulterdrücken sitzend', sets: 3, ziel: '8 bis 12, kg je Hand', pause: 90, einheit: 'Wdh', soll: 8, kg: true, kgSoll: 6, how: 'Auf die Bank mit aufrechter Lehne sitzen, Rücken an die Lehne. Hanteln auf Schulterhöhe, Handflächen nach vorne. Gerade nach oben drücken, bis die Arme fast gestreckt sind. Langsam zurück auf Schulterhöhe. Kein Hohlkreuz.', easy: 'Leichtere Hanteln.', vid: 'seated dumbbell shoulder press form', bild: 'Seated_Dumbbell_Press', mus: 'Schultern, Trizeps' },
+    { id: 'ga4', name: 'Einarmiges Kurzhantel Rudern', sets: 2, ziel: '10 bis 12 pro Seite', pause: 60, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 12, how: 'Linkes Knie und linke Hand auf die Bank, Rücken gerade wie ein Tisch. Die Hantel in der rechten Hand hängt gerade nach unten. Zur Hüfte ziehen, Ellbogen nah am Körper, oben kurz halten. Langsam runter. Alle Wiederholungen, dann die Seite wechseln.', easy: 'Leichtere Hantel.', vid: 'one arm dumbbell row form', bild: 'One-Arm_Dumbbell_Row', mus: 'Rücken, Bizeps' },
+    { id: 'ga5', name: 'Hängendes Knieheben', sets: 2, ziel: '8 bis 12', pause: 60, einheit: 'Wdh', soll: 8, kg: false, how: 'An die Klimmzugstange hängen, Arme gestreckt, Schultern leicht nach unten ziehen. Knie langsam bis über die Hüfte hochziehen, ohne zu schwingen. Langsam wieder runter.', easy: 'Knie nur bis Hüfthöhe, oder am Boden liegend die Beine heben.', vid: 'hanging knee raise form', bild: 'Hanging_Leg_Raise', mus: 'Bauch' },
+    Object.assign({}, NACKEN_VH, { id: 'ga6' }),
+    Object.assign({}, NACKEN_S, { id: 'ga7' })
+  ] },
+  { id: 'GB', name: 'Gym B', title: 'Beine und Rücken', wds: [], ersatz: 'B', ex: [
+    { id: 'gb0', name: 'Aufwärmen', sets: 1, ziel: '3 Min', pause: 0, einheit: 'Min', soll: 3, kg: false, how: '2 Min locker auf dem Velo oder Laufband, sonst auf der Stelle marschieren. 15 Kniebeugen ohne Gewicht, 10 Glute Bridges. Dann 1 leichter Satz Goblet Squat.', easy: '', vid: 'lower body warm up gym', bild: 'Bodyweight_Squat', mus: 'ganzer Körper' },
+    { id: 'gb1', name: 'Goblet Squat', sets: 3, ziel: '8 bis 12', pause: 90, einheit: 'Wdh', soll: 8, kg: true, kgSoll: 12, how: 'Eine Kurzhantel senkrecht vor der Brust halten, Ellbogen zeigen nach unten. Füsse etwas breiter als schulterbreit, Zehen leicht nach aussen. Po nach hinten und runter, bis die Oberschenkel mindestens waagrecht sind. Brust bleibt oben, Fersen am Boden. Durch die ganze Sohle hochdrücken.', easy: 'Leichtere Hantel oder ohne Gewicht.', vid: 'goblet squat form', bild: 'Goblet_Squat', mus: 'Beine, Po' },
+    { id: 'gb2', name: 'Rumänisches Kreuzheben mit Langhantel', sets: 3, ziel: '8 bis 10, kg mit Stange', pause: 90, einheit: 'Wdh', soll: 8, kg: true, kgSoll: 30, how: 'Stange schulterbreit vor den Oberschenkeln halten. Knie leicht gebeugt, Rücken gerade. Po weit nach hinten schieben, die Stange gleitet nah an den Beinen bis knapp unter die Knie. Zieht es hinten im Oberschenkel stark, Hüfte nach vorne zurück in den Stand. Der Rücken rundet nie.', easy: 'Mit zwei Kurzhanteln und weniger Gewicht.', vid: 'barbell romanian deadlift form', bild: 'Romanian_Deadlift', mus: 'Oberschenkel hinten, Po, unterer Rücken' },
+    { id: 'gb3', name: 'Negative Klimmzüge', sets: 3, ziel: '3 bis 6, je 3 s runter', pause: 90, einheit: 'Wdh', soll: 3, kg: false, how: 'Mit einem Sprung oder von einer Bank so hoch, dass das Kinn über der Stange ist. Dort kurz halten. Dann so langsam wie möglich runter, mindestens 3 Sekunden, bis die Arme gestreckt sind. Loslassen und wieder hoch. So lernst du den ersten echten Klimmzug.', easy: 'Latzug mit 10 Wiederholungen statt Klimmzug.', vid: 'negative pull ups', bild: 'Pullups', mus: 'Rücken, Bizeps' },
+    { id: 'gb4', name: 'Rückwärts Ausfallschritte mit Kurzhanteln', sets: 2, ziel: '10 bis 12 pro Bein, kg je Hand', pause: 75, einheit: 'Wdh', soll: 10, kg: true, kgSoll: 6, how: 'In jeder Hand eine Hantel, Arme hängen locker. Grosser Schritt nach hinten, hinteres Knie fast bis zum Boden. Das vordere Knie bleibt über dem Fuss. Zurück in den Stand, Beine abwechseln.', easy: 'Ohne Hanteln.', vid: 'dumbbell reverse lunge form', bild: 'Dumbbell_Rear_Lunge', mus: 'Beine, Po' },
+    { id: 'gb5', name: 'Seitstütz', sets: 2, ziel: '25 s pro Seite', pause: 45, einheit: 'Sek', soll: 25, kg: false, how: 'Auf die Seite legen, Ellbogen unter der Schulter, Beine gestreckt übereinander. Hüfte hoch, bis der Körper eine gerade Linie ist. Halten und ruhig atmen, dann die Seite wechseln.', easy: 'Unteres Knie bleibt am Boden.', vid: 'side plank form', bild: 'Side_Bridge', mus: 'Bauch seitlich' },
+    Object.assign({}, NACKEN_VH, { id: 'gb6' }),
+    Object.assign({}, NACKEN_S, { id: 'gb7' })
   ] },
   { id: 'J', name: 'Beweglichkeit', title: 'Füsse, Beine, Rücken', wds: [], ex: [
     { id: 'j0', name: 'Aufwärmen', sets: 1, ziel: '2 Min', pause: 0, einheit: 'Min', soll: 2, kg: false, how: 'Auf der Stelle marschieren, Arme locker kreisen, Schultern hoch und runter, Hüfte kreisen. Nur warm werden, nicht ausser Atem.', easy: '', vid: 'gentle warm up before stretching', bild: 'Arm_Circles', mus: 'ganzer Körper' },
@@ -1254,7 +1279,8 @@ const DESSERT = 'Dessert: eine kleine Schüssel, nie die Packung. Am Samstag ega
 const ABEND = (heim, lichtAus, pc, notiz) => [
   [heim, 'Zuhause. Mini heute Morgen verpasst? Jetzt nachholen, Schuhe noch an. Dann Freizeit', 'frei', null, 'K'],
   [heim, 'Zuhause. {tag} noch nicht gemacht? Jetzt, etwa {min} Min, noch vor dem Sofa. Dann Freizeit', 'training', null, '!K'],
-  ['18:00', 'Gaming mit den Jungs', 'frei'],
+  ['18:00', 'Gaming mit den Jungs', 'frei']].concat(ABEND_REST(lichtAus, pc, notiz));
+const ABEND_REST = (lichtAus, pc, notiz) => [
   ['19:00', 'Abendessen mit der Familie, Game pausieren. Dazu {supps}. ' + DESSERT, 'essen'],
   ['19:40', 'Gaming oder Freizeit', 'frei'],
   [pc, ABEND_GEL + '. Handy für den Wecker auf die andere Seite des Zimmers', 'pflege'],
@@ -1275,7 +1301,15 @@ const OMAR_WOCHE = [
       ABEND('17:00', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
   { k: 'Do', name: 'Donnerstag', art: '{tag}', items: MORGEN_SCHULE('Mittag und Skyr').concat([
       ['12:00', 'Mittag in der Pause', 'essen'],
-      ['12:45', 'Schule', 'arbeit']], ABEND('17:30', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
+      ['12:45', 'Schule', 'arbeit'],
+      /* Schulschluss 16:15. An Gym Tagen direkt ins Schulfitness, zuhause etwa 18:15 */
+      ['16:15', 'Schulschluss, ab nach Hause', 'arbeit', null, 'K'],
+      ['16:15', 'Schulschluss. Direkt ins Schulfitness, nicht zuerst heim: {tag}, etwa {min} Min', 'training', null, '!K'],
+      ['17:00', 'Duschen und ab nach Hause', 'arbeit', null, '!K'],
+      ['17:30', 'Zuhause. Mini heute Morgen verpasst? Jetzt nachholen, Schuhe noch an. Dann Freizeit', 'frei', null, 'K'],
+      ['18:00', 'Gaming mit den Jungs', 'frei', null, 'K'],
+      ['18:15', 'Zuhause. Gym verpasst? Dann jetzt zuhause: {ersatz}. Erst danach Gaming', 'training', null, '!K'],
+      ['18:20', 'Gaming mit den Jungs', 'frei', null, '!K']].concat(ABEND_REST('21:00', '20:40', '8 Stunden 20 bis 05:20'))) },
   { k: 'Fr', name: 'Freitag', art: '{tag}', items: MORGEN_SCHULE('Skyr').concat([
       ['09:30', 'Snack in der Pause: Skyr', 'essen'],
       ['09:40', 'Schule', 'arbeit'],
@@ -1285,7 +1319,7 @@ const OMAR_WOCHE = [
       ['12:45', 'Zuhause, Mittag', 'essen', null, 'K'],
       ['13:25', 'Zuhause, Mittag mit viel Protein', 'essen', null, '!K'],
       ['13:30', 'Mini heute Morgen verpasst? Jetzt nachholen. Dann Freizeit, Wochenende fängt an', 'frei', null, 'K'],
-      ['14:00', 'Freizeit, Wochenende fängt an. {tag} nicht geschafft? Jetzt zuhause nachholen, vor dem Gaming', 'frei', null, '!K'],
+      ['14:00', 'Freizeit, Wochenende fängt an. Gym verpasst? Dann jetzt zuhause: {ersatz}. Erst danach Gaming', 'frei', null, '!K'],
       ['18:00', 'Gaming mit den Jungs', 'frei'],
       ['19:00', 'Abendessen, Game pausieren. Dazu {supps}. ' + DESSERT, 'essen'],
       ['19:40', 'Gaming', 'frei'],
@@ -1321,6 +1355,8 @@ const STEIG_ALT = {
   a1: { rmin: 8, rmax: 12, stufe: 'Füsse aufs Bett legen' }, c2: { rmin: 8, rmax: 12, stufe: 'Füsse aufs Bett legen' },
   a3: { rmin: 5, rmax: 8, stufe: 'Füsse aufs Bett, Hüfte höher' }, a4: { rmin: 6, rmax: 12, stufe: 'alle Wiederholungen auf den Füssen, ohne Knie' },
   a8: { rmin: 10, rmax: 12, kg: 1 }, b2: { rmin: 10, rmax: 12, kg: 1 }, b3: { rmin: 10, rmax: 12, kg: 1 }, c4: { rmin: 10, rmax: 12, kg: 1 }, c1: { rmin: 12, rmax: 15, kg: 1 },
+  ga1: { rmin: 8, rmax: 12, kg: 2 }, ga2: { rmin: 10, rmax: 12, kg: 2.5 }, ga3: { rmin: 8, rmax: 12, kg: 2 }, ga4: { rmin: 10, rmax: 12, kg: 2 }, ga5: { rmin: 8, rmax: 12, stufe: 'Beine gestreckt heben' },
+  gb1: { rmin: 8, rmax: 12, kg: 2 }, gb2: { rmin: 8, rmax: 10, kg: 2.5 }, gb3: { rmin: 3, rmax: 6, stufe: 'erst ein echter Klimmzug, dann die Negativen' }, gb4: { rmin: 10, rmax: 12, kg: 2 },
   b1: { rmin: 8, rmax: 10, stufe: 'Rucksack auf den Rücken' }, b4: { rmin: 15, rmax: 20, stufe: 'einbeinige Bridge' },
   c3: { rmin: 10, rmax: 12, stufe: 'Rucksack auf den Rücken' }, c5: { rmin: 12, rmax: 15, stufe: 'Beine langsamer senken, 3 s runter' }
 };
@@ -1330,14 +1366,14 @@ const MINI_RUDERN_ALT = { id: 'k4', name: 'Rucksack Rudern', sets: 2, ziel: '10,
    Gespeichert nur auf diesem Handy (LS profil). Ein Profil kommt als JSON, zum Beispiel von Claude, und wird streng geprüft.
    Wer die App schon vorher benutzt hat, bekommt beim ersten Start einmal sein bisheriges Profil (alt). */
 const PROFIL_FORMAT = 'fitapp-profil';
-/* Version des alten Profils. Steigt sie, bekommt das alte Profil einmal den neuen Stand (2: Phasen bis zu den vollen Tagen A, B, C). */
-const ALT_V = 2;
+/* Version des alten Profils. Steigt sie, bekommt das alte Profil einmal den neuen Stand (2: Phasen bis zu den vollen Tagen A, B, C, 3: Gym A und Gym B im Schulfitness). */
+const ALT_V = 3;
 const WT_LANG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 const WO_KURZ = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const WO_LANG = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
 const KINDS = ['training', 'essen', 'arbeit', 'frei', 'schlaf', 'pflege'];
 const FIGUR_IDS = ['gehen', 'hocke', 'kinn', 'kniewand', 'openbook', 'pike', '9090'];
-const EN_ALT = { A: 'Chest & shoulders', B: 'Legs & back', C: 'Full body', J: 'Mobility', L: 'Walk', K: 'Mini workout', W: 'Weekend workout' };
+const EN_ALT = { GA: 'Gym upper body', GB: 'Gym legs & back', A: 'Chest & shoulders', B: 'Legs & back', C: 'Full body', J: 'Mobility', L: 'Walk', K: 'Mini workout', W: 'Weekend workout' };
 
 function altProfil() {
   const woche = {};
@@ -1352,7 +1388,7 @@ function altProfil() {
   tage.forEach(d => {
     if (EN_ALT[d.id]) d.en = EN_ALT[d.id];
     if (d.id === 'K') { d.pflicht = true; d.minSaetze = 1; }
-    if (['W', 'A', 'B', 'C'].indexOf(d.id) >= 0) d.pflicht = true;
+    if (['W', 'A', 'B', 'C', 'GA', 'GB'].indexOf(d.id) >= 0) d.pflicht = true;
     d.ex.forEach(ex => { if (STEIG_ALT[ex.id]) ex.steig = clone(STEIG_ALT[ex.id]); });
   });
   return {
@@ -1367,7 +1403,7 @@ function altProfil() {
     cheatTag: 6,
     supplements: [{ text: '2 Tropfen Vitamin D', monate: [10, 11, 12, 1, 2, 3] }, { text: '1 Omega 3 Kapsel' }],
     gewohnheiten: { wasser: 'Glas Wasser am Morgen', supp: 'Vitamin D und Omega 3', gel: 'Gel und Wasser ans Bett', foto: 'Foto der Stirn' },
-    training: { days: tage, nachholen: ['W', 'A', 'B', 'C'], nachholTag: 0, phasen: { phasen: OMAR_PHASEN(), extra: [Object.assign({ vor: 'k3' }, MINI_RUDERN_ALT)] } },
+    training: { days: tage, nachholen: ['W', 'A', 'B', 'C', 'GA', 'GB'], nachholTag: 0, phasen: { phasen: OMAR_PHASEN(), extra: [Object.assign({ vor: 'k3' }, MINI_RUDERN_ALT)] } },
     woche
   };
 }
@@ -1383,9 +1419,10 @@ function OMAR_PHASEN() {
     { name: 'Mehr Sätze', txt: 'Mini mit je 2 Sätzen, Samstag das ganze Wochenend Training', n: 6, tage: { K: K2(MF), W: { wds: [6] } } },
     { name: 'Rudern dazu', txt: 'Mini mit Rucksack Rudern für den Rücken', n: 6, tage: { K: K3(MF), W: { wds: [6] } } },
     { name: 'Erster grosser Tag', txt: 'Samstag Tag C statt Wochenend Training, leichte Version', n: 6, tage: { K: K3(MF), C: { wds: [6], minus: 1 } } },
-    { name: 'Zwei grosse Tage', txt: 'Freitag Tag B im Schulfitness, Samstag Tag C, beide leicht', n: 8, tage: { K: K3([1, 2, 3, 4]), B: { wds: [5], minus: 1 }, C: { wds: [6], minus: 1 } } },
-    { name: 'Drei grosse Tage', txt: 'Donnerstag Tag A, Freitag Tag B, Samstag Tag C, alle leicht', n: 9, tage: { K: K3([1, 2, 3]), A: { wds: [4], minus: 1 }, B: { wds: [5], minus: 1 }, C: { wds: [6], minus: 1 } } },
-    { name: 'Ziel: volle Tage', txt: 'Tag A, B und C mit allen Sätzen, Montag bis Mittwoch Mini', n: 8, tage: { K: K3([1, 2, 3]), A: { wds: [4] }, B: { wds: [5] }, C: { wds: [6] } } }
+    /* Gym Tage im Schulfitness, der Ersatztag zuhause steht ohne Wochentag dabei und zählt genauso */
+    { name: 'Zwei grosse Tage', txt: 'Freitag Gym B im Schulfitness, Samstag Tag C zuhause, beide leicht', n: 8, tage: { K: K3([1, 2, 3, 4]), GB: { wds: [5], minus: 1 }, B: { wds: [], minus: 1 }, C: { wds: [6], minus: 1 } } },
+    { name: 'Drei grosse Tage', txt: 'Donnerstag Gym A, Freitag Gym B, Samstag Tag C, alle leicht', n: 9, tage: { K: K3([1, 2, 3]), GA: { wds: [4], minus: 1 }, A: { wds: [], minus: 1 }, GB: { wds: [5], minus: 1 }, B: { wds: [], minus: 1 }, C: { wds: [6], minus: 1 } } },
+    { name: 'Ziel: volle Tage', txt: 'Gym A, Gym B und Tag C mit allen Sätzen, Montag bis Mittwoch Mini', n: 8, tage: { K: K3([1, 2, 3]), GA: { wds: [4] }, A: { wds: [] }, GB: { wds: [5] }, B: { wds: [] }, C: { wds: [6] } } }
   ];
 }
 /* Frühere Stufen des Mini Trainings, noch für das Beispielprofil */
@@ -1447,6 +1484,8 @@ function steigIds() {
   return Array.from(s);
 }
 function profilTag(id) { return profil.training.days.find(d => d.id === id) || null; }
+/* Ersatztag zuhause für einen Gym Tag, aus dem Profil (ersatz) */
+function ersatzVon(id) { const t = profilTag(id); return t && t.ersatz ? plan.days.find(d => d.id === t.ersatz) || null : null; }
 const DEFAULT_PLAN = { v: PLAN_V, days: clone(profil.training.days) };
 
 /* Alte gespeicherte Pläne (ohne Version) auf den neuen Stand bringen, eigene Änderungen bleiben */
@@ -1522,9 +1561,9 @@ function phaseSaetze(d, t) {
   });
   if (t.titel) d.title = t.titel; else if (basis) d.title = basis.title;
 }
-function phaseAnwenden(i) {
+function phaseAnwenden(i, still) {
   const P = PHASEN.phasen[i]; const heute = tagKey(new Date());
-  if (!wdsHist.some(x => x.bis === heute)) { wdsHist.push({ bis: heute, m: wdsKarte() }); wdsHist = wdsHist.slice(-40); LS.set('wdsHist', wdsHist); }
+  if (!still && !wdsHist.some(x => x.bis === heute)) { wdsHist.push({ bis: heute, m: wdsKarte() }); wdsHist = wdsHist.slice(-40); LS.set('wdsHist', wdsHist); }
   const belegt = new Set(); Object.values(P.tage).forEach(t => t.wds.forEach(w => belegt.add(w)));
   plan.days.forEach(d => {
     const t = P.tage[d.id];
@@ -1538,6 +1577,8 @@ function phasePruefen(melden) {
   const heute = tagKey(new Date()); let st = phaseStand() || { i: 0, ab: heute, an: false };
   let neu = false;
   if (!st.an && st.ab <= heute) { phaseAnwenden(st.i); st.an = true; neu = true; }
+  /* Plan wurde neu aufgebaut (neue Version), die laufende Phase nochmals anwenden, ohne den Verlauf zu ändern */
+  else if (st.an && plan.phase !== st.i) { phaseAnwenden(st.i, true); neu = true; }
   if (st.an && st.i < PHASEN.phasen.length - 1 && phaseZaehlt(PHASEN.phasen[st.i], st.ab) >= PHASEN.phasen[st.i].n) {
     const m = new Date(); m.setDate(m.getDate() + 1);
     st = { i: st.i + 1, ab: tagKey(m), an: false };
@@ -1557,8 +1598,16 @@ function wochenStart() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate
 function offenePflicht() {
   const ab = wochenStart().getTime();
   const fertig = new Set(history.filter(h => new Date(h.date).getTime() >= ab).map(h => h.dayId));
-  /* Nur Tage, die zurzeit einen Wochentag haben. Tag A in einer späteren Phase ist nicht verpasst. */
-  return PFLICHT.filter(id => !fertig.has(id) && plan.days.some(d => d.id === id && (d.wds || []).length));
+  /* Nur Tage, die zurzeit einen Wochentag haben. Tag A in einer späteren Phase ist nicht verpasst.
+     Ein Gym Tag gilt auch mit seinem Ersatztag als gemacht, nachgeholt wird zuhause der Ersatz. */
+  const r = [];
+  /* In der Reihenfolge der Woche, der früheste verpasste Tag zuerst */
+  const wt = id => { const d = plan.days.find(x => x.id === id); return Math.min(...d.wds.map(w => (w + 6) % 7)); };
+  PFLICHT.filter(id => plan.days.some(d => d.id === id && (d.wds || []).length)).sort((a, b) => wt(a) - wt(b)).forEach(id => {
+    const e = ersatzVon(id); if (fertig.has(id) || (e && fertig.has(e.id))) return;
+    const n = e ? e.id : id; if (r.indexOf(n) < 0) r.push(n);
+  });
+  return r;
 }
 /* Welcher Tag laut Stundenplan heute dran ist */
 function planDayId() {
@@ -1892,6 +1941,7 @@ function render() {
   else if (tab === 'stats') renderStats();
   else renderTagebuch();
   updateBadge();
+  uhrSenden();
 }
 
 /* ======================================================= Stundenplan, aus dem Profil */
@@ -1904,7 +1954,8 @@ function wocheBauen() {
     const pd = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0) || null; const pid = pd ? pd.id : null;
     const gilt = it => { const c = it[4]; if (!c) return true; return c[0] === '!' ? pid !== c.slice(1) : pid === c; };
     const fuell = t => String(t).replace(/\{supps\}/g, suppsText()).replace(/\{tag\}/g, pd ? pd.name : 'Training')
-      .replace(/\{titel\}/g, pd ? pd.title : '').replace(/\{min\}/g, pd ? String(dauerMin(pd)) : '15');
+      .replace(/\{titel\}/g, pd ? pd.title : '').replace(/\{min\}/g, pd ? String(dauerMin(pd)) : '15')
+      .replace(/\{ersatz\}/g, () => { const e = ersatzVon(pid); return e ? e.name + ', etwa ' + dauerMin(e) + ' Min' : (pd ? pd.name : 'Training'); });
     let items = (w.items || []).filter(gilt); if (!items.length) items = [['07:00', 'Aufstehen', 'schlaf']];
     return { k, name: WO_LANG[i], art: fuell(w.art || ''), items: items.map(it => [it[0], fuell(it[1]), it[2], it[3] || null]) };
   });
@@ -2054,7 +2105,7 @@ setInterval(() => { if (tab === 'plan' && document.visibilityState === 'visible'
 /* ======================================================= Modul 1: Training */
 function heuteHinweis(day) {
   const wd = new Date().getDay();
-  if (day.id !== planDayId()) return 'Selbst gewählt';
+  if (day.id !== planDayId()) { const e = ersatzVon(planDayId()); return e && e.id === day.id ? 'Ersatz für ' + esc(dayById(planDayId()).name) + ', zählt genauso' : 'Selbst gewählt'; }
   if (wd === NACHHOL_TAG && PFLICHT.indexOf(day.id) >= 0) return 'Verpasst, heute nachholen';
   return 'Heute laut Stundenplan';
 }
@@ -2070,7 +2121,8 @@ function renderTraining() {
   h += `<div class="card daycard"><div class="ring" style="--p:${pct}" role="img" aria-label="${done} von ${total} Sätzen erledigt"><span>${done}/${total}</span></div>
     <div><div class="lab">${heuteHinweis(day)}</div><h2>${esc(day.name)}: ${esc(day.title)}</h2>
     <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="stats">Verlauf und Statistik</button></div>
-    ${phaseZeile(day) || (STUFEN && day.id === STUFEN.tag ? miniStufeText() : '')}</div></div>`;
+    ${phaseZeile(day) || (STUFEN && day.id === STUFEN.tag ? miniStufeText() : '')}
+    ${!editMode && !done && ersatzVon(day.id) ? `<div class="sub"><button data-ersatz="${esc(ersatzVon(day.id).id)}">Nicht im Gym? Zuhause ${esc(ersatzVon(day.id).name)} machen</button></div>` : ''}</div></div>`;
   if (!editMode && done) h += `<button class="btn wide abschluss ${done >= total ? 'primary' : ''}" data-act="finish">${done >= total ? 'Training abschliessen' : `Abschliessen · ${done} von ${total} Sätzen`}</button>`;
   const aktivIdx = done ? day.ex.findIndex(x => s.sets[x.id].some(st => !st.d)) : 0;
   day.ex.forEach((ex, xi) => {
@@ -2272,9 +2324,10 @@ function trainingSpeichern(day, s, opt) {
   if (!ex.length) return null;
   const soll = day.ex.reduce((a, x) => a + x.sets, 0);
   const fertig = day.ex.reduce((a, x) => a + saetze(x).filter(st => st.d).length, 0);
-  const min = !opt.auto && s.t0 ? Math.round((Date.now() - s.t0) / 60000) : null;
+  const min = opt.min != null ? opt.min : !opt.auto && s.t0 ? Math.round((Date.now() - s.t0) / 60000) : null;
   const e = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: new Date(opt.datum || Date.now()).toISOString(), start: s.start, dayId: day.id, dayName: day.name + ': ' + day.title, ex, voll: fertig >= soll, soll, fertig,
     plan: day.ex.map(x => ({ id: x.id, name: x.name, sets: x.sets, einheit: x.einheit })), min: min != null && min > 0 && min < 180 ? min : null, auto: !!opt.auto };
+  if (opt.uhr) e.uhr = true; if (opt.puls) e.puls = opt.puls;
   history.push(e);
   if (!LS.set('history', history)) { history.pop(); return null; }
   delete sessions[day.id]; saveSessions();
@@ -2356,6 +2409,11 @@ document.addEventListener('click', e => {
     curDay = todayDayId(); toast(`Phase ${st.i}: ${Z.name}`); render();
   };
 });
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-ersatz]'); if (!b) return;
+  if (!plan.days.some(d => d.id === b.dataset.ersatz)) return;
+  curDay = b.dataset.ersatz; editMode = false; if (tab === 'training') renderTraining(); else setTab('training');
+});
 /* Heute noch offen: das Pflicht Training von heute, dessen Zeit schon vorbei ist. Nachholen geht bis Licht aus. */
 function heuteOffenKarte(d, mins, nm, cur) {
   /* Ist gerade Trainingszeit, zeigt die Jetzt Karte schon den Knopf */
@@ -2368,7 +2426,8 @@ function heuteOffenKarte(d, mins, nm, cur) {
   return `<div class="card offen"><div class="lab">Heute noch offen</div>
     <div class="big" style="margin:6px 0 4px">${esc(pd.name)}, etwa ${dauerMin(pd)} Min</div>
     <p class="small muted" style="margin:0 0 12px">${laeuft ? 'Angefangen, aber noch nicht fertig.' : 'Am Morgen nicht geschafft? Kein Drama, aber heute noch.'} Nachholen zählt bis Licht aus${li >= 0 ? ' um ' + esc(d.items[li][0]) : ''}.</p>
-    <button class="btn primary wide" data-goto="training">${laeuft ? 'Weitermachen' : 'Jetzt nachholen'}</button></div>`;
+    <button class="btn primary wide" data-goto="training">${laeuft ? 'Weitermachen' : 'Jetzt nachholen'}</button>
+    ${ersatzVon(pid) && !laeuft ? `<button class="btn wide" data-ersatz="${esc(ersatzVon(pid).id)}" style="margin-top:10px">Nicht im Gym? Zuhause: ${esc(ersatzVon(pid).name)}, etwa ${dauerMin(ersatzVon(pid))} Min</button>` : ''}</div>`;
 }
 /* Nicht abgeschlossene Trainings von früheren Tagen werden nicht vergessen: mit mindestens einem Satz automatisch gespeichert */
 function alteTrainingsSichern() {
@@ -2515,7 +2574,77 @@ function streakAnsWidget() {
       NATIVE.setPlanWoche(teile.join(';'));
     }
   } catch (e) {}
+  uhrSenden();
 }
+
+/* ======================================================= Galaxy Watch
+   Das Handy schickt der Uhr ein kleines Paket: Tagesplan der Woche, Streak, die geplanten Trainings mit Vorschlägen
+   und die Lieblingsessen. Die Uhr schickt fertige Trainings (mit Puls) und Essen zurück. Das Paket geht nur raus,
+   wenn sich etwas geändert hat. */
+function uhrPaket() {
+  const heute = tagKey(new Date()); const s = streakInfo();
+  const code = { ok: 'o', freeze: 'f', weg: 'm', leer: 'm' }; const tage7 = [];
+  const mo = wochenStart();
+  for (let i = 0; i < 7; i++) { const d = new Date(mo); d.setDate(d.getDate() + i); const k = tagKey(d); tage7.push(k > heute ? '-' : k === heute ? (s.heute ? 'o' : 'h') : code[s.tage[k]] || '-'); }
+  const ids = [];
+  plan.days.forEach(d => { if ((d.wds || []).length) { ids.push(d.id); const e = ersatzVon(d.id); if (e) ids.push(e.id); } });
+  const pid = planDayId(); if (ids.indexOf(pid) < 0) ids.push(pid);
+  const trainings = Array.from(new Set(ids)).map(id => {
+    const day = plan.days.find(x => x.id === id); if (!day) return null;
+    return { id, n: day.name, ti: day.title, min: dauerMin(day), wds: day.wds || [], er: (profilTag(id) || {}).ersatz || '',
+      ok: history.some(h => h.dayId === id && h.voll !== false && tagKey(new Date(h.date)) === heute),
+      ex: day.ex.map(x => ({ id: x.id, n: x.name, s: x.sets, z: x.ziel || '', e: x.einheit, p: x.pause || 0, kg: x.kg ? 1 : 0, so: x.soll || 0,
+        v: Array.from({ length: x.sets }, (_, j) => { const v = vorschlag(x, j); return [v.w, v.r]; }), t: teileVon(x).map(t => [t.n || '', t.s || 0]) })) };
+  }).filter(Boolean);
+  const sum = tagSumme(heute); const z = zielFuer(heute);
+  const fav = Object.keys(foods).filter(k => !foods[k].fix && kalorienBekannt(foods[k]))
+    .sort((a, b) => ((foods[b].fav ? 1e15 : 0) + (foods[b].last || 0)) - ((foods[a].fav ? 1e15 : 0) + (foods[a].last || 0))).slice(0, 12).map(k => {
+      const f = foods[k]; const st = standardMenge(f); const u = einheiten(f)[st.ui]; const n = nwMal(puVon(f, u), st.x);
+      return { k, n: kurzName(f.n), m: mengeText(u, st.x), kc: Math.round(n.k || 0), pr: Math.round(n.pr || 0), fav: f.fav ? 1 : 0 };
+    });
+  return { v: 1, tag: heute, plan: WOCHE.map(d => ({ art: d.art, items: d.items.map(it => [it[0], it[1], it[2]]) })),
+    pid, streak: { n: s.streak, frz: s.freezes, heute: s.heute, w: tage7 }, trainings,
+    essen: { k: Math.round(sum.k), kz: z.k || 0, pr: Math.round(sum.pr), prz: z.pr || 0, fav } };
+}
+let uhrLetzt = '', uhrTimer = null;
+function uhrSenden(sofort) {
+  try { if (!NATIVE || typeof NATIVE.uhrSenden !== 'function') return; } catch (e) { return; }
+  clearTimeout(uhrTimer);
+  uhrTimer = setTimeout(() => {
+    try { const j = JSON.stringify(uhrPaket()); if (j === uhrLetzt) return; uhrLetzt = j; const o = JSON.parse(j); o.ts = Date.now(); NATIVE.uhrSenden(JSON.stringify(o)); } catch (e) {}
+  }, sofort ? 50 : 1500);
+}
+/* Von der Uhr: das Handy legt alles in eine Warteschlange, die Seite holt sie hier ab */
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { try { window.fitVonUhr(); } catch (e) {} } });
+window.fitVonUhr = function () {
+  if (!NATIVE || typeof NATIVE.uhrEingang !== 'function') return 0;
+  let liste = []; try { liste = JSON.parse(NATIVE.uhrEingang() || '[]'); } catch (e) { return 0; }
+  if (!Array.isArray(liste) || !liste.length) return 0;
+  const gesehen = LS.get('uhrIds', []); let n = 0; const meldung = [];
+  liste.forEach(roh => {
+    let ev = roh; if (typeof roh === 'string') { try { ev = JSON.parse(roh); } catch (e) { return; } }
+    if (!ev || typeof ev !== 'object' || typeof ev.id !== 'string' || gesehen.indexOf(ev.id) >= 0) return;
+    gesehen.push(ev.id);
+    if (ev.typ === 'training') {
+      const day = plan.days.find(d => d.id === ev.day); if (!day || !ev.sets || typeof ev.sets !== 'object') return;
+      const s = { start: typeof ev.start === 'string' ? ev.start : new Date().toISOString(), sets: {} };
+      day.ex.forEach(x => { const a = Array.isArray(ev.sets[x.id]) ? ev.sets[x.id] : []; s.sets[x.id] = a.slice(0, 10).map(st => ({ w: String((st && st.w) || ''), r: String((st && st.r) || ''), d: true })); });
+      const p = ev.puls && typeof ev.puls === 'object' ? { avg: Math.round(+ev.puls.avg || 0), max: Math.round(+ev.puls.max || 0), min: Math.round(+ev.puls.min || 0) } : null;
+      const e = trainingSpeichern(day, s, { datum: Date.parse(ev.ende) || Date.now(), min: Number.isFinite(+ev.min) ? Math.round(+ev.min) : null, puls: p && p.avg > 0 ? p : null, uhr: true });
+      if (e) { n++; meldung.push(`${day.name} von der Uhr: ${e.fertig} von ${e.soll} Sätzen${e.puls ? ', Puls Ø ' + e.puls.avg : ''}`); }
+    } else if (ev.typ === 'essen') {
+      const f = foods[ev.k]; if (!f || !kalorienBekannt(f)) return;
+      const st = standardMenge(f); const u = einheiten(f)[st.ui];
+      const tag = /^\d{4}-\d\d-\d\d$/.test(ev.tag || '') ? ev.tag : tbHeute();
+      tbEintragen(f, u, st.x, ['morgen', 'mittag', 'snack', 'abend'].indexOf(ev.m) >= 0 ? ev.m : mahlJetzt(), tag); n++;
+      meldung.push(`${kurzName(f.n)} von der Uhr eingetragen`);
+    }
+  });
+  LS.set('uhrIds', gesehen.slice(-100));
+  if (n) { toast(meldung.length > 1 ? `${meldung.length} Einträge von der Uhr übernommen` : meldung[0]); try { streakAnsWidget(); } catch (e) {} render(); }
+  uhrSenden(true);
+  return n;
+};
 /* Wurde seit dem letzten Öffnen ein Freeze eingesetzt? Einmal Bescheid geben. */
 function streakMeldung() {
   const s = streakInfo();
@@ -3270,7 +3399,7 @@ const fx = x => x === 0.5 ? '½' : x === 1.5 ? '1½' : x === 2.5 ? '2½' : fz(x,
 const tbUid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 function tbHeute() { return tagKey(new Date()); }
 function tbAkt() { return tbTag || tbHeute(); }
-function tbSpeichern() { LS.set('tb', tb); }
+function tbSpeichern() { LS.set('tb', tb); uhrSenden(); }
 function foodsSpeichern() {
   const ks = Object.keys(foods);
   if (ks.length > 400) {
@@ -4590,7 +4719,7 @@ function tagDetail(k, fx) {
     (hm[k] || []).forEach(x => {
       const { pl } = planVon(x);
       const fehlt = pl.map(p => { const g = ((x.ex || []).find(e => e.id === p.id) || { sets: [] }).sets.length; return p.sets - g > 0 ? p.name + (g ? ` (${p.sets - g} von ${p.sets} Sätzen)` : '') : ''; }).filter(Boolean);
-      t += `<div class="st-dz"><b>${esc((x.dayName || '').replace(':', ' ·'))}</b><span>${x.voll !== false ? 'komplett' : 'teilweise'}, ${x.fertig} von ${x.soll} Sätzen${x.min ? ', ' + x.min + ' Min' : ''}${x.auto ? ', automatisch gespeichert' : ''}, ${new Date(x.date).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}</span></div>
+      t += `<div class="st-dz"><b>${esc((x.dayName || '').replace(':', ' ·'))}</b><span>${x.voll !== false ? 'komplett' : 'teilweise'}, ${x.fertig} von ${x.soll} Sätzen${x.min ? ', ' + x.min + ' Min' : ''}${x.puls ? ', Puls Ø ' + x.puls.avg + ', max ' + x.puls.max : ''}${x.uhr ? ', auf der Uhr' : ''}${x.auto ? ', automatisch gespeichert' : ''}, ${new Date(x.date).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}</span></div>
         ${(x.ex || []).map(e => `<div class="st-dr"><span>${esc(e.name)}</span><span class="num">${esc(e.sets.map(s => (s.w ? String(s.w).replace('.', ',') + ' kg × ' : '') + (s.r || '?')).join(' · '))} ${esc(e.einheit || '')}</span></div>`).join('')}
         ${fehlt.length ? `<div class="st-dr fehlt"><span>Ausgelassen</span><span>${esc(fehlt.join(', '))}</span></div>` : ''}`;
     });
@@ -5228,7 +5357,8 @@ window.fitZurueck = () => { if (tab === 'stats' && stf.d) { stf.d = null; render
 const PROFIL_BILDER = ['Pushups', 'Push-Ups_-_Close_Triceps_Position', 'Bodyweight_Squat', 'Goblet_Squat', 'Plank', 'Dead_Bug', 'Butt_Lift_Bridge',
   'Bent_Over_Two-Dumbbell_Row', 'Romanian_Deadlift', 'Dumbbell_Rear_Lunge', 'Suspended_Split_Squat', 'Arm_Circles', 'Ankle_Circles', 'Cat_Stretch',
   'Childs_Pose', 'Calf_Stretch_Hands_Against_Wall', 'Hamstring_Stretch', 'Kneeling_Hip_Flexor', 'Side_Neck_Stretch',
-  'Isometric_Neck_Exercise_-_Front_And_Back', 'Isometric_Neck_Exercise_-_Sides'];
+  'Isometric_Neck_Exercise_-_Front_And_Back', 'Isometric_Neck_Exercise_-_Sides',
+  'Dumbbell_Bench_Press', 'Wide-Grip_Lat_Pulldown', 'Seated_Dumbbell_Press', 'One-Arm_Dumbbell_Row', 'Hanging_Leg_Raise', 'Pullups', 'Side_Bridge'];
 function profilPruefen(roh) {
   const f = [];
   let o;
@@ -5303,6 +5433,7 @@ function profilPruefen(roh) {
     if (!t.id) f.push(wo + ': "id" fehlt.'); if (!t.name) f.push(wo + ': "name" fehlt.');
     if (d.minSaetze != null) { const m = ganz(d.minSaetze, 1, 20); if (m) t.minSaetze = m; }
     if (txt(d.en, 30)) t.en = txt(d.en, 30);
+    if (d.ersatz != null) { if (idOk(d.ersatz)) t.ersatz = d.ersatz; else f.push(wo + ': "ersatz" muss die id eines Trainingstags sein.'); }
     if (!Array.isArray(d.ex) || !d.ex.length) f.push(wo + ' ' + t.name + ': keine Übungen.');
     t.ex = (Array.isArray(d.ex) ? d.ex : []).slice(0, 20).map(x => uebung(x, t.name || wo)).filter(Boolean);
     const ids = t.ex.map(x => x.id); if (new Set(ids).size !== ids.length) f.push(wo + ' ' + t.name + ': zwei Übungen haben die gleiche id.');
@@ -5310,8 +5441,9 @@ function profilPruefen(roh) {
   }).filter(Boolean);
   if (!tage.length) f.push('training.days braucht mindestens einen Trainingstag.');
   const tIds = tage.map(t => t.id); if (new Set(tIds).size !== tIds.length) f.push('Zwei Trainingstage haben die gleiche id.');
+  tage.forEach(t => { if (t.ersatz && (t.ersatz === t.id || tIds.indexOf(t.ersatz) < 0)) f.push(`${t.name}: "ersatz" muss die id eines anderen Trainingstags sein.`); });
   const belegt = {}; tage.forEach(t => t.wds.forEach(w => { if (belegt[w]) f.push(`${WT_LANG[w]} ist zwei Trainingstagen zugeteilt (${belegt[w]} und ${t.name}). Pro Wochentag nur einer.`); else belegt[w] = t.name; }));
-  p.training = { days: tage, nachholen: (Array.isArray(tr.nachholen) ? tr.nachholen : []).filter(id => tIds.indexOf(id) >= 0).slice(0, 5),
+  p.training = { days: tage, nachholen: (Array.isArray(tr.nachholen) ? tr.nachholen : []).filter(id => tIds.indexOf(id) >= 0).slice(0, 10),
     nachholTag: tr.nachholTag == null ? 0 : ganz(tr.nachholTag, 0, 6) ?? 0 };
   if (tr.stufen && typeof tr.stufen === 'object') {
     const s = tr.stufen; const tag = tage.find(t => t.id === s.tag);
@@ -5476,13 +5608,13 @@ FELDER GENAU
 - cheatTag: 0 Sonntag, 1 Montag, ... 6 Samstag, oder null für keinen. An diesem Tag zählt das Essen nicht in den Schnitt.
 - supplements: höchstens 8. "monate" (1 bis 12) nur, wenn es nur in bestimmten Monaten gilt. Im Tagesplan schreibst du {supps}, die App setzt dort die Supplements des Monats ein.
 - gewohnheiten: höchstens 8, Schlüssel nur Kleinbuchstaben a bis z. Ein Tagesplan Eintrag bekommt den Schlüssel als vierten Wert, dann kann ich ihn abhaken. Training wird automatisch abgehakt, dafür keinen Schlüssel.
-- training.days: 1 bis 10 Tage. id: 1 bis 8 Buchstaben oder Ziffern, eindeutig. wds: Wochentage 0 bis 6, jeder Wochentag gehört höchstens einem Trainingstag. Tage ohne wds sind freiwillig. pflicht: true, wenn ein verpasster Tag als verpasst zählt. minSaetze: ab so vielen Sätzen zählt der Tag für die Streak, auch wenn nicht alles geschafft ist. en: kurzer englischer Name fürs Android Widget.
+- training.days: 1 bis 10 Tage. id: 1 bis 8 Buchstaben oder Ziffern, eindeutig. wds: Wochentage 0 bis 6, jeder Wochentag gehört höchstens einem Trainingstag. Tage ohne wds sind freiwillig. pflicht: true, wenn ein verpasster Tag als verpasst zählt. ersatz (optional): id eines Tages ohne Geräte, den ich zuhause mache, wenn ich nicht ins Fitnessstudio komme; er zählt genauso. minSaetze: ab so vielen Sätzen zählt der Tag für die Streak, auch wenn nicht alles geschafft ist. en: kurzer englischer Name fürs Android Widget.
 - Übung: id (1 bis 8 Buchstaben oder Ziffern, im Tag eindeutig), name, sets (1 bis 10), ziel (Text wie "8 bis 12" oder "30 s"), pause in Sekunden (0 bis 600), einheit "Wdh", "Sek" oder "Min", soll (Startwert als Zahl), kg (true, wenn mit Gewicht, dann kgSoll in kg), how, easy, vid (englischer Suchbegriff für YouTube), mus (Muskeln, mit Komma getrennt), steig (optional: rmin und rmax Wiederholungen; wenn alle Sätze rmax schaffen, schlägt die App mehr Gewicht vor, mit "kg" als Schritt in kg, oder die schwerere Variante in "stufe"). Bei einseitigen Übungen "pro Bein" oder "pro Seite" ins ziel schreiben.
 - bild: nur einer dieser Namen, sonst "bild" weglassen: ${PROFIL_BILDER.join(', ')}.
 - training.nachholen: Trainingstage, die am nachholTag (0 Sonntag bis 6 Samstag) nachgeholt werden können, wenn sie in der Woche verpasst wurden.
 - training.stufen (optional): tag ist die id des Tages, der wächst. Alle "proStufe" kompletten Trainings kommt die nächste Stufe. sets legt pro Übungs id die Sätze fest (0 heisst weglassen). Neue Übungen für spätere Stufen stehen in "extra", mit "vor": id der Übung, vor der sie eingefügt wird. titel ersetzt den Titel des Tages.
 - training.phasen (optional, ersetzt stufen): { "phasen": [...], "extra": [...] }. Jede Phase: name (bis 30 Zeichen), txt (was sich ändert, bis 120 Zeichen, ohne Punkt am Schluss), n (so viele komplette Pflicht Trainings, dann kommt ab dem nächsten Tag die nächste Phase), tage: pro Trainingstag id ein Objekt { "wds": [Wochentage], "sets": { Übungs id: Sätze, 0 heisst weglassen }, "minus": Sätze weniger als im Tag festgelegt, "pause": Sekunden, "titel": Text }. Nur wds ist Pflicht. Ein Tag, der in einer Phase fehlt, verliert die Wochentage, die die Phase anderen Tagen gibt. Pro Phase jeder Wochentag höchstens einmal. Die letzte Phase ist das Ziel. Neue Übungen stehen in "extra" mit "vor" wie bei stufen. Beispiel: { "name": "Start", "txt": "Mini mit je 1 Satz", "n": 6, "tage": { "K": { "wds": [1, 2, 3, 4, 5], "sets": { "k1": 1, "k2": 1 }, "pause": 30 }, "W": { "wds": [6], "minus": 1 } } }.
-- woche: alle sieben Tage Mo, Di, Mi, Do, Fr, Sa, So. art: kurzes Wort für den Tag (höchstens 20 Zeichen). items: Einträge ["HH:MM", "Text bis 160 Zeichen", Art, optional Gewohnheit oder null, optional Bedingung]. Art ist eine von: ${KINDS.join(', ')}. Die Bedingung ist die id eines Trainingstags: "K" heisst, der Eintrag gilt nur an Wochentagen, an denen K dran ist, "!K" an allen anderen. So passt der Tagesplan in jeder Phase. Im Text und in art setzt die App {tag} (Name des Trainings an dem Tag), {titel} und {min} (Dauer in Minuten) ein.`;
+- woche: alle sieben Tage Mo, Di, Mi, Do, Fr, Sa, So. art: kurzes Wort für den Tag (höchstens 20 Zeichen). items: Einträge ["HH:MM", "Text bis 160 Zeichen", Art, optional Gewohnheit oder null, optional Bedingung]. Art ist eine von: ${KINDS.join(', ')}. Die Bedingung ist die id eines Trainingstags: "K" heisst, der Eintrag gilt nur an Wochentagen, an denen K dran ist, "!K" an allen anderen. So passt der Tagesplan in jeder Phase. Im Text und in art setzt die App {tag} (Name des Trainings an dem Tag), {titel}, {min} (Dauer in Minuten) und {ersatz} (Ersatztag mit Dauer) ein.`;
 }
 function profilBoxHtml() {
   return `<p class="small" style="margin:0 0 10px">${profil.beispiel ? '<b>Noch kein eigenes Profil.</b> <span class="muted">Die App zeigt ein Beispiel.</span>' : `<b>${esc(profil.name)}</b> <span class="muted">· ${profil.training.days.length} Trainingstage · ${fz(profil.ziele.k)} kcal</span>`}</p>
@@ -5923,6 +6055,7 @@ async function start() {
   if (!DATA) DATA = await IDB.get('data');
   if (alteTrainingsSichern()) curDay = todayDayId();
   miniAnpassen(false);
+  try { window.fitVonUhr(); } catch (e) {}
   setTab(tab);
   if (hcBruecke()) { try { NATIVE.healthCheck(); } catch (e) {} }
   Timer.render();

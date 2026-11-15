@@ -61,4 +61,6 @@ dependencies {
     implementation 'androidx.health.connect:connect-client:1.1.0'
     implementation 'androidx.activity:activity:1.9.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+    /* Galaxy Watch: Paket an die Uhr, Trainings und Essen zurück */
+    implementation 'com.google.android.gms:play-services-wearable:19.0.0'
 }

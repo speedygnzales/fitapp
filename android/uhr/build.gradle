@@ -1,0 +1,54 @@
+plugins {
+    id 'com.android.application'
+}
+
+def env = { String name, String fallback -> System.getenv(name) ?: fallback }
+
+/* FitApp für die Galaxy Watch (Wear OS). Gleiche applicationId und gleicher Schlüssel wie die Handy App,
+   sonst reden die beiden nicht miteinander (Wearable Data Layer). */
+android {
+    namespace 'ch.fitapp.uhr'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'ch.fitapp.privat'
+        minSdk 30
+        targetSdk 34
+        versionCode env('VERSION_CODE', '1').toInteger()
+        versionName '1.' + env('VERSION_CODE', '1')
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(env('KEYSTORE_PATH', 'fehlt.p12'))
+            storePassword env('KEYSTORE_PASSWORD', '')
+            keyAlias 'fitapp'
+            keyPassword env('KEYSTORE_PASSWORD', '')
+            storeType 'pkcs12'
+        }
+    }
+
+    buildTypes {
+        release {
+            /* Klein halten: ungenutzter Code und Ressourcen fliegen raus */
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            signingConfig signingConfigs.release
+        }
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-wearable:19.0.0'
+}

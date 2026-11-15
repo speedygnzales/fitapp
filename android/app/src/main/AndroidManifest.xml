@@ -66,6 +66,19 @@
             android:name=".TimerReceiver"
             android:exported="false" />
 
+        <!-- Galaxy Watch: nimmt Trainings und Essen von der Uhr an -->
+        <service
+            android:name=".UhrEmpfang"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/fitapp/uhr"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".StreakWidget"
             android:exported="false"

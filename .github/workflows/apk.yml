@@ -50,15 +50,16 @@ jobs:
         run: |
           export APP_URL="https://${OWNER,,}.github.io/${REPO}/"
           echo "App Adresse: $APP_URL"
-          gradle assembleRelease --no-daemon --stacktrace
+          gradle :app:assembleRelease :uhr:assembleRelease --no-daemon --stacktrace
 
       - name: Als Release veröffentlichen
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp android/app/build/outputs/apk/release/app-release.apk FitApp.apk
-          gh release create "apk-${{ github.run_number }}" FitApp.apk \
+          cp android/uhr/build/outputs/apk/release/uhr-release.apk FitApp_Uhr.apk
+          gh release create "apk-${{ github.run_number }}" FitApp.apk FitApp_Uhr.apk \
             --repo "${{ github.repository }}" \
             --title "FitApp Version ${{ github.run_number }}" \
-            --notes "APK für Android. Auf dem Handy herunterladen und installieren." \
+            --notes "FitApp.apk aufs Handy. FitApp_Uhr.apk mit ADB auf die Galaxy Watch." \
             --latest

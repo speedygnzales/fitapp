@@ -33,6 +33,7 @@ import android.webkit.WebViewClient;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -51,6 +52,16 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileCallback;
     private PermissionRequest camRequest;
     private HealthBridge health;
+    /* Für die Uhr: die laufende App bekommt Bescheid, wenn etwas von der Uhr da ist */
+    private static WeakReference<MainActivity> aktiv = new WeakReference<>(null);
+
+    static void uhrMelden() {
+        MainActivity a = aktiv.get();
+        if (a == null || a.web == null) {
+            return;
+        }
+        a.runOnUiThread(() -> a.web.evaluateJavascript("window.fitVonUhr&&window.fitVonUhr()", null));
+    }
 
     @Override
     protected void onCreate(Bundle state) {
@@ -70,6 +81,7 @@ public class MainActivity extends Activity {
         s.setCacheMode(WebSettings.LOAD_DEFAULT);
 
         health = new HealthBridge(this, web);
+        aktiv = new WeakReference<>(this);
         web.addJavascriptInterface(new Bridge(), "FitNative");
 
         web.setWebViewClient(new WebViewClient() {
@@ -200,6 +212,8 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         web.onResume();
+        aktiv = new WeakReference<>(this);
+        uhrMelden();
     }
 
     @Override
@@ -371,6 +385,17 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void healthSettings() {
             runOnUiThread(() -> health.einstellungen());
+        }
+
+        /* Galaxy Watch: Paket an die Uhr, Eingang von der Uhr abholen (JSON Liste) */
+        @JavascriptInterface
+        public void uhrSenden(String json) {
+            UhrBruecke.paketSenden(MainActivity.this, json);
+        }
+
+        @JavascriptInterface
+        public String uhrEingang() {
+            return UhrBruecke.eingangHolen(MainActivity.this);
         }
 
         @JavascriptInterface
