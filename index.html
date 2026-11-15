@@ -2597,13 +2597,22 @@ function uhrPaket() {
         v: Array.from({ length: x.sets }, (_, j) => { const v = vorschlag(x, j); return [v.w, v.r]; }), t: teileVon(x).map(t => [t.n || '', t.s || 0]) })) };
   }).filter(Boolean);
   const sum = tagSumme(heute); const z = zielFuer(heute);
+  /* Woche Mo bis So für die Diagramme auf der Uhr: Kalorien, gemachte und geplante Sätze. Zukunft ist null. */
+  const stat = { kcal: [], sz: [], soll: [] };
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(mo); d.setDate(d.getDate() + i); const k = tagKey(d);
+    if (k > heute) { stat.kcal.push(null); stat.sz.push(null); stat.soll.push(shPlanSaetze(k)); continue; }
+    stat.kcal.push(istCheat(k) ? null : Math.round(tagSumme(k).k));
+    stat.sz.push(history.filter(h => tagKey(new Date(h.date)) === k).reduce((a, h) => a + (h.fertig || 0), 0));
+    stat.soll.push(shPlanSaetze(k));
+  }
   const fav = Object.keys(foods).filter(k => !foods[k].fix && kalorienBekannt(foods[k]))
     .sort((a, b) => ((foods[b].fav ? 1e15 : 0) + (foods[b].last || 0)) - ((foods[a].fav ? 1e15 : 0) + (foods[a].last || 0))).slice(0, 12).map(k => {
       const f = foods[k]; const st = standardMenge(f); const u = einheiten(f)[st.ui]; const n = nwMal(puVon(f, u), st.x);
       return { k, n: kurzName(f.n), m: mengeText(u, st.x), kc: Math.round(n.k || 0), pr: Math.round(n.pr || 0), fav: f.fav ? 1 : 0 };
     });
   return { v: 1, tag: heute, plan: WOCHE.map(d => ({ art: d.art, items: d.items.map(it => [it[0], it[1], it[2]]) })),
-    pid, streak: { n: s.streak, frz: s.freezes, heute: s.heute, w: tage7 }, trainings,
+    pid, streak: { n: s.streak, frz: s.freezes, heute: s.heute, w: tage7 }, trainings, stat,
     essen: { k: Math.round(sum.k), kz: z.k || 0, pr: Math.round(sum.pr), prz: z.pr || 0, fav } };
 }
 let uhrLetzt = '', uhrTimer = null;
