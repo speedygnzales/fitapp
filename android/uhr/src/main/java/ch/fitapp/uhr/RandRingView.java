@@ -24,6 +24,11 @@ public class RandRingView extends View {
         p.setStrokeWidth(Masse.dp(c, 5));
     }
 
+    public void setDicke(float dp) {
+        p.setStrokeWidth(Masse.dp(getContext(), dp));
+        invalidate();
+    }
+
     public void setFarbe(int f) {
         farbe = f;
         invalidate();

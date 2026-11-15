@@ -25,6 +25,7 @@ public class RingView extends View {
     private final Paint schrift = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF oval = new RectF();
     private ValueAnimator anim;
+    private float grossPx, kleinPx, iconPx;
 
     public RingView(Context c) {
         super(c);
@@ -79,6 +80,14 @@ public class RingView extends View {
         return r;
     }
 
+    /** Feste Grössen für die Mitte, sonst wird aus dem Platz gerechnet */
+    public void setSchrift(float grossSp, float kleinSp, float iconDp) {
+        grossPx = Masse.sp(getContext(), grossSp);
+        kleinPx = Masse.sp(getContext(), kleinSp);
+        iconPx = Masse.dp(getContext(), iconDp);
+        invalidate();
+    }
+
     public void setMitte(Drawable d, int farbe, String g, String k) {
         icon = d;
         iconFarbe = farbe;
@@ -115,9 +124,9 @@ public class RingView extends View {
         }
         /* Mitte: Symbol, Zahl, Text */
         float innen = r + dicke / 2f;
-        float gs = Math.max(Masse.sp(getContext(), 14), innen * 0.46f);
-        float ks = Math.max(Masse.sp(getContext(), 9), innen * 0.2f);
-        float is = innen * (gross.isEmpty() ? 0.9f : 0.42f);
+        float gs = grossPx > 0 ? grossPx : Math.max(Masse.sp(getContext(), 14), innen * 0.46f);
+        float ks = kleinPx > 0 ? kleinPx : Math.max(Masse.sp(getContext(), 9), innen * 0.2f);
+        float is = iconPx > 0 ? iconPx : innen * (gross.isEmpty() ? 0.9f : 0.42f);
         float gesamt = (icon != null ? is + innen * 0.04f : 0) + (gross.isEmpty() ? 0 : gs) + (klein.isEmpty() ? 0 : ks * 1.3f);
         float y = cy - gesamt / 2f;
         if (icon != null) {

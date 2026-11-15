@@ -56,9 +56,11 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 /**
- * FitApp auf der Galaxy Watch, gestaltet wie die Apps von Samsung: schwarzer Grund, runde Chips mit farbigen Symbolen,
- * Ringe, Wochendiagramme, Pulskurve, Ring am Rand im Training. Keine Bibliotheken ausser der Data Layer.
- * Animationen sind kurz und laufen nur, wenn sich etwas ändert. Der Pulssensor läuft nur im Training.
+ * FitApp auf der Galaxy Watch.
+ * Aufbau nach Wear OS Material 3: Startseiten zum Wischen nach links und rechts (eine Aufgabe pro Seite, ohne Scrollen),
+ * Unterseiten legen sich darüber und gehen mit einem Wisch nach rechts wieder zu. Schriftgrössen aus der offiziellen
+ * Skala (Zahlen 40 bis 52 sp, Titel 16 bis 20 sp, Text mindestens 13 sp), Knöpfe 52 dp hoch, Ränder in Prozent.
+ * Keine Bibliotheken ausser der Data Layer. Der Pulssensor läuft nur im Training.
  */
 public class UhrActivity extends Activity implements SensorEventListener, DataClient.OnDataChangedListener {
 
@@ -67,34 +69,35 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
     private static final int REQ_PULS = 7;
     private static final long SECHS_STUNDEN = 6L * 3600 * 1000;
 
-    /* Farben: schwarz für AMOLED, Chips dunkelgrau, Akzente wie in der Statistik der App */
-    static final int BG = 0xFF000000, CHIP = 0xFF1F1F1F, INK = 0xFFFAFAFA, MUTED = 0xFFA3A3A3, FAINT = 0xFF6E6E6E,
+    static final int BG = 0xFF000000, FLAECHE = 0xFF1E1E1E, FLAECHE2 = 0xFF2C2C2C, INK = 0xFFFAFAFA, MUTED = 0xFFB0B0B0, FAINT = 0xFF7A7A7A,
             TRAINING = 0xFFD55181, KCAL = 0xFFD95926, PROTEIN = 0xFF3987E5, PULS = 0xFFE66767, SCHLAF = 0xFF9085E9,
             FREI = 0xFF199E70, ARBEIT = 0xFF8A9BB0, PAUSE = 0xFFE6E6E6;
 
     private SharedPreferences prefs;
-    private JSONObject paket;
-    private JSONObject lauf;
-    private String screen = "home";
-    private String letzterScreen = "";
+    private JSONObject paket, lauf, fertigInfo;
     private FrameLayout root;
-    private RandRingView rand;
-    private ScrollView scroll;
-    private LinearLayout box;
-    private int breite;
+    private final List<View> stapel = new ArrayList<>();
+    private Pager home;
+    private final List<Runnable> homeAnim = new ArrayList<>();
+    private int W, H;
     private final Handler h = new Handler(Looper.getMainLooper());
-    private TextView zeitView, pulsView, repView, kgView;
+    private boolean erstesResume = true;
+
+    /* Training */
+    private WischRahmen trainingRahmen;
+    private Pager trainingPager;
+    private RandRingView rand;
+    private FrameLayout satzSeite, pulsSeite;
+    private TextView zeitView, pulsView, repView, kgView, pulsGross, pulsSchnitt, essenKopf;
     private LinieView pulsLinie;
     private int letzteSekunde = -1;
     private SensorManager sm;
     private boolean pulsAn;
     private int pulsJetzt;
-    private long pulsZuletzt, verlaufZuletzt;
+    private long pulsZuletzt, verlaufZuletzt, beendenSeit;
     private final List<Integer> pulsLive = new ArrayList<>();
     private double wertW, wertR;
     private String wertFuer = "";
-    private long beendenSeit;
-    private JSONObject fertigInfo;
 
     // ------------------------------------------------------------------ Lebenszyklus
 
@@ -103,26 +106,10 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         super.onCreate(state);
         prefs = getSharedPreferences("uhr", MODE_PRIVATE);
         DisplayMetrics m = getResources().getDisplayMetrics();
-        boolean rund = getResources().getConfiguration().isScreenRound();
-        int seite = rund ? (int) (m.widthPixels * 0.11f) : px(10);
-        breite = m.widthPixels - 2 * seite;
-
+        W = m.widthPixels;
+        H = m.heightPixels;
         root = new FrameLayout(this);
         root.setBackgroundColor(BG);
-        rand = new RandRingView(this);
-        rand.setVisibility(View.GONE);
-        root.addView(rand, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-        scroll = new ScrollView(this);
-        scroll.setFillViewport(true);
-        scroll.setVerticalScrollBarEnabled(false);
-        scroll.setFocusable(true);
-        scroll.setFocusableInTouchMode(true);
-        box = new LinearLayout(this);
-        box.setOrientation(LinearLayout.VERTICAL);
-        box.setGravity(Gravity.CENTER_HORIZONTAL);
-        box.setPadding(seite, rund ? (int) (m.heightPixels * 0.06f) : px(8), seite, rund ? (int) (m.heightPixels * 0.2f) : px(16));
-        scroll.addView(box, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-        root.addView(scroll, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
         setContentView(root);
         sm = (SensorManager) getSystemService(SENSOR_SERVICE);
 
@@ -132,11 +119,11 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
             lauf = null;
             prefs.edit().remove("lauf").apply();
         }
+        homeBauen(0, true);
         if (lauf != null) {
-            screen = "training";
+            trainingOeffnen(false);
             pulsStarten();
         }
-        zeigen(0);
     }
 
     @Override
@@ -147,11 +134,12 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         } catch (Exception ignored) {
         }
         paketLaden();
-        if (!"training".equals(screen)) {
-            zeigen(2);
-        } else {
+        if (trainingRahmen != null) {
             h.post(tickRunner);
+        } else if (stapel.size() == 1 && !erstesResume) {
+            homeBauen(home != null ? home.getAktuell() : 0, false);
         }
+        erstesResume = false;
     }
 
     @Override
@@ -173,18 +161,69 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
 
     @Override
     public void onBackPressed() {
-        if ("optionen".equals(screen)) {
-            gehe("training", -1);
-        } else if (!"home".equals(screen)) {
-            gehe("home", -1);
-        } else {
-            super.onBackPressed();
+        if (stapel.size() > 1) {
+            View oben = stapel.get(stapel.size() - 1);
+            if (oben instanceof WischRahmen) {
+                ((WischRahmen) oben).schliessen();
+                return;
+            }
         }
+        super.onBackPressed();
     }
 
-    private void gehe(String ziel, int richtung) {
-        screen = ziel;
-        zeigen(richtung);
+    // ------------------------------------------------------------------ Stapel: Unterseiten legen sich darüber
+
+    private WischRahmen oeffnen(View inhalt) {
+        final WischRahmen w = new WischRahmen(this);
+        w.setBackgroundColor(BG);
+        w.addView(inhalt, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        final View unten = stapel.isEmpty() ? null : stapel.get(stapel.size() - 1);
+        w.setHoerer(new WischRahmen.Hoerer() {
+            @Override
+            public void zug(float a) {
+                if (unten != null) {
+                    float s = 0.92f + 0.08f * a;
+                    unten.setScaleX(s);
+                    unten.setScaleY(s);
+                    unten.setAlpha(0.35f + 0.65f * a);
+                }
+            }
+
+            @Override
+            public void zu() {
+                schliessen(w);
+            }
+        });
+        root.addView(w, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        stapel.add(w);
+        w.setTranslationX(W);
+        w.animate().translationX(0).setDuration(300).setInterpolator(new DecelerateInterpolator(2f)).start();
+        if (unten != null) {
+            unten.animate().scaleX(0.92f).scaleY(0.92f).alpha(0.35f).setDuration(300).setInterpolator(new DecelerateInterpolator(2f)).start();
+        }
+        w.requestFocus();
+        return w;
+    }
+
+    private void schliessen(WischRahmen w) {
+        root.removeView(w);
+        stapel.remove(w);
+        if (w == trainingRahmen) {
+            trainingRahmen = null;
+            trainingPager = null;
+            satzSeite = null;
+            pulsSeite = null;
+            h.removeCallbacks(tickRunner);
+            bildschirmAn(false);
+        }
+        if (stapel.size() == 1) {
+            /* Zurück auf den Startseiten: frisch aufbauen, damit Ringe und Zahlen stimmen */
+            homeBauen(home != null ? home.getAktuell() : 0, false);
+        } else if (!stapel.isEmpty()) {
+            View unten = stapel.get(stapel.size() - 1);
+            unten.animate().scaleX(1f).scaleY(1f).alpha(1f).setDuration(180).start();
+            unten.requestFocus();
+        }
     }
 
     // ------------------------------------------------------------------ Paket vom Handy
@@ -223,8 +262,8 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         }
         paket = p;
         prefs.edit().putString("paket", j).apply();
-        if (!"training".equals(screen) && !"optionen".equals(screen)) {
-            zeigen(2);
+        if (stapel.size() <= 1) {
+            homeBauen(home != null ? home.getAktuell() : 0, false);
         }
     }
 
@@ -232,236 +271,326 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         return paket != null && heute().equals(paket.optString("tag"));
     }
 
-    // ------------------------------------------------------------------ Anzeige und Übergänge
+    // ------------------------------------------------------------------ Startseiten
 
-    /** richtung 1 von rechts, -1 von links, 0 nur einblenden, 2 ohne Animation (Aktualisieren) */
-    private void zeigen(int richtung) {
-        h.removeCallbacks(tickRunner);
-        zeitView = null;
-        pulsView = null;
-        pulsLinie = null;
-        repView = null;
-        kgView = null;
-        letzteSekunde = -1;
-        box.removeAllViews();
-        boolean imTraining = "training".equals(screen) && lauf != null;
-        switch (screen) {
-            case "plan":
-                planZeigen();
-                break;
-            case "essen":
-                essenZeigen();
-                break;
-            case "wahl":
-                wahlZeigen();
-                break;
-            case "optionen":
-                optionenZeigen();
-                break;
-            case "training":
-                if (lauf == null) {
-                    screen = "home";
-                    homeZeigen();
-                } else {
-                    trainingZeigen();
-                }
-                break;
-            case "fertig":
-                fertigZeigen();
-                break;
-            default:
-                screen = "home";
-                homeZeigen();
-        }
-        if (!imTraining) {
-            rand.setVisibility(View.GONE);
-            bildschirmAn(false);
-        }
-        boolean neu = !screen.equals(letzterScreen);
-        if (neu) {
-            scroll.scrollTo(0, 0);
-            letzterScreen = screen;
-        }
-        if (richtung != 2) {
-            einblenden(richtung);
-        }
-        scroll.requestFocus();
-    }
-
-    /** Inhalt gleitet sanft herein, die Elemente kurz nacheinander */
-    private void einblenden(int richtung) {
-        box.setAlpha(0f);
-        box.setTranslationX(richtung * px(28));
-        box.animate().alpha(1f).translationX(0).setDuration(240).setInterpolator(new DecelerateInterpolator(1.6f)).start();
-        int n = Math.min(box.getChildCount(), 10);
-        for (int i = 0; i < n; i++) {
-            View v = box.getChildAt(i);
-            v.setAlpha(0f);
-            v.setTranslationY(px(10));
-            v.animate().alpha(1f).translationY(0).setStartDelay(40L * i).setDuration(260).setInterpolator(new DecelerateInterpolator()).start();
-        }
-    }
-
-    // ------------------------------------------------------------------ Start
-
-    private void homeZeigen() {
-        box.addView(uhrzeit());
+    private void homeBauen(int seite, boolean animiert) {
+        Pager alt = home;
+        home = new Pager(this);
+        homeAnim.clear();
         if (paket == null) {
-            box.addView(abstand(14));
-            box.addView(iconKreis(R.drawable.ic_hantel, TRAINING, 56));
-            box.addView(abstand(10));
-            box.addView(text("FitApp", 18, INK, 2));
-            box.addView(abstand(6));
-            box.addView(text("Öffne FitApp auf dem Handy. Dann kommen Plan, Training und Essen hierher.", 13, MUTED, 0));
-            return;
+            home.addSeite(seiteWillkommen());
+        } else {
+            home.addSeite(seiteHeute());
+            home.addSeite(seiteJetzt());
+            home.addSeite(seiteTraining());
+            home.addSeite(seiteEssen());
+            home.addSeite(seiteKalorien());
+            home.addSeite(seiteSaetze());
         }
+        home.setHoerer(new Pager.Hoerer() {
+            @Override
+            public void seite(int i) {
+                animiereSeite(i);
+            }
+
+            @Override
+            public void zurueck() {
+                finish();
+            }
+        });
+        if (alt != null) {
+            root.removeView(alt);
+            stapel.remove(alt);
+        }
+        root.addView(home, 0, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        stapel.add(0, home);
+        final int s = Math.max(0, Math.min(seite, home.anzahl() - 1));
+        home.geheZu(s, false);
+        if (stapel.size() == 1) {
+            home.requestFocus();
+        }
+        if (animiert) {
+            home.setAlpha(0f);
+            home.animate().alpha(1f).setDuration(260).start();
+        }
+        home.post(() -> animiereSeite(s));
+    }
+
+    private void animiereSeite(int i) {
+        if (i >= 0 && i < homeAnim.size() && homeAnim.get(i) != null) {
+            homeAnim.get(i).run();
+        }
+    }
+
+    /** Grundgerüst einer Seite ohne Scrollen: Inhalt mittig, Ränder in Prozent des Bildschirms */
+    private FrameLayout seite(LinearLayout inhalt, boolean mitUhrzeit) {
+        FrameLayout f = new FrameLayout(this);
+        inhalt.setOrientation(LinearLayout.VERTICAL);
+        inhalt.setGravity(Gravity.CENTER);
+        inhalt.setPadding((int) (W * 0.12f), (int) (H * 0.11f), (int) (W * 0.12f), (int) (H * 0.11f));
+        f.addView(inhalt, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        if (mitUhrzeit) {
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.TOP);
+            lp.topMargin = (int) (H * 0.045f);
+            f.addView(uhrzeit(), lp);
+        }
+        return f;
+    }
+
+    private View seiteWillkommen() {
+        LinearLayout c = new LinearLayout(this);
+        c.addView(iconKreis(R.drawable.ic_hantel, TRAINING, 52));
+        c.addView(abstand(12));
+        c.addView(text("FitApp", 20, INK, 2));
+        c.addView(abstand(6));
+        c.addView(text("Öffne FitApp auf dem Handy. Dann kommen Plan, Training und Essen hierher.", 14, MUTED, 0));
+        homeAnim.add(null);
+        return seite(c, true);
+    }
+
+    /** Seite 1: drei Ringe wie Samsung Health, in der Mitte die Streak */
+    private View seiteHeute() {
+        FrameLayout f = new FrameLayout(this);
+        JSONObject st = paket.optJSONObject("streak"), es = paket.optJSONObject("essen"), stat = paket.optJSONObject("stat");
         boolean frisch = paketHeute();
-        JSONObject st = paket.optJSONObject("streak");
-        JSONObject es = paket.optJSONObject("essen");
-        JSONObject stat = paket.optJSONObject("stat");
         int heuteI = wochentagIndex();
         int[] summe = essenSumme();
         JSONObject t = trainingHeute();
         boolean erledigt = t != null && trainingErledigt(t);
-
-        /* Ringe: Kalorien, Protein, Training. In der Mitte die Streak. */
         int sz = stat != null && frisch ? zahlAus(stat.optJSONArray("sz"), heuteI) : 0;
         int soll = stat != null ? zahlAus(stat.optJSONArray("soll"), heuteI) : 0;
-        float trainingWert = erledigt ? 1f : soll > 0 ? sz / (float) soll : 0f;
         int kz = es != null ? es.optInt("kz") : 0, prz = es != null ? es.optInt("prz") : 0;
-        RingView ringe = new RingView(this);
-        int rg = (int) (breite * 0.78f);
-        ringe.setLayoutParams(new LinearLayout.LayoutParams(rg, rg));
-        ringe.setDicke(8.5f, 3f);
         int streak = st != null ? st.optInt("n") : 0;
-        ringe.setMitte(icon(R.drawable.ic_flamme), streak > 0 ? KCAL : FAINT, String.valueOf(streak), streak == 1 ? "Tag Streak" : "Tage Streak");
-        ringe.setRinge(new int[]{KCAL, PROTEIN, TRAINING},
-                new float[]{kz > 0 ? summe[0] / (float) kz : 0, prz > 0 ? summe[1] / (float) prz : 0, trainingWert}, true);
-        box.addView(ringe);
-        box.addView(abstand(6));
 
-        /* Legende wie in Samsung Health: Punkt, Wert, Bezeichnung */
-        LinearLayout leg = new LinearLayout(this);
-        leg.setOrientation(LinearLayout.HORIZONTAL);
-        leg.addView(legende(KCAL, String.valueOf(summe[0]), "kcal"));
-        leg.addView(legende(PROTEIN, summe[1] + " g", "Protein"));
-        leg.addView(legende(TRAINING, erledigt ? "✓" : soll > 0 ? sz + "/" + soll : "frei", "Training"));
-        box.addView(leg, volleBreite());
-        box.addView(abstand(10));
-
-        WocheView woche = new WocheView(this);
-        String[] codes = new String[7];
-        JSONArray w = st != null ? st.optJSONArray("w") : null;
-        for (int i = 0; i < 7; i++) {
-            codes[i] = w != null && i < w.length() ? w.optString(i) : "-";
-            if ("h".equals(codes[i]) && !frisch) {
-                codes[i] = "-";
-            }
-        }
-        woche.setTage(codes, heuteI, TRAINING, PROTEIN);
-        box.addView(woche, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, px(38)));
-        box.addView(abstand(8));
-
-        jetztChip();
-
-        if (lauf != null) {
-            box.addView(chip(R.drawable.ic_play, TRAINING, "Training läuft", lauf.optString("n") + " · " + satzFertig() + " von " + satzGesamt() + " Sätzen",
-                    knopfKlein(R.drawable.ic_play, TRAINING), v -> gehe("training", 1)));
-        } else if (t == null) {
-            box.addView(chip(R.drawable.ic_hantel, FAINT, "Kein Pflicht Training", "Freiwillig trainieren", null, v -> gehe("wahl", 1)));
-        } else {
-            int anzahl = t.optJSONArray("ex") != null ? t.optJSONArray("ex").length() : 0;
-            String unter = erledigt ? "Erledigt. Stark." : "etwa " + t.optInt("min") + " Min · " + anzahl + " Übungen";
-            box.addView(chip(R.drawable.ic_hantel, TRAINING, t.optString("n"), unter,
-                    erledigt ? iconKreis(R.drawable.ic_check, FREI, 30) : knopfKlein(R.drawable.ic_play, TRAINING), v -> starten(t)));
-            JSONObject e = trainingVon(t.optString("er"));
-            if (e != null && !erledigt) {
-                box.addView(chip(R.drawable.ic_haus, MUTED, "Zuhause: " + e.optString("n"), "Nicht im Gym? Zählt genauso · " + e.optInt("min") + " Min", null, v -> starten(e)));
-            }
-        }
-
-        if (es != null) {
-            LinearLayout c = chip(R.drawable.ic_essen, KCAL, "Essen eintragen", summe[0] + " von " + kz + " kcal", null, v -> gehe("essen", 1));
-            Fortschritt f = new Fortschritt(this);
-            f.setWert(kz > 0 ? summe[0] / (float) kz : 0, KCAL, true);
-            ((LinearLayout) c.getChildAt(1)).addView(f, balkenParams(4));
-            box.addView(c);
-        }
-
-        if (stat != null) {
-            box.addView(abstand(6));
-            box.addView(diagrammKarte("Kalorien", "Ø " + schnitt(stat.optJSONArray("kcal"), heuteI, frisch) + " kcal",
-                    werte(stat.optJSONArray("kcal")), null, kz, KCAL, heuteI));
-            box.addView(diagrammKarte("Training", summeBis(stat.optJSONArray("sz"), heuteI) + " Sätze",
-                    werte(stat.optJSONArray("sz")), werte(stat.optJSONArray("soll")), 0, TRAINING, heuteI));
-        }
-        box.addView(abstand(4));
-        box.addView(chip(R.drawable.ic_uhrzeit, SCHLAF, "Tagesplan", heuteArt(), null, v -> gehe("plan", 1)));
-        box.addView(chip(R.drawable.ic_liste, MUTED, "Anderes Training", "Alle Trainings dieser Woche", null, v -> gehe("wahl", 1)));
-        if (!frisch) {
-            box.addView(abstand(10));
-            box.addView(text("Stand vom " + datumKurz(paket.optString("tag")) + ". Öffne FitApp kurz auf dem Handy.", 11, FAINT, 0));
-        }
+        final RingView ringe = new RingView(this);
+        int g = (int) (Math.min(W, H) * 0.78f);
+        ringe.setDicke(12f, 4f);
+        ringe.setSchrift(42, 14, 24);
+        ringe.setMitte(icon(R.drawable.ic_flamme), streak > 0 ? KCAL : FAINT, String.valueOf(streak),
+                !frisch ? "Stand " + datumKurz(paket.optString("tag")) : streak == 1 ? "Tag Streak" : "Tage Streak");
+        final float[] werte = {kz > 0 ? summe[0] / (float) kz : 0, prz > 0 ? summe[1] / (float) prz : 0, erledigt ? 1f : soll > 0 ? sz / (float) soll : 0f};
+        final int[] farben = {KCAL, PROTEIN, TRAINING};
+        ringe.setRinge(farben, new float[]{0, 0, 0}, false);
+        f.addView(ringe, new FrameLayout.LayoutParams(g, g, Gravity.CENTER));
+        klickbar(ringe, v -> home.geheZu(1, true));
+        homeAnim.add(() -> {
+            ringe.setRinge(farben, new float[]{0, 0, 0}, false);
+            ringe.setRinge(farben, werte, true);
+        });
+        FrameLayout.LayoutParams ul = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.TOP);
+        ul.topMargin = (int) (H * 0.025f);
+        f.addView(uhrzeit(), ul);
+        return f;
     }
 
-    private void jetztChip() {
+    /** Seite 2: was gerade dran ist, mit Fortschritt und dem nächsten Punkt */
+    private View seiteJetzt() {
+        LinearLayout c = new LinearLayout(this);
         JSONArray items = heuteItems();
-        if (items == null || items.length() == 0) {
-            return;
-        }
-        int cur = aktuellerEintrag(items);
-        JSONArray c = cur >= 0 ? items.optJSONArray(cur) : null;
-        JSONArray n = cur + 1 < items.length() ? items.optJSONArray(cur + 1) : null;
-        String art = c != null ? c.optString(2) : "schlaf";
-        String unter;
-        float anteil = 0;
-        if (c != null && n != null) {
+        int cur = items != null && items.length() > 0 ? aktuellerEintrag(items) : -1;
+        JSONArray it = cur >= 0 ? items.optJSONArray(cur) : null;
+        JSONArray n = items != null && cur + 1 < items.length() ? items.optJSONArray(cur + 1) : null;
+        String art = it != null ? it.optString(2) : "schlaf";
+        final int farbe = artFarbe(art);
+        c.addView(iconKreis(artIcon(art), farbe, 32));
+        c.addView(abstand(6));
+        TextView titel = text(it != null ? it.optString(1) : "Noch Nacht. Schlaf weiter", 17, INK, 1);
+        titel.setMaxLines(2);
+        titel.setEllipsize(TextUtils.TruncateAt.END);
+        c.addView(titel);
+        if (it != null && n != null) {
             int jetzt = minutenJetzt(), von = zuMinRel(items, cur), bis = zuMinRel(items, cur + 1);
-            unter = "noch " + dauerText(bis - jetzt) + " · dann " + n.optString(0);
-            anteil = bis > von ? (jetzt - von) / (float) (bis - von) : 0;
+            c.addView(abstand(4));
+            c.addView(text("noch " + dauerText(bis - jetzt), 14, farbe, 2));
+            final Fortschritt ff = new Fortschritt(this);
+            LinearLayout.LayoutParams fl = new LinearLayout.LayoutParams((int) (W * 0.42f), px(6));
+            fl.topMargin = px(6);
+            c.addView(ff, fl);
+            final float anteil = bis > von ? (jetzt - von) / (float) (bis - von) : 0;
+            ff.setWert(0, farbe, false);
+            homeAnim.add(() -> {
+                ff.setWert(0, farbe, false);
+                ff.setWert(anteil, farbe, true);
+            });
+            c.addView(abstand(6));
+            TextView d = text("Dann " + n.optString(0) + "  " + n.optString(1), 13, MUTED, 0);
+            d.setMaxLines(1);
+            d.setEllipsize(TextUtils.TruncateAt.END);
+            c.addView(d);
         } else {
-            unter = n != null ? "ab " + n.optString(0) + ": " + n.optString(1) : "";
+            homeAnim.add(null);
         }
-        LinearLayout ch = chip(artIcon(art), artFarbe(art), c != null ? c.optString(1) : "Noch Nacht. Schlaf weiter", unter, null, v -> gehe("plan", 1));
-        ((TextView) ((LinearLayout) ch.getChildAt(1)).getChildAt(0)).setMaxLines(3);
-        if (anteil > 0) {
-            Fortschritt f = new Fortschritt(this);
-            f.setWert(anteil, artFarbe(art), true);
-            ((LinearLayout) ch.getChildAt(1)).addView(f, balkenParams(3));
-        }
-        box.addView(ch);
+        c.addView(abstand(6));
+        c.addView(kompakt("Ganzer Tag", R.drawable.ic_uhrzeit, SCHLAF, v -> planOeffnen()));
+        return seite(c, true);
     }
 
-    private View diagrammKarte(String titel, String wert, float[] werte, float[] soll, float ziel, int farbe, int heuteI) {
-        LinearLayout k = karte();
-        LinearLayout kopf = new LinearLayout(this);
-        kopf.setOrientation(LinearLayout.HORIZONTAL);
-        kopf.setGravity(Gravity.CENTER_VERTICAL);
-        TextView t = text(titel, 13, INK, 1);
-        t.setGravity(Gravity.START);
-        kopf.addView(t, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        TextView w = text(wert, 12, farbe, 2);
-        w.setGravity(Gravity.END);
-        kopf.addView(w, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        k.addView(kopf);
-        TextView u = text("Diese Woche", 10, FAINT, 0);
-        u.setGravity(Gravity.START);
-        k.addView(u);
-        BalkenView b = new BalkenView(this);
-        b.setDaten(werte, soll, ziel, farbe, heuteI);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, px(74));
-        lp.topMargin = px(8);
-        k.addView(b, lp);
-        return k;
+    /** Seite 3: das Training von heute mit grossem Start Knopf */
+    private View seiteTraining() {
+        LinearLayout c = new LinearLayout(this);
+        homeAnim.add(null);
+        if (lauf != null) {
+            TextView k = text("LÄUFT", 12, TRAINING, 2);
+            k.setLetterSpacing(0.1f);
+            c.addView(k);
+            c.addView(text("Training", 22, INK, 2));
+            c.addView(text(lauf.optString("n") + " · " + satzZaehlen(lauf) + " von " + satzGesamtVon(lauf) + " Sätzen", 14, MUTED, 0));
+            c.addView(abstand(12));
+            c.addView(pille("Weiter", R.drawable.ic_play, TRAINING, v -> trainingOeffnen(true)));
+            return seite(c, true);
+        }
+        JSONObject t = trainingHeute();
+        if (t == null) {
+            TextView k = text("HEUTE", 12, FAINT, 2);
+            k.setLetterSpacing(0.1f);
+            c.addView(k);
+            c.addView(text("Frei", 22, INK, 2));
+            c.addView(text("Kein Pflicht Training", 14, MUTED, 0));
+            c.addView(abstand(12));
+            c.addView(pille("Training wählen", R.drawable.ic_liste, FLAECHE2, v -> wahlOeffnen()));
+            return seite(c, true);
+        }
+        boolean erledigt = trainingErledigt(t);
+        int anzahl = t.optJSONArray("ex") != null ? t.optJSONArray("ex").length() : 0;
+        TextView kopf = text(erledigt ? "✓ ERLEDIGT" : "TRAINING HEUTE", 12, erledigt ? FREI : TRAINING, 2);
+        kopf.setLetterSpacing(0.1f);
+        c.addView(kopf);
+        c.addView(abstand(2));
+        TextView n = text(t.optString("n"), 22, INK, 2);
+        n.setMaxLines(1);
+        c.addView(n);
+        c.addView(text("etwa " + t.optInt("min") + " Min · " + anzahl + " Übungen", 14, MUTED, 0));
+        c.addView(abstand(10));
+        c.addView(pille(erledigt ? "Nochmals" : "Starten", R.drawable.ic_play, erledigt ? FLAECHE2 : TRAINING, v -> starten(t)));
+        c.addView(abstand(6));
+        JSONObject e = trainingVon(t.optString("er"));
+        if (e != null && !erledigt) {
+            c.addView(kompakt("Zuhause: " + e.optString("n"), R.drawable.ic_haus, MUTED, v -> starten(e)));
+        } else {
+            c.addView(kompakt("Andere", R.drawable.ic_liste, MUTED, v -> wahlOeffnen()));
+        }
+        return seite(c, true);
     }
 
-    // ------------------------------------------------------------------ Tagesplan als Zeitleiste
+    /** Seite 4: Kalorien als Ring am Rand, Protein als Balken, grosser Knopf zum Eintragen */
+    private View seiteEssen() {
+        FrameLayout f = new FrameLayout(this);
+        JSONObject es = paket.optJSONObject("essen");
+        int[] s = essenSumme();
+        int kz = es != null ? es.optInt("kz") : 0, prz = es != null ? es.optInt("prz") : 0;
+        final RandRingView ring = new RandRingView(this);
+        ring.setFarbe(KCAL);
+        ring.setDicke(8);
+        f.addView(ring, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        LinearLayout c = new LinearLayout(this);
+        c.addView(text("Kalorien", 13, KCAL, 1));
+        c.addView(text(String.valueOf(s[0]), 42, INK, 2));
+        c.addView(text("von " + kz + " kcal", 13, MUTED, 0));
+        c.addView(abstand(6));
+        final Fortschritt pb = new Fortschritt(this);
+        c.addView(pb, new LinearLayout.LayoutParams((int) (W * 0.4f), px(6)));
+        c.addView(abstand(4));
+        c.addView(text(s[1] + " / " + prz + " g Protein", 13, PROTEIN, 1));
+        c.addView(abstand(8));
+        c.addView(pille("Eintragen", R.drawable.ic_plus, KCAL, v -> essenOeffnen()));
+        final float kw = kz > 0 ? s[0] / (float) kz : 0, pw = prz > 0 ? s[1] / (float) prz : 0;
+        pb.setWert(0, PROTEIN, false);
+        homeAnim.add(() -> {
+            ring.setWert(0, false);
+            ring.setWert(kw, true);
+            pb.setWert(0, PROTEIN, false);
+            pb.setWert(pw, PROTEIN, true);
+        });
+        f.addView(seite(c, false), new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        return f;
+    }
 
-    private void planZeigen() {
+    /** Seite 5: Kalorien der Woche */
+    private View seiteKalorien() {
+        JSONObject stat = paket.optJSONObject("stat"), es = paket.optJSONObject("essen");
+        final int heuteI = wochentagIndex();
+        LinearLayout c = new LinearLayout(this);
+        c.addView(text("Kalorien Woche", 14, KCAL, 1));
+        int avg = stat != null ? schnitt(stat.optJSONArray("kcal"), heuteI, paketHeute()) : 0;
+        c.addView(text(avg > 0 ? String.valueOf(avg) : "noch offen", avg > 0 ? 34 : 20, INK, 2));
+        c.addView(text("Ø kcal pro Tag · Ziel gestrichelt", 12, MUTED, 0));
+        c.addView(abstand(8));
+        final BalkenView b = new BalkenView(this);
+        c.addView(b, new LinearLayout.LayoutParams((int) (W * 0.72f), (int) (H * 0.3f)));
+        final float[] w = werte(stat != null ? stat.optJSONArray("kcal") : null);
+        final int kz = es != null ? es.optInt("kz") : 0;
+        homeAnim.add(() -> b.setDaten(w, null, kz, KCAL, heuteI));
+        return seite(c, false);
+    }
+
+    /** Seite 6: Sätze der Woche gegen den Plan */
+    private View seiteSaetze() {
+        JSONObject stat = paket.optJSONObject("stat"), st = paket.optJSONObject("streak");
+        final int heuteI = wochentagIndex();
+        LinearLayout c = new LinearLayout(this);
+        c.addView(text("Training Woche", 14, TRAINING, 1));
+        int summe = stat != null ? summeBis(stat.optJSONArray("sz"), heuteI) : 0;
+        c.addView(text(String.valueOf(summe), 34, INK, 2));
+        c.addView(text("Sätze · grau ist der Plan", 12, MUTED, 0));
+        c.addView(abstand(8));
+        final BalkenView b = new BalkenView(this);
+        c.addView(b, new LinearLayout.LayoutParams((int) (W * 0.72f), (int) (H * 0.3f)));
+        final float[] w = werte(stat != null ? stat.optJSONArray("sz") : null);
+        final float[] soll = werte(stat != null ? stat.optJSONArray("soll") : null);
+        for (int i = 0; i < 7; i++) {
+            if (Float.isNaN(soll[i])) {
+                soll[i] = 0;
+            }
+        }
+        homeAnim.add(() -> b.setDaten(w, soll, 0, TRAINING, heuteI));
+        if (st != null && st.optInt("frz") > 0) {
+            c.addView(abstand(4));
+            c.addView(text(st.optInt("frz") + (st.optInt("frz") == 1 ? " Freeze" : " Freezes") + " auf Vorrat", 12, PROTEIN, 1));
+        }
+        return seite(c, false);
+    }
+
+    // ------------------------------------------------------------------ Unterseiten mit Liste
+
+    /** Liste zum Scrollen: Uhrzeit und Titel oben, unten nur so viel Rand wie nötig, kein Nachfedern */
+    private LinearLayout liste(String titel, int farbe, ScrollView[] aussen) {
+        ScrollView sv = new ScrollView(this);
+        sv.setVerticalScrollBarEnabled(false);
+        sv.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        sv.setFocusable(true);
+        sv.setFocusableInTouchMode(true);
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setGravity(Gravity.CENTER_HORIZONTAL);
+        box.setPadding((int) (W * 0.07f), (int) (H * 0.05f), (int) (W * 0.07f), (int) (H * 0.14f));
         box.addView(uhrzeit());
-        box.addView(titel("Tagesplan", SCHLAF));
-        box.addView(text(heuteArt(), 11, MUTED, 0));
-        box.addView(abstand(10));
+        if (titel != null) {
+            TextView t = text(titel, 16, farbe, 2);
+            t.setPadding(0, px(4), 0, px(6));
+            box.addView(t);
+        }
+        sv.addView(box, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        aussen[0] = sv;
+        return box;
+    }
+
+    private void listeOeffnen(ScrollView sv, LinearLayout box) {
+        oeffnen(sv);
+        sv.post(sv::requestFocus);
+        int n = Math.min(box.getChildCount(), 9);
+        for (int i = 0; i < n; i++) {
+            View v = box.getChildAt(i);
+            v.setAlpha(0f);
+            v.setTranslationY(px(12));
+            v.animate().alpha(1f).translationY(0).setStartDelay(90 + 35L * i).setDuration(260).setInterpolator(new DecelerateInterpolator()).start();
+        }
+    }
+
+    private void planOeffnen() {
+        ScrollView[] sv = new ScrollView[1];
+        LinearLayout box = liste("Tagesplan", SCHLAF, sv);
+        box.addView(text(heuteArt(), 13, MUTED, 0));
+        box.addView(abstand(8));
         JSONArray items = heuteItems();
         View ziel = null;
         if (items != null) {
@@ -475,23 +604,23 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
                 int farbe = artFarbe(it.optString(2));
                 LinearLayout zeile = new LinearLayout(this);
                 zeile.setOrientation(LinearLayout.HORIZONTAL);
-                TextView z = text(it.optString(0), 11, jetzt ? INK : FAINT, jetzt ? 2 : 0);
+                TextView z = text(it.optString(0), 13, jetzt ? INK : FAINT, jetzt ? 2 : 1);
                 z.setGravity(Gravity.END);
-                z.setPadding(0, px(8), 0, 0);
-                zeile.addView(z, new LinearLayout.LayoutParams(px(38), LinearLayout.LayoutParams.WRAP_CONTENT));
+                z.setPadding(0, px(7), 0, 0);
+                zeile.addView(z, new LinearLayout.LayoutParams(px(44), LinearLayout.LayoutParams.WRAP_CONTENT));
                 ZeitpunktView zp = new ZeitpunktView(this);
                 zp.setZustand(farbe, jetzt, vorbei, i == 0, i == items.length() - 1);
-                zeile.addView(zp, new LinearLayout.LayoutParams(px(22), LinearLayout.LayoutParams.MATCH_PARENT));
+                zeile.addView(zp, new LinearLayout.LayoutParams(px(24), LinearLayout.LayoutParams.MATCH_PARENT));
                 LinearLayout spalte = new LinearLayout(this);
                 spalte.setOrientation(LinearLayout.VERTICAL);
-                spalte.setPadding(0, px(6), 0, px(10));
+                spalte.setPadding(0, px(5), 0, px(12));
                 if (jetzt) {
-                    TextView j = text("JETZT", 9, farbe, 2);
+                    TextView j = text("JETZT", 11, farbe, 2);
                     j.setGravity(Gravity.START);
-                    j.setLetterSpacing(0.12f);
+                    j.setLetterSpacing(0.1f);
                     spalte.addView(j);
                 }
-                TextView tx = text(it.optString(1), 13, vorbei ? FAINT : INK, jetzt ? 1 : 0);
+                TextView tx = text(it.optString(1), 14, vorbei ? FAINT : INK, jetzt ? 1 : 0);
                 tx.setGravity(Gravity.START);
                 spalte.addView(tx);
                 zeile.addView(spalte, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
@@ -501,18 +630,17 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
                 }
             }
         }
+        listeOeffnen(sv[0], box);
         if (ziel != null) {
             final View zz = ziel;
-            scroll.post(() -> scroll.smoothScrollTo(0, Math.max(0, zz.getTop() - px(50))));
+            final ScrollView s = sv[0];
+            s.postDelayed(() -> s.smoothScrollTo(0, Math.max(0, zz.getTop() - (int) (H * 0.3f))), 320);
         }
     }
 
-    // ------------------------------------------------------------------ Training wählen
-
-    private void wahlZeigen() {
-        box.addView(uhrzeit());
-        box.addView(titel("Training wählen", TRAINING));
-        box.addView(abstand(6));
+    private void wahlOeffnen() {
+        ScrollView[] sv = new ScrollView[1];
+        LinearLayout box = liste("Training wählen", TRAINING, sv);
         JSONObject heute = trainingHeute();
         JSONArray ts = paket != null ? paket.optJSONArray("trainings") : null;
         for (int i = 0; ts != null && i < ts.length(); i++) {
@@ -521,12 +649,111 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
                 continue;
             }
             boolean istHeute = heute != null && heute.optString("id").equals(t.optString("id"));
-            box.addView(chip(R.drawable.ic_hantel, istHeute ? TRAINING : MUTED, t.optString("n"), t.optString("ti") + " · " + t.optInt("min") + " Min",
-                    istHeute ? abzeichen("Heute", TRAINING) : null, v -> starten(t)));
+            box.addView(chip(R.drawable.ic_hantel, istHeute ? TRAINING : MUTED, t.optString("n"), (istHeute ? "Heute · " : "") + t.optInt("min") + " Min", null, v -> starten(t)));
         }
+        listeOeffnen(sv[0], box);
     }
 
-    // ------------------------------------------------------------------ Training
+    private void essenOeffnen() {
+        ScrollView[] sv = new ScrollView[1];
+        LinearLayout box = liste("Eintragen", KCAL, sv);
+        essenKopf = text("", 14, MUTED, 0);
+        box.addView(essenKopf);
+        essenKopfSetzen();
+        box.addView(abstand(4));
+        JSONObject es = paket != null ? paket.optJSONObject("essen") : null;
+        JSONArray fav = es != null ? es.optJSONArray("fav") : null;
+        if (fav == null || fav.length() == 0) {
+            box.addView(abstand(10));
+            box.addView(text("Trag auf dem Handy etwas ein. Dann erscheint es hier.", 14, MUTED, 0));
+        }
+        for (int i = 0; fav != null && i < fav.length(); i++) {
+            JSONObject f = fav.optJSONObject(i);
+            if (f == null) {
+                continue;
+            }
+            TextView kc = text(String.valueOf(f.optInt("kc")), 15, INK, 2);
+            kc.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            box.addView(chip(f.optInt("fav") == 1 ? R.drawable.ic_stern : R.drawable.ic_essen, KCAL, f.optString("n"), f.optString("m"), kc, v -> essenEintragen(f, v)));
+        }
+        listeOeffnen(sv[0], box);
+    }
+
+    private void essenKopfSetzen() {
+        JSONObject es = paket != null ? paket.optJSONObject("essen") : null;
+        if (essenKopf == null || es == null) {
+            return;
+        }
+        int[] s = essenSumme();
+        essenKopf.setText(s[0] + " von " + es.optInt("kz") + " kcal · " + s[1] + " g Protein");
+    }
+
+    private void essenEintragen(JSONObject f, View chipView) {
+        if (!chipView.isEnabled()) {
+            return;
+        }
+        chipView.setEnabled(false);
+        try {
+            JSONObject ev = new JSONObject();
+            ev.put("typ", "essen");
+            ev.put("id", UUID.randomUUID().toString());
+            ev.put("k", f.optString("k"));
+            ev.put("m", mahlzeit());
+            ev.put("tag", heute());
+            senden(ev);
+            JSONArray offen = offenHeute();
+            offen.put(new JSONObject().put("t", System.currentTimeMillis()).put("kc", f.optInt("kc")).put("pr", f.optInt("pr")));
+            prefs.edit().putString("offen", new JSONObject().put("tag", heute()).put("l", offen).toString()).apply();
+        } catch (Exception ignored) {
+        }
+        vibrieren(new long[]{0, 30});
+        /* Symbol wird zum Haken */
+        if (chipView instanceof LinearLayout && ((LinearLayout) chipView).getChildAt(0) instanceof ImageView) {
+            ImageView ic = (ImageView) ((LinearLayout) chipView).getChildAt(0);
+            ic.setImageDrawable(icon(R.drawable.ic_check));
+            ic.setColorFilter(FREI, PorterDuff.Mode.SRC_IN);
+            ic.setBackground(oval(Masse.alpha(FREI, 0x38)));
+            ic.setScaleX(0.5f);
+            ic.setScaleY(0.5f);
+            ic.animate().scaleX(1f).scaleY(1f).setDuration(340).setInterpolator(new OvershootInterpolator(2.4f)).start();
+        }
+        essenKopfSetzen();
+        h.postDelayed(() -> chipView.setEnabled(true), 1500);
+    }
+
+    private JSONArray offenHeute() {
+        JSONObject o = json(prefs.getString("offen", null));
+        if (o == null || !heute().equals(o.optString("tag"))) {
+            return new JSONArray();
+        }
+        JSONArray l = o.optJSONArray("l");
+        return l != null ? l : new JSONArray();
+    }
+
+    /** Summe von heute: was das Handy kennt, plus was auf der Uhr seither eingetragen wurde. */
+    private int[] essenSumme() {
+        JSONObject es = paket != null ? paket.optJSONObject("essen") : null;
+        boolean frisch = paketHeute();
+        int k = frisch && es != null ? es.optInt("k") : 0, pr = frisch && es != null ? es.optInt("pr") : 0;
+        long ts = frisch ? paket.optLong("ts") : 0;
+        JSONArray o = offenHeute();
+        for (int i = 0; i < o.length(); i++) {
+            JSONObject e = o.optJSONObject(i);
+            if (e != null && e.optLong("t") > ts) {
+                k += e.optInt("kc");
+                pr += e.optInt("pr");
+            }
+        }
+        return new int[]{k, pr};
+    }
+
+    private String mahlzeit() {
+        Calendar c = Calendar.getInstance();
+        double s = c.get(Calendar.HOUR_OF_DAY) + c.get(Calendar.MINUTE) / 60.0;
+        return s < 10 ? "morgen" : s < 14.5 ? "mittag" : s < 17 ? "snack" : s < 22 ? "abend" : "snack";
+    }
+
+    // ------------------------------------------------------------------ Training: eigene Seiten Satz, Puls, Optionen
 
     private void starten(JSONObject t) {
         if (t == null) {
@@ -549,9 +776,55 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         }
         pulsLive.clear();
         laufSpeichern();
-        screen = "training";
+        /* Offene Auswahl zuerst schliessen, das Training legt sich direkt über die Startseiten */
+        while (stapel.size() > 1) {
+            View v = stapel.remove(stapel.size() - 1);
+            root.removeView(v);
+        }
+        home.setScaleX(1f);
+        home.setScaleY(1f);
+        home.setAlpha(1f);
         pulsStarten();
-        zeigen(1);
+        trainingOeffnen(true);
+    }
+
+    private void trainingOeffnen(boolean animiert) {
+        if (lauf == null || trainingRahmen != null) {
+            return;
+        }
+        FrameLayout f = new FrameLayout(this);
+        rand = new RandRingView(this);
+        rand.setDicke(6);
+        f.addView(rand, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        trainingPager = new Pager(this);
+        trainingPager.setPunkteOben(true);
+        satzSeite = new FrameLayout(this);
+        pulsSeite = new FrameLayout(this);
+        trainingPager.addSeite(satzSeite);
+        trainingPager.addSeite(pulsSeite);
+        trainingPager.addSeite(optionenSeite());
+        trainingPager.setHoerer(new Pager.Hoerer() {
+            @Override
+            public void seite(int i) {
+                if (i == 1) {
+                    pulsSeiteBauen();
+                }
+            }
+
+            @Override
+            public void zurueck() {
+            }
+        });
+        f.addView(trainingPager, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        trainingRahmen = oeffnen(f);
+        trainingRahmen.setInnen(trainingPager);
+        if (!animiert) {
+            trainingRahmen.animate().cancel();
+            trainingRahmen.setTranslationX(0);
+        }
+        satzSeiteBauen(0);
+        pulsSeiteBauen();
+        trainingPager.requestFocus();
     }
 
     private JSONObject aktUebung() {
@@ -560,32 +833,34 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         return ex != null && i < ex.length() ? ex.optJSONObject(i) : null;
     }
 
-    private int satzGesamt() {
-        return lauf == null ? 0 : satzGesamtVon(lauf);
-    }
-
-    private int satzFertig() {
-        return lauf == null ? 0 : satzZaehlen(lauf);
-    }
-
-    private void trainingZeigen() {
+    /** richtung 1 von rechts, 0 einblenden */
+    private void satzSeiteBauen(int richtung) {
+        if (lauf == null || satzSeite == null) {
+            return;
+        }
+        h.removeCallbacks(tickRunner);
+        zeitView = null;
+        pulsView = null;
+        repView = null;
+        kgView = null;
+        letzteSekunde = -1;
+        satzSeite.removeAllViews();
         JSONObject x = aktUebung();
         if (x == null) {
             beenden();
             return;
         }
         String phase = lauf.optString("phase", "satz");
-        rand.setVisibility(View.VISIBLE);
-        int gesamt = Math.max(1, satzGesamt());
         boolean timer = "pause".equals(phase) || "halten".equals(phase) || "bereit".equals(phase);
-        if (!timer) {
-            rand.setFarbe(TRAINING);
-            rand.setWert(satzFertig() / (float) gesamt, true);
-        }
+        int gesamt = Math.max(1, satzGesamtVon(lauf));
+        LinearLayout c = new LinearLayout(this);
+        c.setOrientation(LinearLayout.VERTICAL);
+        c.setGravity(Gravity.CENTER_HORIZONTAL);
+        c.setPadding((int) (W * 0.1f), (int) (H * 0.1f), (int) (W * 0.1f), 0);
+        satzSeite.addView(c, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 
         if (timer) {
             bildschirmAn(true);
-            box.addView(abstand(14));
             String label;
             int farbe;
             if ("pause".equals(phase)) {
@@ -600,22 +875,20 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
                 farbe = TRAINING;
             }
             rand.setFarbe(farbe);
-            TextView l = text(label, 12, farbe, 2);
-            l.setLetterSpacing(0.14f);
-            box.addView(l);
+            c.addView(abstand(4));
+            TextView l = text(label, 14, farbe, 2);
+            l.setLetterSpacing(0.12f);
+            c.addView(l);
             zeitView = text("", 50, INK, 2);
             zeitView.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
-            box.addView(zeitView);
+            c.addView(zeitView);
             if ("pause".equals(phase)) {
-                box.addView(text("Als Nächstes", 10, FAINT, 0));
-                TextView nx = text(x.optString("n"), 14, INK, 1);
-                nx.setMaxLines(2);
-                box.addView(nx);
-                box.addView(text("Satz " + (lauf.optInt("j") + 1) + " von " + x.optInt("s"), 11, TRAINING, 1));
-                box.addView(abstand(6));
-                box.addView(pulsZeile());
-                LinearLayout r = reihe();
-                r.addView(knopfMitText(R.drawable.ic_plus, CHIP, INK, "15 s", v -> {
+                TextView nx = text("Dann: " + x.optString("n"), 15, INK, 1);
+                nx.setMaxLines(1);
+                nx.setEllipsize(TextUtils.TruncateAt.END);
+                c.addView(nx);
+                c.addView(abstand(6));
+                c.addView(kompakt("+15 s", R.drawable.ic_plus, MUTED, v -> {
                     try {
                         lauf.put("bis", lauf.optLong("bis") + 15000);
                         lauf.put("dauer", lauf.optLong("dauer") + 15000);
@@ -623,106 +896,139 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
                     }
                     laufSpeichern();
                 }));
-                r.addView(knopfMitText(R.drawable.ic_weiter, CHIP, INK, "Weiter", v -> phaseSatz()));
-                box.addView(r);
+                kante(satzSeite, "Weiter", R.drawable.ic_weiter, FLAECHE2, v -> phaseSatz());
             } else {
-                TextView nx = text(x.optString("n"), 12, MUTED, 0);
+                TextView nx = text(x.optString("n"), 15, MUTED, 0);
                 nx.setMaxLines(2);
-                box.addView(nx);
-                box.addView(abstand(4));
-                box.addView(pulsZeile());
-                LinearLayout r = reihe();
-                r.addView(knopfMitText(R.drawable.ic_stopp, CHIP, INK, "Stopp", v -> phaseSatz()));
-                box.addView(r);
+                c.addView(nx);
+                kante(satzSeite, "Stopp", R.drawable.ic_stopp, FLAECHE2, v -> phaseSatz());
             }
             h.post(tickRunner);
-            return;
-        }
-
-        bildschirmAn(false);
-        box.addView(abstand(10));
-        box.addView(pulsZeile());
-        JSONArray alle = lauf.optJSONArray("ex");
-        box.addView(text("Übung " + (lauf.optInt("i") + 1) + " von " + (alle != null ? alle.length() : 1), 10, FAINT, 0));
-        TextView name = text(x.optString("n"), 17, INK, 2);
-        name.setMaxLines(2);
-        name.setEllipsize(TextUtils.TruncateAt.END);
-        box.addView(name);
-        int j = lauf.optInt("j"), s = x.optInt("s");
-        box.addView(text("Satz " + (j + 1) + " von " + s + (x.optString("z").length() > 0 ? " · " + x.optString("z") : ""), 11, TRAINING, 1));
-        box.addView(abstand(6));
-        String einheit = x.optString("e");
-        if ("Wdh".equals(einheit)) {
-            werteVorbereiten(x, j);
-            repView = text(fmt(wertR), 38, INK, 2);
-            box.addView(stepper(repView, "Wdh", 42, () -> {
-                wertR = Math.max(0, wertR - 1);
-                repView.setText(fmt(wertR));
-            }, () -> {
-                wertR = Math.min(200, wertR + 1);
-                repView.setText(fmt(wertR));
-            }));
-            if (x.optInt("kg") == 1) {
-                kgView = text(fmt(wertW) + " kg", 17, INK, 2);
-                box.addView(stepper(kgView, null, 34, () -> {
-                    wertW = Math.max(0, wertW - (wertW > 20 ? 2.5 : 1));
-                    kgView.setText(fmt(wertW) + " kg");
-                }, () -> {
-                    wertW = Math.min(300, wertW + (wertW >= 20 ? 2.5 : 1));
-                    kgView.setText(fmt(wertW) + " kg");
-                }));
-            }
-            box.addView(abstand(8));
-            LinearLayout r = reihe();
-            r.addView(rundKnopf(R.drawable.ic_mehr, CHIP, MUTED, 36, v -> gehe("optionen", 1)));
-            View ok = rundKnopf(R.drawable.ic_check, TRAINING, INK, 60, v -> satzErledigt(x.optInt("kg") == 1 ? fmt(wertW) : "", fmt(wertR)));
-            ((LinearLayout.LayoutParams) ok.getLayoutParams()).leftMargin = px(14);
-            ((LinearLayout.LayoutParams) ok.getLayoutParams()).rightMargin = px(14);
-            r.addView(ok);
-            /* Platzhalter rechts, damit der Haken genau in der Mitte steht */
-            r.addView(new View(this), new LinearLayout.LayoutParams(px(36), px(36)));
-            box.addView(r);
         } else {
-            int sek = haltenSekunden(x, 0);
-            TextView z = text(dauer(sek), 38, INK, 2);
-            box.addView(z);
-            int teile = teileAnzahl(x);
-            box.addView(text(teile > 1 ? teile + " Teile, je " + dauer(sek) : "halten", 10, FAINT, 0));
-            box.addView(abstand(8));
-            LinearLayout r = reihe();
-            r.addView(rundKnopf(R.drawable.ic_mehr, CHIP, MUTED, 36, v -> gehe("optionen", 1)));
-            View go = rundKnopf(R.drawable.ic_play, TRAINING, INK, 60, v -> haltenStarten());
-            ((LinearLayout.LayoutParams) go.getLayoutParams()).leftMargin = px(14);
-            ((LinearLayout.LayoutParams) go.getLayoutParams()).rightMargin = px(14);
-            r.addView(go);
-            r.addView(rundKnopf(R.drawable.ic_check, CHIP, INK, 36, v -> satzErledigt("", String.valueOf(x.optInt("so")))));
-            box.addView(r);
+            bildschirmAn(false);
+            rand.setFarbe(TRAINING);
+            rand.setWert(satzZaehlen(lauf) / (float) gesamt, true);
+            int j = lauf.optInt("j"), s = x.optInt("s");
+            /* Kopfzeile: Puls und Satz */
+            LinearLayout kopf = new LinearLayout(this);
+            kopf.setOrientation(LinearLayout.HORIZONTAL);
+            kopf.setGravity(Gravity.CENTER);
+            kopf.addView(icon(R.drawable.ic_herz, PULS, 14));
+            pulsView = text(pulsJetzt > 0 ? " " + pulsJetzt : " ...", 14, PULS, 2);
+            pulsView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            kopf.addView(pulsView);
+            TextView satz = text("    Satz " + (j + 1) + "/" + s, 14, TRAINING, 2);
+            satz.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            kopf.addView(satz);
+            c.addView(abstand(4));
+            c.addView(kopf);
+            final boolean kg = x.optInt("kg") == 1 && "Wdh".equals(x.optString("e"));
+            TextView name = text(x.optString("n"), 17, INK, 2);
+            name.setMaxLines(kg || !"Wdh".equals(x.optString("e")) ? 1 : 2);
+            name.setEllipsize(TextUtils.TruncateAt.END);
+            c.addView(name);
+            if (x.optString("z").length() > 0 && !kg && "Wdh".equals(x.optString("e"))) {
+                TextView z = text(x.optString("z"), 13, MUTED, 0);
+                z.setMaxLines(1);
+                z.setEllipsize(TextUtils.TruncateAt.END);
+                c.addView(z);
+            }
+            if ("Wdh".equals(x.optString("e"))) {
+                werteVorbereiten(x, j);
+                repView = text(fmt(wertR), 42, INK, 2);
+                c.addView(stepper(repView, kg ? null : "Wdh", 48, () -> {
+                    wertR = Math.max(0, wertR - 1);
+                    repView.setText(fmt(wertR));
+                }, () -> {
+                    wertR = Math.min(200, wertR + 1);
+                    repView.setText(fmt(wertR));
+                }));
+                if (kg) {
+                    kgView = text(fmt(wertW) + " kg", 20, INK, 2);
+                    c.addView(stepper(kgView, null, 40, () -> {
+                        wertW = Math.max(0, wertW - (wertW > 20 ? 2.5 : 1));
+                        kgView.setText(fmt(wertW) + " kg");
+                    }, () -> {
+                        wertW = Math.min(300, wertW + (wertW >= 20 ? 2.5 : 1));
+                        kgView.setText(fmt(wertW) + " kg");
+                    }));
+                }
+                kante(satzSeite, "Satz fertig", R.drawable.ic_check, TRAINING, v -> satzErledigt(kg ? fmt(wertW) : "", fmt(wertR)));
+            } else {
+                int sek = haltenSekunden(x, 0);
+                c.addView(abstand(4));
+                c.addView(text(dauer(sek), 42, INK, 2));
+                int teile = teileAnzahl(x);
+                c.addView(text(teile > 1 ? teile + " Teile, je " + dauer(sek) : "halten", 13, MUTED, 0));
+                c.addView(abstand(4));
+                c.addView(kompakt("Schon gemacht", R.drawable.ic_check, MUTED, v -> satzErledigt("", String.valueOf(x.optInt("so")))));
+                kante(satzSeite, "Start", R.drawable.ic_play, TRAINING, v -> haltenStarten());
+            }
         }
+        /* Neuer Satz kommt sanft von rechts */
+        c.setAlpha(0f);
+        c.setTranslationX(richtung * px(24));
+        c.animate().alpha(1f).translationX(0).setDuration(240).setInterpolator(new DecelerateInterpolator(1.6f)).start();
     }
 
-    private View pulsZeile() {
-        LinearLayout r = new LinearLayout(this);
-        r.setOrientation(LinearLayout.HORIZONTAL);
-        r.setGravity(Gravity.CENTER);
-        ImageView herz = icon(R.drawable.ic_herz, PULS, 13);
-        r.addView(herz);
-        pulsView = text(pulsJetzt > 0 ? " " + pulsJetzt : " ...", 13, PULS, 2);
-        pulsView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        r.addView(pulsView);
-        if (pulsJetzt > 0) {
-            herz.animate().scaleX(1.25f).scaleY(1.25f).setDuration(180).withEndAction(() -> herz.animate().scaleX(1f).scaleY(1f).setDuration(220).start()).start();
+    private void pulsSeiteBauen() {
+        if (pulsSeite == null || lauf == null) {
+            return;
         }
-        if (!"satz".equals(lauf.optString("phase")) && pulsLive.size() >= 3) {
-            LinearLayout spalte = new LinearLayout(this);
-            spalte.setOrientation(LinearLayout.VERTICAL);
-            spalte.setGravity(Gravity.CENTER_HORIZONTAL);
-            spalte.addView(r);
-            pulsLinie = new LinieView(this);
-            pulsLinie.setWerte(liste(pulsLive), PULS, false);
-            spalte.addView(pulsLinie, new LinearLayout.LayoutParams((int) (breite * 0.62f), px(26)));
-            return spalte;
+        pulsSeite.removeAllViews();
+        LinearLayout c = new LinearLayout(this);
+        c.addView(text("Puls", 14, PULS, 1));
+        pulsGross = text(pulsJetzt > 0 ? String.valueOf(pulsJetzt) : "...", 48, INK, 2);
+        c.addView(pulsGross);
+        c.addView(text("bpm", 13, MUTED, 0));
+        c.addView(abstand(6));
+        pulsLinie = new LinieView(this);
+        pulsLinie.setWerte(liste(pulsLive), PULS, true);
+        c.addView(pulsLinie, new LinearLayout.LayoutParams((int) (W * 0.66f), (int) (H * 0.2f)));
+        c.addView(abstand(6));
+        pulsSchnitt = text(pulsText(), 13, MUTED, 0);
+        c.addView(pulsSchnitt);
+        pulsSeite.addView(seite(c, false), new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+    }
+
+    private String pulsText() {
+        JSONObject p = lauf != null ? lauf.optJSONObject("puls") : null;
+        if (p == null || p.optInt("n") == 0) {
+            return "Sensor misst, Uhr eng tragen";
         }
-        return r;
+        return "Ø " + Math.round(p.optDouble("sum") / p.optInt("n")) + "  ·  max " + p.optInt("max");
+    }
+
+    private View optionenSeite() {
+        ScrollView sv = new ScrollView(this);
+        sv.setVerticalScrollBarEnabled(false);
+        sv.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setGravity(Gravity.CENTER_HORIZONTAL);
+        box.setPadding((int) (W * 0.08f), (int) (H * 0.13f), (int) (W * 0.08f), (int) (H * 0.14f));
+        box.addView(text("Training", 16, TRAINING, 2));
+        box.addView(abstand(4));
+        box.addView(chip(R.drawable.ic_weiter, MUTED, "Übung überspringen", null, null, v -> uebungUeberspringen()));
+        final LinearLayout[] ende = new LinearLayout[1];
+        ende[0] = chip(R.drawable.ic_ende, PULS, "Training beenden", "Speichert, was du hast", null, v -> {
+            if (System.currentTimeMillis() - beendenSeit < 4000) {
+                beenden();
+            } else {
+                beendenSeit = System.currentTimeMillis();
+                TextView t = (TextView) ((LinearLayout) ende[0].getChildAt(1)).getChildAt(0);
+                t.setText("Nochmals tippen");
+                vibrieren(new long[]{0, 30});
+            }
+        });
+        box.addView(ende[0]);
+        box.addView(chip(R.drawable.ic_haus, MUTED, "Zur Übersicht", "Training läuft weiter", null, v -> {
+            if (trainingRahmen != null) {
+                trainingRahmen.schliessen();
+            }
+        }));
+        sv.addView(box, new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+        return sv;
     }
 
     private void werteVorbereiten(JSONObject x, int j) {
@@ -738,7 +1044,6 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
             w = sv.optString(0);
             r = sv.optString(1);
         }
-        /* Im selben Training gilt der letzte Satz dieser Übung als Vorschlag für das Gewicht */
         JSONObject sets = lauf.optJSONObject("sets");
         JSONArray schon = sets != null ? sets.optJSONArray(x.optString("id")) : null;
         if (schon != null && schon.length() > 0 && schon.optJSONArray(schon.length() - 1) != null) {
@@ -787,14 +1092,14 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         }
         timerSetzen("bereit", 3000);
         laufSpeichern();
-        zeigen(0);
+        satzSeiteBauen(0);
     }
 
-    /* Zehnmal pro Sekunde, damit der Ring am Rand weich läuft. Text nur bei neuer Sekunde. */
+    /* Zehnmal pro Sekunde, damit der Ring am Rand weich läuft. Der Text ändert sich nur bei neuer Sekunde. */
     private final Runnable tickRunner = new Runnable() {
         @Override
         public void run() {
-            if (lauf == null || zeitView == null) {
+            if (lauf == null || zeitView == null || rand == null) {
                 return;
             }
             long rest = lauf.optLong("bis") - System.currentTimeMillis();
@@ -807,11 +1112,12 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
             int s = (int) Math.ceil(rest / 1000.0);
             if (s != letzteSekunde) {
                 letzteSekunde = s;
-                zeitView.setText("bereit".equals(lauf.optString("phase")) ? String.valueOf(s) : dauer(s));
-                if ("bereit".equals(lauf.optString("phase"))) {
-                    zeitView.setScaleX(1.35f);
-                    zeitView.setScaleY(1.35f);
-                    zeitView.animate().scaleX(1f).scaleY(1f).setDuration(350).setInterpolator(new DecelerateInterpolator()).start();
+                boolean bereit = "bereit".equals(lauf.optString("phase"));
+                zeitView.setText(bereit ? String.valueOf(s) : dauer(s));
+                if (bereit) {
+                    zeitView.setScaleX(1.4f);
+                    zeitView.setScaleY(1.4f);
+                    zeitView.animate().scaleX(1f).scaleY(1f).setDuration(360).setInterpolator(new DecelerateInterpolator()).start();
                 }
                 if (!"pause".equals(lauf.optString("phase")) && s <= 3 && s != lauf.optInt("piep", -1)) {
                     try {
@@ -842,7 +1148,6 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
                 if (k < teileAnzahl(x)) {
                     lauf.put("k", k);
                     lauf.put("teil", teilName(x, k));
-                    /* 5 Sekunden zum Wechseln, zum Beispiel die Seite */
                     timerSetzen("halten", (5 + haltenSekunden(x, k)) * 1000L);
                     vibrieren(new long[]{0, 200, 120, 200});
                 } else {
@@ -857,7 +1162,7 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         } catch (Exception ignored) {
         }
         laufSpeichern();
-        zeigen(0);
+        satzSeiteBauen(0);
     }
 
     private String teilName(JSONObject x, int k) {
@@ -872,7 +1177,7 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         } catch (Exception ignored) {
         }
         laufSpeichern();
-        zeigen(0);
+        satzSeiteBauen(1);
     }
 
     private void satzErledigt(String w, String r) {
@@ -898,8 +1203,7 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
             }
             lauf.put("i", i);
             lauf.put("j", j);
-            JSONArray ex = lauf.optJSONArray("ex");
-            if (i >= ex.length()) {
+            if (i >= lauf.optJSONArray("ex").length()) {
                 fertig = true;
             } else if (pause > 0) {
                 timerSetzen("pause", pause * 1000L);
@@ -912,31 +1216,8 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         if (fertig) {
             beenden();
         } else {
-            zeigen(1);
+            satzSeiteBauen(1);
         }
-    }
-
-    private void optionenZeigen() {
-        box.addView(uhrzeit());
-        box.addView(titel("Training", TRAINING));
-        if (lauf != null) {
-            box.addView(text(lauf.optString("n") + " · " + satzFertig() + " von " + satzGesamt() + " Sätzen", 11, MUTED, 0));
-        }
-        box.addView(abstand(6));
-        box.addView(chip(R.drawable.ic_play, TRAINING, "Weiter trainieren", null, null, v -> gehe("training", -1)));
-        box.addView(chip(R.drawable.ic_weiter, MUTED, "Übung überspringen", "Zur nächsten Übung", null, v -> {
-            uebungUeberspringen();
-        }));
-        boolean sicher = System.currentTimeMillis() - beendenSeit < 4000;
-        box.addView(chip(R.drawable.ic_ende, PULS, sicher ? "Nochmals tippen" : "Training beenden", sicher ? "Dann wird gespeichert, was du hast" : "Speichert die gemachten Sätze", null, v -> {
-            if (System.currentTimeMillis() - beendenSeit < 4000) {
-                beenden();
-            } else {
-                beendenSeit = System.currentTimeMillis();
-                zeigen(2);
-            }
-        }));
-        box.addView(chip(R.drawable.ic_haus, MUTED, "Zur Übersicht", "Training läuft weiter", null, v -> gehe("home", -1)));
     }
 
     private void uebungUeberspringen() {
@@ -950,63 +1231,137 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         if (aktUebung() == null) {
             beenden();
         } else {
-            gehe("training", -1);
+            satzSeiteBauen(1);
+            if (trainingPager != null) {
+                trainingPager.geheZu(0, true);
+            }
         }
     }
 
     private void beenden() {
         pulsStoppen();
         bildschirmAn(false);
+        h.removeCallbacks(tickRunner);
         JSONObject l = lauf;
         lauf = null;
         prefs.edit().remove("lauf").apply();
         int fertig = satzZaehlen(l);
-        if (l == null || fertig == 0) {
-            gehe("home", -1);
-            return;
+        /* Training Bildschirm weg, darunter frische Startseiten auf der Seite Training */
+        if (trainingRahmen != null) {
+            root.removeView(trainingRahmen);
+            stapel.remove(trainingRahmen);
+            trainingRahmen = null;
+            trainingPager = null;
+            satzSeite = null;
+            pulsSeite = null;
         }
-        try {
-            long t0 = l.optLong("t0"), jetzt = System.currentTimeMillis();
-            JSONObject ev = new JSONObject();
-            ev.put("typ", "training");
-            ev.put("id", UUID.randomUUID().toString());
-            ev.put("day", l.optString("day"));
-            ev.put("start", iso(t0));
-            ev.put("ende", iso(jetzt));
-            ev.put("min", Math.max(1, Math.round((jetzt - t0) / 60000.0)));
-            JSONObject sets = new JSONObject();
-            JSONObject ls = l.optJSONObject("sets");
-            JSONArray names = ls != null ? ls.names() : null;
-            for (int i = 0; names != null && i < names.length(); i++) {
-                JSONArray a = ls.optJSONArray(names.optString(i));
-                JSONArray b = new JSONArray();
-                for (int k = 0; a != null && k < a.length(); k++) {
-                    JSONArray st = a.optJSONArray(k);
-                    b.put(new JSONObject().put("w", st.optString(0)).put("r", st.optString(1)));
+        if (l != null && fertig > 0) {
+            try {
+                long t0 = l.optLong("t0"), jetzt = System.currentTimeMillis();
+                JSONObject ev = new JSONObject();
+                ev.put("typ", "training");
+                ev.put("id", UUID.randomUUID().toString());
+                ev.put("day", l.optString("day"));
+                ev.put("start", iso(t0));
+                ev.put("ende", iso(jetzt));
+                ev.put("min", Math.max(1, Math.round((jetzt - t0) / 60000.0)));
+                JSONObject sets = new JSONObject();
+                JSONObject ls = l.optJSONObject("sets");
+                JSONArray names = ls != null ? ls.names() : null;
+                for (int i = 0; names != null && i < names.length(); i++) {
+                    JSONArray a = ls.optJSONArray(names.optString(i));
+                    JSONArray b = new JSONArray();
+                    for (int k = 0; a != null && k < a.length(); k++) {
+                        JSONArray st = a.optJSONArray(k);
+                        b.put(new JSONObject().put("w", st.optString(0)).put("r", st.optString(1)));
+                    }
+                    sets.put(names.optString(i), b);
                 }
-                sets.put(names.optString(i), b);
+                ev.put("sets", sets);
+                JSONObject p = l.optJSONObject("puls");
+                JSONObject puls = null;
+                if (p != null && p.optInt("n") > 0) {
+                    puls = new JSONObject().put("avg", Math.round(p.optDouble("sum") / p.optInt("n"))).put("max", p.optInt("max")).put("min", p.optInt("min"));
+                    ev.put("puls", puls);
+                }
+                senden(ev);
+                String erledigt = prefs.getString("erledigt", "");
+                prefs.edit().putString("erledigt", heute() + ":" + l.optString("day") + ";" + (erledigt.startsWith(heute()) ? erledigt : "")).apply();
+                fertigInfo = new JSONObject().put("n", l.optString("n")).put("f", fertig).put("s", satzGesamtVon(l)).put("min", ev.optInt("min"));
+                if (puls != null) {
+                    fertigInfo.put("avg", puls.optInt("avg")).put("max", puls.optInt("max"));
+                }
+                fertigInfo.put("hr", l.optJSONArray("hr") != null ? l.optJSONArray("hr") : new JSONArray());
+                vibrieren(new long[]{0, 120, 80, 120, 80, 300});
+            } catch (Exception ignored) {
             }
-            ev.put("sets", sets);
-            JSONObject p = l.optJSONObject("puls");
-            JSONObject puls = null;
-            if (p != null && p.optInt("n") > 0) {
-                puls = new JSONObject().put("avg", Math.round(p.optDouble("sum") / p.optInt("n")))
-                        .put("max", p.optInt("max")).put("min", p.optInt("min"));
-                ev.put("puls", puls);
-            }
-            senden(ev);
-            String erledigt = prefs.getString("erledigt", "");
-            prefs.edit().putString("erledigt", heute() + ":" + l.optString("day") + ";" + (erledigt.startsWith(heute()) ? erledigt : "")).apply();
-            fertigInfo = new JSONObject().put("n", l.optString("n")).put("f", fertig).put("s", satzGesamtVon(l))
-                    .put("min", ev.optInt("min"));
-            if (puls != null) {
-                fertigInfo.put("avg", puls.optInt("avg")).put("max", puls.optInt("max"));
-            }
-            fertigInfo.put("hr", l.optJSONArray("hr") != null ? l.optJSONArray("hr") : new JSONArray());
-            vibrieren(new long[]{0, 120, 80, 120, 80, 300});
-        } catch (Exception ignored) {
         }
-        gehe("fertig", 1);
+        homeBauen(2, false);
+        home.setScaleX(1f);
+        home.setScaleY(1f);
+        home.setAlpha(1f);
+        if (l != null && fertig > 0) {
+            fertigOeffnen();
+        }
+    }
+
+    private void fertigOeffnen() {
+        JSONObject f = fertigInfo;
+        ScrollView[] sv = new ScrollView[1];
+        LinearLayout box = liste(null, INK, sv);
+        float anteil = f != null && f.optInt("s") > 0 ? f.optInt("f") / (float) f.optInt("s") : 1f;
+        final RingView r = new RingView(this);
+        int g = (int) (W * 0.42f);
+        r.setLayoutParams(new LinearLayout.LayoutParams(g, g));
+        r.setDicke(9, 0);
+        r.setSchrift(0, 0, 36);
+        r.setMitte(icon(R.drawable.ic_check), anteil >= 1f ? INK : MUTED, "", "");
+        r.setRinge(new int[]{TRAINING}, new float[]{0}, false);
+        box.addView(r);
+        box.addView(abstand(6));
+        box.addView(text(anteil >= 1f ? "Geschafft" : "Gespeichert", 20, INK, 2));
+        if (f != null) {
+            box.addView(text(f.optString("n"), 14, MUTED, 0));
+            LinearLayout k = karte();
+            k.addView(tabellenZeile("Sätze", f.optInt("f") + " / " + f.optInt("s"), INK));
+            k.addView(tabellenZeile("Dauer", f.optInt("min") + " Min", INK));
+            if (f.optInt("avg") > 0) {
+                k.addView(tabellenZeile("Puls Ø", f.optInt("avg") + " bpm", PULS));
+                k.addView(tabellenZeile("Puls max", f.optInt("max") + " bpm", PULS));
+            }
+            JSONArray hr = f.optJSONArray("hr");
+            if (hr != null && hr.length() >= 3) {
+                TextView t = text("Pulsverlauf", 12, FAINT, 0);
+                t.setGravity(Gravity.START);
+                t.setPadding(0, px(8), 0, px(2));
+                k.addView(t);
+                LinieView lv = new LinieView(this);
+                int[] w = new int[hr.length()];
+                for (int i = 0; i < w.length; i++) {
+                    w[i] = hr.optInt(i);
+                }
+                lv.setWerte(w, PULS, true);
+                k.addView(lv, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, px(52)));
+            }
+            box.addView(k);
+            box.addView(text("Geht ans Handy, sobald es in der Nähe ist.", 12, FAINT, 0));
+        }
+        box.addView(abstand(6));
+        box.addView(pille("Fertig", R.drawable.ic_check, TRAINING, v -> {
+            View oben = stapel.get(stapel.size() - 1);
+            if (oben instanceof WischRahmen) {
+                ((WischRahmen) oben).schliessen();
+            }
+        }));
+        listeOeffnen(sv[0], box);
+        final float a = anteil;
+        r.postDelayed(() -> r.setRinge(new int[]{TRAINING}, new float[]{a}, true), 280);
+    }
+
+    private void laufSpeichern() {
+        if (lauf != null) {
+            prefs.edit().putString("lauf", lauf.toString()).apply();
+        }
     }
 
     private int satzZaehlen(JSONObject l) {
@@ -1021,192 +1376,13 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
     }
 
     private int satzGesamtVon(JSONObject l) {
-        JSONArray ex = l.optJSONArray("ex");
+        JSONArray ex = l == null ? null : l.optJSONArray("ex");
         int n = 0;
         for (int i = 0; ex != null && i < ex.length(); i++) {
             JSONObject e = ex.optJSONObject(i);
             n += e != null ? e.optInt("s") : 0;
         }
         return n;
-    }
-
-    private void fertigZeigen() {
-        JSONObject f = fertigInfo;
-        box.addView(uhrzeit());
-        box.addView(abstand(6));
-        float anteil = f != null && f.optInt("s") > 0 ? f.optInt("f") / (float) f.optInt("s") : 1f;
-        RingView r = new RingView(this);
-        int g = (int) (breite * 0.5f);
-        r.setLayoutParams(new LinearLayout.LayoutParams(g, g));
-        r.setDicke(8, 0);
-        r.setMitte(icon(R.drawable.ic_check), anteil >= 1f ? INK : MUTED, "", "");
-        r.setRinge(new int[]{TRAINING}, new float[]{anteil}, true);
-        box.addView(r);
-        box.addView(abstand(8));
-        box.addView(text(anteil >= 1f ? "Geschafft" : "Gespeichert", 19, INK, 2));
-        if (f == null) {
-            return;
-        }
-        box.addView(text(f.optString("n"), 12, MUTED, 0));
-        box.addView(abstand(8));
-        LinearLayout k = karte();
-        k.addView(tabellenZeile("Sätze", f.optInt("f") + " / " + f.optInt("s"), INK));
-        k.addView(tabellenZeile("Dauer", f.optInt("min") + " Min", INK));
-        if (f.optInt("avg") > 0) {
-            k.addView(tabellenZeile("Puls Ø", f.optInt("avg") + " bpm", PULS));
-            k.addView(tabellenZeile("Puls max", f.optInt("max") + " bpm", PULS));
-        }
-        JSONArray hr = f.optJSONArray("hr");
-        if (hr != null && hr.length() >= 3) {
-            TextView t = text("Pulsverlauf", 10, FAINT, 0);
-            t.setGravity(Gravity.START);
-            t.setPadding(0, px(8), 0, px(2));
-            k.addView(t);
-            LinieView lv = new LinieView(this);
-            int[] w = new int[hr.length()];
-            for (int i = 0; i < w.length; i++) {
-                w[i] = hr.optInt(i);
-            }
-            lv.setWerte(w, PULS, true);
-            k.addView(lv, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, px(46)));
-        }
-        box.addView(k);
-        box.addView(text("Geht ans Handy, sobald es in der Nähe ist.", 10, FAINT, 0));
-        box.addView(pille("Fertig", TRAINING, v -> gehe("home", -1)));
-    }
-
-    private void laufSpeichern() {
-        if (lauf != null) {
-            prefs.edit().putString("lauf", lauf.toString()).apply();
-        }
-    }
-
-    // ------------------------------------------------------------------ Essen
-
-    private RingView essenRing;
-    private Fortschritt proteinBalken;
-    private TextView essenZahl, proteinText;
-
-    private void essenZeigen() {
-        box.addView(uhrzeit());
-        box.addView(titel("Essen", KCAL));
-        JSONObject es = paket != null ? paket.optJSONObject("essen") : null;
-        if (es == null) {
-            box.addView(abstand(8));
-            box.addView(text("Noch keine Daten vom Handy", 13, MUTED, 0));
-            return;
-        }
-        box.addView(abstand(4));
-        essenRing = new RingView(this);
-        int g = (int) (breite * 0.56f);
-        essenRing.setLayoutParams(new LinearLayout.LayoutParams(g, g));
-        essenRing.setDicke(8, 0);
-        box.addView(essenRing);
-        LinearLayout pr = new LinearLayout(this);
-        pr.setOrientation(LinearLayout.VERTICAL);
-        pr.setPadding(px(18), px(8), px(18), px(4));
-        proteinText = text("", 11, PROTEIN, 1);
-        pr.addView(proteinText);
-        proteinBalken = new Fortschritt(this);
-        pr.addView(proteinBalken, balkenParams(5));
-        box.addView(pr, volleBreite());
-        essenAktualisieren(true);
-        box.addView(abstand(4));
-        JSONArray fav = es.optJSONArray("fav");
-        if (fav == null || fav.length() == 0) {
-            box.addView(text("Trag auf dem Handy etwas ein, dann erscheint es hier.", 12, MUTED, 0));
-        }
-        for (int i = 0; fav != null && i < fav.length(); i++) {
-            JSONObject f = fav.optJSONObject(i);
-            if (f == null) {
-                continue;
-            }
-            TextView kc = text(f.optInt("kc") + "", 13, INK, 2);
-            kc.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-            box.addView(chip(f.optInt("fav") == 1 ? R.drawable.ic_stern : R.drawable.ic_essen, KCAL, f.optString("n"), f.optString("m"), kc, v -> essenEintragen(f, v)));
-        }
-    }
-
-    private void essenAktualisieren(boolean animiert) {
-        JSONObject es = paket != null ? paket.optJSONObject("essen") : null;
-        if (es == null || essenRing == null) {
-            return;
-        }
-        int[] s = essenSumme();
-        int kz = es.optInt("kz"), prz = es.optInt("prz");
-        essenRing.setMitte(null, 0, String.valueOf(s[0]), "von " + kz + " kcal");
-        essenRing.setRinge(new int[]{KCAL}, new float[]{kz > 0 ? s[0] / (float) kz : 0}, animiert);
-        proteinText.setText(s[1] + " / " + prz + " g Protein");
-        proteinBalken.setWert(prz > 0 ? s[1] / (float) prz : 0, PROTEIN, animiert);
-    }
-
-    private void essenEintragen(JSONObject f, View chipView) {
-        if (!chipView.isEnabled()) {
-            return;
-        }
-        chipView.setEnabled(false);
-        try {
-            JSONObject ev = new JSONObject();
-            ev.put("typ", "essen");
-            ev.put("id", UUID.randomUUID().toString());
-            ev.put("k", f.optString("k"));
-            ev.put("m", mahlzeit());
-            ev.put("tag", heute());
-            senden(ev);
-            JSONArray offen = offenHeute();
-            offen.put(new JSONObject().put("t", System.currentTimeMillis()).put("kc", f.optInt("kc")).put("pr", f.optInt("pr")));
-            prefs.edit().putString("offen", new JSONObject().put("tag", heute()).put("l", offen).toString()).apply();
-        } catch (Exception ignored) {
-        }
-        vibrieren(new long[]{0, 30});
-        /* Symbol wird zum Haken, der Ring wächst */
-        if (chipView instanceof LinearLayout && ((LinearLayout) chipView).getChildAt(0) instanceof ImageView) {
-            ImageView ic = (ImageView) ((LinearLayout) chipView).getChildAt(0);
-            ic.setImageDrawable(icon(R.drawable.ic_check));
-            ic.setColorFilter(FREI, PorterDuff.Mode.SRC_IN);
-            ic.setBackground(oval(Masse.alpha(FREI, 0x38)));
-            ic.setScaleX(0.6f);
-            ic.setScaleY(0.6f);
-            ic.animate().scaleX(1f).scaleY(1f).setDuration(320).setInterpolator(new OvershootInterpolator(2.2f)).start();
-        }
-        essenAktualisieren(true);
-        h.postDelayed(() -> {
-            if ("essen".equals(screen)) {
-                chipView.setEnabled(true);
-            }
-        }, 1500);
-    }
-
-    private JSONArray offenHeute() {
-        JSONObject o = json(prefs.getString("offen", null));
-        if (o == null || !heute().equals(o.optString("tag"))) {
-            return new JSONArray();
-        }
-        JSONArray l = o.optJSONArray("l");
-        return l != null ? l : new JSONArray();
-    }
-
-    /** Summe von heute: was das Handy kennt, plus was auf der Uhr seither eingetragen wurde. */
-    private int[] essenSumme() {
-        JSONObject es = paket != null ? paket.optJSONObject("essen") : null;
-        boolean frisch = paketHeute();
-        int k = frisch && es != null ? es.optInt("k") : 0, pr = frisch && es != null ? es.optInt("pr") : 0;
-        long ts = frisch ? paket.optLong("ts") : 0;
-        JSONArray o = offenHeute();
-        for (int i = 0; i < o.length(); i++) {
-            JSONObject e = o.optJSONObject(i);
-            if (e != null && e.optLong("t") > ts) {
-                k += e.optInt("kc");
-                pr += e.optInt("pr");
-            }
-        }
-        return new int[]{k, pr};
-    }
-
-    private String mahlzeit() {
-        Calendar c = Calendar.getInstance();
-        double s = c.get(Calendar.HOUR_OF_DAY) + c.get(Calendar.MINUTE) / 60.0;
-        return s < 10 ? "morgen" : s < 14.5 ? "mittag" : s < 17 ? "snack" : s < 22 ? "abend" : "snack";
     }
 
     // ------------------------------------------------------------------ Puls, nur während des Trainings
@@ -1254,6 +1430,9 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         if (pulsView != null) {
             pulsView.setText(" " + v);
         }
+        if (pulsGross != null) {
+            pulsGross.setText(String.valueOf(v));
+        }
         long jetzt = System.currentTimeMillis();
         if (lauf == null || jetzt - pulsZuletzt < 2000) {
             return;
@@ -1281,6 +1460,9 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
                 hr.put(v);
             }
         } catch (Exception ignored) {
+        }
+        if (pulsSchnitt != null) {
+            pulsSchnitt.setText(pulsText());
         }
         if (p != null && p.optInt("n") % 15 == 0) {
             laufSpeichern();
@@ -1475,7 +1657,7 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         return r;
     }
 
-    /** Schnitt der abgeschlossenen Tage mit Werten, heute nur wenn schon etwas da ist */
+    /** Schnitt der Tage mit Werten bis heute, heute nur wenn das Paket von heute ist */
     private static int schnitt(JSONArray a, int heuteI, boolean frisch) {
         int s = 0, n = 0;
         for (int i = 0; a != null && i < a.length() && i <= heuteI; i++) {
@@ -1537,7 +1719,7 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         }
     }
 
-    // ------------------------------------------------------------------ Bausteine im Stil von One UI Watch
+    // ------------------------------------------------------------------ Bausteine
 
     private int px(float d) {
         return Math.round(Masse.dp(this, d));
@@ -1565,19 +1747,12 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         TextClock c = new TextClock(this);
         c.setFormat24Hour("HH:mm");
         c.setFormat12Hour("HH:mm");
-        c.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+        c.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
         c.setTextColor(INK);
         c.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
         c.setGravity(Gravity.CENTER_HORIZONTAL);
         c.setLayoutParams(volleBreite());
-        c.setPadding(0, 0, 0, px(4));
         return c;
-    }
-
-    private View titel(String s, int farbe) {
-        TextView t = text(s, 15, farbe, 2);
-        t.setPadding(0, px(2), 0, px(2));
-        return t;
     }
 
     private View abstand(int d) {
@@ -1588,12 +1763,6 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
 
     private LinearLayout.LayoutParams volleBreite() {
         return new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-    }
-
-    private LinearLayout.LayoutParams balkenParams(int hoeheDp) {
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, px(hoeheDp));
-        lp.topMargin = px(6);
-        return lp;
     }
 
     private Drawable icon(int res) {
@@ -1623,7 +1792,7 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         return g;
     }
 
-    /** Farbiges Symbol auf getöntem Kreis, wie in den Listen von Samsung */
+    /** Farbiges Symbol auf getöntem Kreis */
     private ImageView iconKreis(int res, int farbe, int groesseDp) {
         ImageView i = icon(res, farbe, groesseDp);
         i.setBackground(oval(Masse.alpha(farbe, 0x33)));
@@ -1632,27 +1801,27 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         return i;
     }
 
-    /** Listeneintrag: Symbol links, Titel und Untertitel, optional etwas rechts */
+    /** Listeneintrag nach Wear OS: mindestens 58 dp hoch, Symbol 36 dp, Titel 15 sp, Untertitel 13 sp */
     private LinearLayout chip(int iconRes, int farbe, String titel, String unter, View rechts, View.OnClickListener klick) {
         LinearLayout c = new LinearLayout(this);
         c.setOrientation(LinearLayout.HORIZONTAL);
         c.setGravity(Gravity.CENTER_VERTICAL);
-        c.setMinimumHeight(px(54));
-        c.setPadding(px(10), px(9), px(12), px(9));
-        c.setBackground(rund(CHIP, 27));
-        c.addView(iconKreis(iconRes, farbe, 32));
+        c.setMinimumHeight(px(58));
+        c.setPadding(px(10), px(10), px(14), px(10));
+        c.setBackground(rund(FLAECHE, 29));
+        c.addView(iconKreis(iconRes, farbe, 36));
         LinearLayout spalte = new LinearLayout(this);
         spalte.setOrientation(LinearLayout.VERTICAL);
         spalte.setPadding(px(10), 0, px(4), 0);
-        TextView t = text(titel, 14, INK, 1);
+        TextView t = text(titel, 15, INK, 1);
         t.setGravity(Gravity.START);
         t.setMaxLines(2);
         t.setEllipsize(TextUtils.TruncateAt.END);
         spalte.addView(t);
         if (unter != null && unter.length() > 0) {
-            TextView u = text(unter, 11, MUTED, 0);
+            TextView u = text(unter, 13, MUTED, 0);
             u.setGravity(Gravity.START);
-            u.setMaxLines(2);
+            u.setMaxLines(1);
             u.setEllipsize(TextUtils.TruncateAt.END);
             u.setPadding(0, px(2), 0, 0);
             spalte.addView(u);
@@ -1671,11 +1840,11 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
     private LinearLayout karte() {
         LinearLayout k = new LinearLayout(this);
         k.setOrientation(LinearLayout.VERTICAL);
-        k.setPadding(px(14), px(11), px(14), px(11));
-        k.setBackground(rund(CHIP, 22));
+        k.setPadding(px(16), px(12), px(16), px(12));
+        k.setBackground(rund(FLAECHE, 24));
         LinearLayout.LayoutParams lp = volleBreite();
-        lp.topMargin = px(6);
-        lp.bottomMargin = px(6);
+        lp.topMargin = px(10);
+        lp.bottomMargin = px(8);
         k.setLayoutParams(lp);
         return k;
     }
@@ -1683,102 +1852,80 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
     private View tabellenZeile(String label, String wert, int farbe) {
         LinearLayout r = new LinearLayout(this);
         r.setOrientation(LinearLayout.HORIZONTAL);
-        r.setPadding(0, px(4), 0, px(4));
-        TextView l = text(label, 12, MUTED, 0);
+        r.setPadding(0, px(5), 0, px(5));
+        TextView l = text(label, 14, MUTED, 0);
         l.setGravity(Gravity.START);
         r.addView(l, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        TextView w = text(wert, 13, farbe, 2);
+        TextView w = text(wert, 15, farbe, 2);
         w.setGravity(Gravity.END);
         r.addView(w, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
         return r;
     }
 
-    private View legende(int farbe, String wert, String label) {
-        LinearLayout s = new LinearLayout(this);
-        s.setOrientation(LinearLayout.VERTICAL);
-        s.setGravity(Gravity.CENTER_HORIZONTAL);
-        LinearLayout oben = new LinearLayout(this);
-        oben.setOrientation(LinearLayout.HORIZONTAL);
-        oben.setGravity(Gravity.CENTER);
-        View punkt = new View(this);
-        punkt.setBackground(oval(farbe));
-        LinearLayout.LayoutParams pp = new LinearLayout.LayoutParams(px(6), px(6));
-        pp.rightMargin = px(4);
-        oben.addView(punkt, pp);
-        TextView w = text(wert, 13, INK, 2);
-        w.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        oben.addView(w);
-        s.addView(oben);
-        s.addView(text(label, 10, FAINT, 0));
-        s.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        return s;
-    }
-
-    private View abzeichen(String s, int farbe) {
-        TextView t = text(s, 10, farbe, 2);
-        t.setBackground(rund(Masse.alpha(farbe, 0x30), 10));
-        t.setPadding(px(8), px(3), px(8), px(3));
+    /** Hauptknopf: 52 dp hoch, ganz rund, Symbol und Text */
+    private View pille(String s, int iconRes, int farbe, View.OnClickListener klick) {
+        LinearLayout p = new LinearLayout(this);
+        p.setOrientation(LinearLayout.HORIZONTAL);
+        p.setGravity(Gravity.CENTER);
+        p.setMinimumHeight(px(48));
+        p.setPadding(px(16), 0, px(18), 0);
+        p.setBackground(rund(farbe, 24));
+        if (iconRes != 0) {
+            ImageView i = icon(iconRes, INK, 20);
+            LinearLayout.LayoutParams il = new LinearLayout.LayoutParams(px(20), px(20));
+            il.rightMargin = px(8);
+            p.addView(i, il);
+        }
+        TextView t = text(s, 16, INK, 1);
         t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        return t;
+        p.addView(t);
+        klickbar(p, klick);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams((int) (W * 0.56f), px(48));
+        lp.topMargin = px(4);
+        p.setLayoutParams(lp);
+        return p;
     }
 
-    private View pille(String s, int farbe, View.OnClickListener klick) {
-        TextView t = text(s, 15, INK, 2);
-        t.setGravity(Gravity.CENTER);
-        t.setMinHeight(px(48));
-        t.setBackground(rund(farbe, 24));
-        klickbar(t, klick);
-        LinearLayout.LayoutParams lp = volleBreite();
-        lp.topMargin = px(10);
-        lp.leftMargin = px(14);
-        lp.rightMargin = px(14);
-        t.setLayoutParams(lp);
-        return t;
+    /** Kleiner Knopf (40 dp) für Nebenaktionen */
+    private View kompakt(String s, int iconRes, int farbe, View.OnClickListener klick) {
+        LinearLayout p = new LinearLayout(this);
+        p.setOrientation(LinearLayout.HORIZONTAL);
+        p.setGravity(Gravity.CENTER);
+        p.setPadding(px(14), 0, px(16), 0);
+        p.setBackground(rund(FLAECHE, 20));
+        if (iconRes != 0) {
+            ImageView i = icon(iconRes, farbe, 16);
+            LinearLayout.LayoutParams il = new LinearLayout.LayoutParams(px(16), px(16));
+            il.rightMargin = px(6);
+            p.addView(i, il);
+        }
+        TextView t = text(s, 14, INK, 1);
+        t.setMaxLines(1);
+        t.setEllipsize(TextUtils.TruncateAt.END);
+        t.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        p.addView(t);
+        klickbar(p, klick);
+        p.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, px(38)));
+        return p;
     }
 
-    private View knopfKlein(int res, int farbe) {
-        ImageView i = icon(res, INK, 30);
-        i.setBackground(oval(farbe));
-        int pad = px(8);
-        i.setPadding(pad, pad, pad, pad);
-        return i;
-    }
-
-    private View rundKnopf(int res, int bg, int fg, int groesseDp, View.OnClickListener klick) {
-        ImageView i = icon(res, fg, groesseDp);
-        i.setBackground(oval(bg));
-        int pad = Math.round(px(groesseDp) * 0.27f);
-        i.setPadding(pad, pad, pad, pad);
-        klickbar(i, klick);
-        return i;
-    }
-
-    private View knopfMitText(int res, int bg, int fg, String label, View.OnClickListener klick) {
-        LinearLayout s = new LinearLayout(this);
-        s.setOrientation(LinearLayout.VERTICAL);
-        s.setGravity(Gravity.CENTER_HORIZONTAL);
-        s.addView(rundKnopf(res, bg, fg, 44, klick));
-        TextView t = text(label, 10, MUTED, 0);
-        t.setPadding(0, px(4), 0, 0);
-        s.addView(t);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(px(70), LinearLayout.LayoutParams.WRAP_CONTENT);
-        s.setLayoutParams(lp);
-        return s;
-    }
-
-    private LinearLayout reihe() {
-        LinearLayout r = new LinearLayout(this);
-        r.setOrientation(LinearLayout.HORIZONTAL);
-        r.setGravity(Gravity.CENTER);
-        LinearLayout.LayoutParams lp = volleBreite();
-        lp.topMargin = px(10);
-        r.setLayoutParams(lp);
-        return r;
+    /** Knopf am unteren Rand, folgt der Rundung */
+    private void kante(FrameLayout seite, String s, int iconRes, int farbe, View.OnClickListener klick) {
+        KantenKnopf k = new KantenKnopf(this, Math.min(W, H));
+        k.setInhalt(s, icon(iconRes), farbe, INK);
+        klickbar(k, klick);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, px(58), Gravity.BOTTOM);
+        seite.addView(k, lp);
     }
 
     private View stepper(TextView wert, String einheit, int knopfDp, Runnable minus, Runnable plus) {
-        LinearLayout r = reihe();
-        r.addView(rundKnopf(R.drawable.ic_minus, CHIP, INK, knopfDp, v -> {
+        LinearLayout r = new LinearLayout(this);
+        r.setOrientation(LinearLayout.HORIZONTAL);
+        r.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams rl = volleBreite();
+        rl.topMargin = px(4);
+        r.setLayoutParams(rl);
+        r.addView(rundKnopf(R.drawable.ic_minus, FLAECHE, INK, knopfDp, v -> {
             minus.run();
             huepfen(wert);
         }));
@@ -1787,19 +1934,28 @@ public class UhrActivity extends Activity implements SensorEventListener, DataCl
         mitte.setGravity(Gravity.CENTER);
         mitte.addView(wert);
         if (einheit != null) {
-            mitte.addView(text(einheit, 10, FAINT, 0));
+            mitte.addView(text(einheit, 13, FAINT, 0));
         }
         r.addView(mitte, new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        r.addView(rundKnopf(R.drawable.ic_plus, CHIP, INK, knopfDp, v -> {
+        r.addView(rundKnopf(R.drawable.ic_plus, FLAECHE, INK, knopfDp, v -> {
             plus.run();
             huepfen(wert);
         }));
         return r;
     }
 
+    private View rundKnopf(int res, int bg, int fg, int groesseDp, View.OnClickListener klick) {
+        ImageView i = icon(res, fg, groesseDp);
+        i.setBackground(oval(bg));
+        int pad = Math.round(px(groesseDp) * 0.28f);
+        i.setPadding(pad, pad, pad, pad);
+        klickbar(i, klick);
+        return i;
+    }
+
     private void huepfen(View v) {
-        v.setScaleX(1.14f);
-        v.setScaleY(1.14f);
+        v.setScaleX(1.16f);
+        v.setScaleY(1.16f);
         v.animate().scaleX(1f).scaleY(1f).setDuration(220).setInterpolator(new DecelerateInterpolator()).start();
     }
 

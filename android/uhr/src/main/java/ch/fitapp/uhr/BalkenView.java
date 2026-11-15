@@ -33,7 +33,7 @@ public class BalkenView extends View {
         linie.setColor(0xFF6E6E6E);
         linie.setPathEffect(new DashPathEffect(new float[]{Masse.dp(c, 3), Masse.dp(c, 3)}, 0));
         schrift.setTextAlign(Paint.Align.CENTER);
-        schrift.setTextSize(Masse.sp(c, 10));
+        schrift.setTextSize(Masse.sp(c, 12));
     }
 
     /** werte: Float.NaN heisst noch kein Wert (Zukunft). soll darf null sein. ziel 0 heisst keine Linie. */
@@ -69,7 +69,7 @@ public class BalkenView extends View {
     @Override
     protected void onDraw(Canvas c) {
         float w = getWidth(), h = getHeight();
-        float labelH = Masse.sp(getContext(), 14);
+        float labelH = Masse.sp(getContext(), 17);
         float oben = Masse.dp(getContext(), 2);
         float hoehe = h - labelH - oben;
         float max = ziel;
@@ -86,7 +86,7 @@ public class BalkenView extends View {
         }
         max *= 1.08f;
         float spalte = w / 7f;
-        float bw = Math.min(spalte * 0.46f, Masse.dp(getContext(), 12));
+        float bw = Math.min(spalte * 0.5f, Masse.dp(getContext(), 14));
         for (int i = 0; i < 7; i++) {
             float x = spalte * (i + 0.5f);
             /* Spur: geplant oder ganze Höhe */
