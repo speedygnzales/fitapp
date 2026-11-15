@@ -949,8 +949,15 @@ body.blatt #toast.show { transform: translate(-50%, 0) scale(1); }
 /* Profil */
 .hc-diag { margin-top: 14px; padding: 12px 14px 8px; border-radius: 12px; background: var(--fill); }
 .hc-diag .lab { margin-bottom: 4px; }
+.hc-diag .st-dr > span:last-child { overflow-wrap: anywhere; min-width: 0; }
 #pIn, #kopTxt { width: 100%; box-sizing: border-box; background: var(--fill); color: var(--ink); border: 1px solid var(--line2); border-radius: 12px; padding: 12px; font: 16px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; }
 /* 16px, sonst zoomt Safari auf dem iPhone beim Antippen hinein */
+.ph-seg { display: flex; gap: 4px; margin: 10px 0 12px; }
+.ph-seg i { flex: 1; height: 6px; border-radius: 3px; background: var(--fill2); }
+.ph-seg i.ok { background: var(--ink); }
+.ph-seg i.cur { background: var(--muted); }
+.card.offen { border-color: var(--line2); background: var(--fill); }
+.card.offen .big { font-size: 1.15rem; font-weight: 600; }
 .prof-w { background: var(--fill); border-color: var(--line2); border-radius: 20px; }
 .prof-w .schritte li { margin-bottom: 4px; }
 /* ======================================================= Bewegung
@@ -1220,28 +1227,33 @@ const ABEND_GEL = 'PC aus. Gesicht nur mit Wasser, trocknen, CeraVe Gel dünn. G
 /* Zwei Wecker: Die Uhr weckt (Vibration), das Handy klingelt 2 Minuten später auf der anderen Seite des Zimmers.
    Ausschalten geht nur im Stehen, dort beginnt direkt das Mini Training. */
 const WECKER = (z, h) => [z, `Uhr vibriert. Um ${h} klingelt das Handy auf der anderen Seite des Zimmers: aufstehen und dort ausschalten`, 'schlaf'];
-const MORGEN = (auf, handy, start, rest) => [WECKER(auf, handy),
-  [start, 'Licht an, Glas Wasser trinken, dann direkt Mini Training beim Handy', 'training']].concat(rest);
+/* Der fünfte Wert ist die Bedingung: nur an Tagen mit diesem Training (K) oder ohne (!K). {tag} und {min} setzt die App aus der aktuellen Phase ein. */
+const MORGEN = (auf, handy, start, nach, rest) => [WECKER(auf, handy),
+  [start, 'Licht an, Glas Wasser trinken, dann direkt Mini Training beim Handy', 'training', null, 'K'],
+  [start, `Licht an, Glas Wasser trinken, 10 Kniebeugen. {tag} kommt heute nach ${nach}`, 'schlaf', null, '!K']].concat(rest);
 /* Arbeitstage Mo bis Mi: 06:30 bis 16:00, um 17:00 zuhause */
-const MORGEN_ARBEIT = () => MORGEN('04:50', '04:52', '04:53', [
-  ['05:00', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
-  ['05:10', 'Anziehen. Whey mit Milch in die Flasche, Skyr für den Nachmittag einpacken', 'essen'],
-  ['05:15', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
-  ['05:21', 'Puffer: Zähne, Schuhe, Tasche', 'frei'],
+/* Platz für das Mini Training bis 11 Minuten, danach geht es ohne Hetze */
+const MORGEN_ARBEIT = () => MORGEN('04:50', '04:52', '04:53', 'der Arbeit', [
+  ['05:05', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
+  ['05:13', 'Anziehen. Whey mit Milch in die Flasche, Skyr für den Nachmittag einpacken', 'essen'],
+  ['05:18', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
+  ['05:23', 'Puffer: Zähne, Schuhe, Tasche', 'frei'],
   ['05:28', 'Raus, 8 Min zum Bahnhof', 'arbeit'],
   ['05:38', 'Zug: Shake trinken, das ist dein Frühstück. Kokoswasser höchstens dazu. Am Fenster sitzen, Licht macht wach', 'essen'],
   ['06:30', 'Arbeit', 'arbeit']]);
 /* Schultage Do und Fr: 06:30 raus */
-const MORGEN_SCHULE = einpacken => MORGEN('05:20', '05:22', '05:23', [
-  ['05:30', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
-  ['05:40', 'Anziehen, Shake mit Milch trinken, das ist dein Frühstück. ' + einpacken + ' einpacken', 'essen'],
-  ['05:45', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
-  ['05:52', 'Zeit für dich. Heute fährst du später', 'frei'],
+const MORGEN_SCHULE = einpacken => MORGEN('05:20', '05:22', '05:23', 'der Schule', [
+  ['05:35', 'Duschen, Gesicht mit der Reinigungslotion', 'pflege'],
+  ['05:45', 'Anziehen, Shake mit Milch trinken, das ist dein Frühstück. ' + einpacken + ' einpacken', 'essen'],
+  ['05:50', 'Trocken rasieren: Haut straff, langsam, wenig Druck', 'pflege'],
+  ['05:57', 'Zeit für dich. Heute fährst du später', 'frei'],
   ['06:30', 'Raus zur Berufsschule', 'arbeit'],
   ['07:30', 'Schule', 'arbeit']]);
 const DESSERT = 'Dessert: eine kleine Schüssel, nie die Packung. Am Samstag egal';
+/* Was am Morgen nicht geklappt hat, kommt direkt nach dem Heimkommen. Nicht erst nach dem Gaming. */
 const ABEND = (heim, lichtAus, pc, notiz) => [
-  [heim, 'Zuhause. Freizeit', 'frei'],
+  [heim, 'Zuhause. Mini heute Morgen verpasst? Jetzt nachholen, Schuhe noch an. Dann Freizeit', 'frei', null, 'K'],
+  [heim, 'Zuhause. {tag} noch nicht gemacht? Jetzt, etwa {min} Min, noch vor dem Sofa. Dann Freizeit', 'training', null, '!K'],
   ['18:00', 'Gaming mit den Jungs', 'frei'],
   ['19:00', 'Abendessen mit der Familie, Game pausieren. Dazu {supps}. ' + DESSERT, 'essen'],
   ['19:40', 'Gaming oder Freizeit', 'frei'],
@@ -1261,26 +1273,31 @@ const OMAR_WOCHE = [
       ABEND('17:00', '20:30', '20:10', '8 Stunden 20 bis 04:50')) },
   { k: 'Mi', name: 'Mittwoch', art: 'Mini', items: MORGEN_ARBEIT().concat(MITTAG_ARBEIT,
       ABEND('17:00', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
-  { k: 'Do', name: 'Donnerstag', art: 'Mini', items: MORGEN_SCHULE('Mittag und Skyr').concat([
+  { k: 'Do', name: 'Donnerstag', art: '{tag}', items: MORGEN_SCHULE('Mittag und Skyr').concat([
       ['12:00', 'Mittag in der Pause', 'essen'],
       ['12:45', 'Schule', 'arbeit']], ABEND('17:30', '21:00', '20:40', '8 Stunden 20 bis 05:20')) },
-  { k: 'Fr', name: 'Freitag', art: 'Mini', items: MORGEN_SCHULE('Skyr').concat([
+  { k: 'Fr', name: 'Freitag', art: '{tag}', items: MORGEN_SCHULE('Skyr').concat([
       ['09:30', 'Snack in der Pause: Skyr', 'essen'],
       ['09:40', 'Schule', 'arbeit'],
-      ['11:45', 'Schulschluss, ab nach Hause', 'arbeit'],
-      ['12:45', 'Zuhause, Mittag', 'essen'],
-      ['13:30', 'Freizeit, Wochenende fängt an', 'frei'],
+      ['11:45', 'Schulschluss, ab nach Hause', 'arbeit', null, 'K'],
+      ['11:45', 'Schulschluss. Direkt ins Schulfitness, nicht zuerst heim: {tag}, etwa {min} Min', 'training', null, '!K'],
+      ['12:25', 'Duschen und ab nach Hause', 'arbeit', null, '!K'],
+      ['12:45', 'Zuhause, Mittag', 'essen', null, 'K'],
+      ['13:25', 'Zuhause, Mittag mit viel Protein', 'essen', null, '!K'],
+      ['13:30', 'Mini heute Morgen verpasst? Jetzt nachholen. Dann Freizeit, Wochenende fängt an', 'frei', null, 'K'],
+      ['14:00', 'Freizeit, Wochenende fängt an. {tag} nicht geschafft? Jetzt zuhause nachholen, vor dem Gaming', 'frei', null, '!K'],
       ['18:00', 'Gaming mit den Jungs', 'frei'],
       ['19:00', 'Abendessen, Game pausieren. Dazu {supps}. ' + DESSERT, 'essen'],
       ['19:40', 'Gaming', 'frei'],
       ['00:40', ABEND_GEL, 'pflege'],
       ['01:00', 'Licht aus. Morgen ausschlafen bis 10:00', 'schlaf']]) },
-  { k: 'Sa', name: 'Samstag', art: 'Wochenende', items: [
+  { k: 'Sa', name: 'Samstag', art: '{tag}', items: [
       ['10:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
       ['10:05', 'Gesicht mit der Reinigungslotion, trocknen, rasieren', 'pflege'],
       ['10:30', 'Cheat Day: iss, worauf du Lust hast', 'essen'],
-      ['11:00', 'Wochenend Training: 15 Min, ganzer Körper', 'training'],
-      ['11:20', 'Duschen, dann Freizeit', 'frei'],
+      ['11:00', 'Training: {tag}, etwa {min} Min', 'training'],
+      ['11:20', 'Duschen, dann Freizeit', 'frei', null, 'W'],
+      ['11:35', 'Duschen, dann Freizeit', 'frei', null, '!W'],
       ['14:00', 'Raus, 7000 Schritte', 'training'],
       ['16:00', 'Freizeit und Gaming', 'frei'],
       ['19:00', 'Abendessen. Dazu {supps}', 'essen'],
@@ -1290,7 +1307,7 @@ const OMAR_WOCHE = [
   { k: 'So', name: 'Sonntag', art: 'Spaziergang', items: [
       ['09:00', 'Aufstehen, ein Glas Wasser', 'schlaf'],
       ['09:30', 'Erste Mahlzeit mit Protein. Ab heute wieder normal essen', 'essen'],
-      ['10:00', 'Wochenend Training verpasst? Jetzt nachholen. Sonst 7000 Schritte', 'training'],
+      ['10:00', 'Pflicht Training diese Woche verpasst? Jetzt nachholen. Sonst 7000 Schritte', 'training'],
       ['11:00', 'Duschen, Gesicht waschen, danach trocken rasieren', 'pflege'],
       ['11:30', 'Freizeit', 'frei'],
       ['18:00', 'Foto von der Stirn. Einkaufsliste an die Eltern: Milch und Skyr für die Woche', 'pflege'],
@@ -1313,6 +1330,8 @@ const MINI_RUDERN_ALT = { id: 'k4', name: 'Rucksack Rudern', sets: 2, ziel: '10,
    Gespeichert nur auf diesem Handy (LS profil). Ein Profil kommt als JSON, zum Beispiel von Claude, und wird streng geprüft.
    Wer die App schon vorher benutzt hat, bekommt beim ersten Start einmal sein bisheriges Profil (alt). */
 const PROFIL_FORMAT = 'fitapp-profil';
+/* Version des alten Profils. Steigt sie, bekommt das alte Profil einmal den neuen Stand (2: Phasen bis zu den vollen Tagen A, B, C). */
+const ALT_V = 2;
 const WT_LANG = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 const WO_KURZ = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 const WO_LANG = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
@@ -1326,18 +1345,18 @@ function altProfil() {
     woche[d.k] = { art: d.art, items: d.items.map(it => {
       const t = it[1];
       const g = it[2] === 'training' ? null : /\{supps\}/.test(t) ? 'supp' : t.indexOf(ABEND_GEL) === 0 ? 'gel' : /Foto von der Stirn/.test(t) ? 'foto' : /Glas Wasser/.test(t) && it[2] === 'schlaf' ? 'wasser' : null;
-      return g ? [it[0], t, it[2], g] : [it[0], t, it[2]];
+      const r = [it[0], t, it[2]]; if (g || it[4]) r.push(g || null); if (it[4]) r.push(it[4]); return r;
     }) };
   });
   const tage = clone(PLAN_OMAR_TAGE);
   tage.forEach(d => {
     if (EN_ALT[d.id]) d.en = EN_ALT[d.id];
     if (d.id === 'K') { d.pflicht = true; d.minSaetze = 1; }
-    if (d.id === 'W') d.pflicht = true;
+    if (['W', 'A', 'B', 'C'].indexOf(d.id) >= 0) d.pflicht = true;
     d.ex.forEach(ex => { if (STEIG_ALT[ex.id]) ex.steig = clone(STEIG_ALT[ex.id]); });
   });
   return {
-    format: PROFIL_FORMAT, version: 1, id: 'alt', name: 'Mein Profil',
+    format: PROFIL_FORMAT, version: 1, id: 'alt', altV: ALT_V, name: 'Mein Profil',
     person: { alter: 17, groesse: 180, gewicht: 79 },
     ziele: { k: 2200, pr: 130, f: 70, kh: 265, kcalMin: 2200, schritte: 7000, schlaf: 480, erklaerung: [
       'Bei 180 cm, rund 79 kg, Bürojob, kurzem Training und 7000 Schritten verbrauchst du geschätzt 2600 bis 2800 kcal. Mit 2200 bist du klar im Minus und verlierst Fett, grob ein halbes Kilo pro Woche. Weniger lohnt sich nicht: Muskeln brauchen Energie, und du wächst noch.',
@@ -1348,15 +1367,36 @@ function altProfil() {
     cheatTag: 6,
     supplements: [{ text: '2 Tropfen Vitamin D', monate: [10, 11, 12, 1, 2, 3] }, { text: '1 Omega 3 Kapsel' }],
     gewohnheiten: { wasser: 'Glas Wasser am Morgen', supp: 'Vitamin D und Omega 3', gel: 'Gel und Wasser ans Bett', foto: 'Foto der Stirn' },
-    training: { days: tage, nachholen: ['W'], nachholTag: 0, stufen: {
+    training: { days: tage, nachholen: ['W', 'A', 'B', 'C'], nachholTag: 0, phasen: { phasen: OMAR_PHASEN(), extra: [Object.assign({ vor: 'k3' }, MINI_RUDERN_ALT)] } },
+    woche
+  };
+}
+/* Der Weg vom Mini Training bis zu den vollen Tagen A, B und C. Jede Phase braucht n komplette Pflicht Trainings,
+   erst dann wird es schwerer. Wer aussetzt, bleibt stehen, fällt aber nicht zurück. Etwa 7 Wochen, wenn alles klappt. */
+function OMAR_PHASEN() {
+  const MF = [1, 2, 3, 4, 5];
+  const K1 = w => ({ wds: w, sets: { k1: 1, k2: 1, k3: 1 }, pause: 30, titel: '5 Minuten nach dem Aufstehen' });
+  const K2 = w => ({ wds: w, sets: { k1: 2, k2: 2, k3: 2 }, pause: 45, titel: '8 Minuten nach dem Aufstehen' });
+  const K3 = w => ({ wds: w, sets: { k1: 2, k2: 2, k4: 2, k3: 2 }, pause: 45, titel: '11 Minuten nach dem Aufstehen' });
+  return [
+    { name: 'Start', txt: 'Mini mit je 1 Satz, Samstag ein kurzes Ganzkörper Training', n: 6, tage: { K: K1(MF), W: { wds: [6], minus: 1 } } },
+    { name: 'Mehr Sätze', txt: 'Mini mit je 2 Sätzen, Samstag das ganze Wochenend Training', n: 6, tage: { K: K2(MF), W: { wds: [6] } } },
+    { name: 'Rudern dazu', txt: 'Mini mit Rucksack Rudern für den Rücken', n: 6, tage: { K: K3(MF), W: { wds: [6] } } },
+    { name: 'Erster grosser Tag', txt: 'Samstag Tag C statt Wochenend Training, leichte Version', n: 6, tage: { K: K3(MF), C: { wds: [6], minus: 1 } } },
+    { name: 'Zwei grosse Tage', txt: 'Freitag Tag B im Schulfitness, Samstag Tag C, beide leicht', n: 8, tage: { K: K3([1, 2, 3, 4]), B: { wds: [5], minus: 1 }, C: { wds: [6], minus: 1 } } },
+    { name: 'Drei grosse Tage', txt: 'Donnerstag Tag A, Freitag Tag B, Samstag Tag C, alle leicht', n: 9, tage: { K: K3([1, 2, 3]), A: { wds: [4], minus: 1 }, B: { wds: [5], minus: 1 }, C: { wds: [6], minus: 1 } } },
+    { name: 'Ziel: volle Tage', txt: 'Tag A, B und C mit allen Sätzen, Montag bis Mittwoch Mini', n: 8, tage: { K: K3([1, 2, 3]), A: { wds: [4] }, B: { wds: [5] }, C: { wds: [6] } } }
+  ];
+}
+/* Frühere Stufen des Mini Trainings, noch für das Beispielprofil */
+function miniStufenAlt() {
+  return {
       tag: 'K', proStufe: 8, stufen: [
         { min: 5, txt: 'je 1 Satz', pause: 30, titel: '5 Minuten nach dem Aufstehen', sets: { k1: 1, k2: 1, k3: 1 } },
         { min: 8, txt: 'je 2 Sätze', pause: 45, titel: '8 Minuten nach dem Aufstehen', sets: { k1: 2, k2: 2, k3: 2 } },
         { min: 11, txt: 'je 2 Sätze plus Rucksack Rudern', pause: 45, titel: '11 Minuten nach dem Aufstehen', sets: { k1: 2, k2: 2, k4: 2, k3: 2 } },
         { min: 15, txt: 'je 3 Sätze plus Rucksack Rudern', pause: 60, titel: '15 Minuten nach dem Aufstehen', sets: { k1: 3, k2: 3, k4: 2, k3: 3 } }],
-      extra: [Object.assign({ vor: 'k3' }, MINI_RUDERN_ALT)] } },
-    woche
-  };
+      extra: [Object.assign({ vor: 'k3' }, MINI_RUDERN_ALT)] };
 }
 /* Beispiel für alle ohne eigenes Profil: klein anfangen, alles austauschbar */
 function beispielProfil() {
@@ -1376,10 +1416,11 @@ function beispielProfil() {
     training: { days: tage, nachholen: ['W'], nachholTag: 0, stufen: altProfilStufen() }, woche
   };
 }
-function altProfilStufen() { return clone(altProfil().training.stufen); }
+function altProfilStufen() { return miniStufenAlt(); }
 function khRestRoh(k, pr, f) { return Math.max(0, Math.round((k - 4 * pr - 9 * f) / 4 / 5) * 5); }
 function profilLaden() {
-  const p = LS.get('profil', null);
+  let p = LS.get('profil', null);
+  if (p && p.format === PROFIL_FORMAT && p.id === 'alt' && (p.altV || 1) < ALT_V) { const a = altProfil(); a.name = p.name || a.name; LS.set('profil', a); p = a; }
   /* Jedes gespeicherte Profil wird beim Start nochmals geprüft, auch eins aus einer Sicherung */
   if (p && p.format === PROFIL_FORMAT) { const r = profilPruefen(p); if (r.p) { r.p.id = p.id === 'alt' ? 'alt' : 'eigen'; if (p.id === 'alt') r.p.name = p.name; return r.p; } }
   /* Schon benutzt, aber noch ohne Profil: das bisherige Profil einmal übernehmen */
@@ -1391,15 +1432,18 @@ let profil = profilLaden();
 const CHEAT = typeof profil.cheatTag === 'number' ? profil.cheatTag : null;
 function istCheat(k) { return CHEAT != null && keyDatum(k).getDay() === CHEAT; }
 const NACHHOL_TAG = typeof profil.training.nachholTag === 'number' ? profil.training.nachholTag : 0;
-const STUFEN = profil.training.stufen || null;
+/* Phasen gehen vor Stufen: Phasen steuern den ganzen Plan, Stufen nur einen Tag */
+const PHASEN = profil.training.phasen && profil.training.phasen.phasen && profil.training.phasen.phasen.length ? profil.training.phasen : null;
+const STUFEN = PHASEN ? null : profil.training.stufen || null;
+const EXTRA = (PHASEN ? PHASEN.extra : STUFEN && STUFEN.extra) || [];
 /* Steigerung pro Übung steht im Profil (steig). */
 function steigVon(exId) {
   for (const d of profil.training.days) { const e = d.ex.find(x => x.id === exId); if (e && e.steig) return e.steig; }
-  const x = STUFEN && (STUFEN.extra || []).find(e => e.id === exId); return x && x.steig ? x.steig : null;
+  const x = EXTRA.find(e => e.id === exId); return x && x.steig ? x.steig : null;
 }
 function steigIds() {
   const s = new Set(); profil.training.days.forEach(d => d.ex.forEach(e => { if (e.steig) s.add(e.id); }));
-  ((STUFEN && STUFEN.extra) || []).forEach(e => { if (e.steig) s.add(e.id); });
+  EXTRA.forEach(e => { if (e.steig) s.add(e.id); });
   return Array.from(s);
 }
 function profilTag(id) { return profil.training.days.find(d => d.id === id) || null; }
@@ -1449,6 +1493,62 @@ let editMode = false;
 function savePlan() { LS.set('plan', plan); }
 function saveSessions() { LS.set('sess', sessions); }
 
+/* ======================================================= Phasen
+   Der Plan wird Schritt für Schritt schwerer. Eine Phase legt fest, welcher Trainingstag an welchem Wochentag dran ist
+   und mit wie vielen Sätzen. Nach n kompletten Pflicht Trainings seit dem Start der Phase kommt ab dem nächsten Tag die nächste.
+   Wechselt die Phase heute, gilt der neue Plan erst ab morgen, damit das heutige Training nicht plötzlich falsch zählt. */
+let WOCHE = [];
+/* Welcher Tag an welchem Wochentag dran war, vor jedem Wechsel gesichert. Streak und Statistik werten alte Tage damit richtig. */
+let wdsHist = LS.get('wdsHist', []);
+function wdsKarte() { const m = {}; plan.days.forEach(d => { if ((d.wds || []).length) m[d.id] = d.wds.slice(); }); return m; }
+function phaseStand() { const st = LS.get('phase', null); return st && Number.isInteger(st.i) && PHASEN && st.i >= 0 && st.i < PHASEN.phasen.length && /^\d{4}-\d\d-\d\d$/.test(st.ab || '') ? st : null; }
+/* Zählt komplette Trainings der Pflichttage dieser Phase seit ihrem Start */
+function phaseZaehlt(P, ab) {
+  return history.filter(h => h.voll !== false && P.tage[h.dayId] && (profilTag(h.dayId) || {}).pflicht && tagKey(new Date(h.date)) >= ab).length;
+}
+function phaseSaetze(d, t) {
+  const basis = profilTag(d.id); const sets = t.sets || {};
+  const extraIds = EXTRA.map(x => x.id).filter(id => !(basis && basis.ex.some(b => b.id === id)));
+  /* Übungen aus dem Profil, die fehlen, kommen zurück. Extras nur, wenn die Phase sie will. */
+  if (basis) basis.ex.forEach((b, bi) => { if (sets[b.id] !== 0 && !d.ex.some(e => e.id === b.id)) d.ex.splice(Math.min(bi, d.ex.length), 0, clone(b)); });
+  Object.entries(sets).forEach(([id, n]) => {
+    if (n > 0 && !d.ex.some(e => e.id === id)) { const x = EXTRA.find(y => y.id === id); if (x) { const e = clone(x); delete e.vor; const j = x.vor ? d.ex.findIndex(y => y.id === x.vor) : -1; d.ex.splice(j >= 0 ? j : d.ex.length, 0, e); } }
+  });
+  d.ex = d.ex.filter(e => sets[e.id] !== 0 && !(extraIds.indexOf(e.id) >= 0 && !(sets[e.id] > 0)));
+  d.ex.forEach((e, i) => {
+    const b = basis && basis.ex.find(x => x.id === e.id);
+    if (sets[e.id] > 0) e.sets = sets[e.id]; else if (b) e.sets = Math.max(1, b.sets - (t.minus || 0));
+    if (t.pause != null) e.pause = i === d.ex.length - 1 ? 0 : t.pause; else if (b) e.pause = b.pause;
+  });
+  if (t.titel) d.title = t.titel; else if (basis) d.title = basis.title;
+}
+function phaseAnwenden(i) {
+  const P = PHASEN.phasen[i]; const heute = tagKey(new Date());
+  if (!wdsHist.some(x => x.bis === heute)) { wdsHist.push({ bis: heute, m: wdsKarte() }); wdsHist = wdsHist.slice(-40); LS.set('wdsHist', wdsHist); }
+  const belegt = new Set(); Object.values(P.tage).forEach(t => t.wds.forEach(w => belegt.add(w)));
+  plan.days.forEach(d => {
+    const t = P.tage[d.id];
+    if (t) { d.wds = t.wds.slice(); phaseSaetze(d, t); }
+    else d.wds = (d.wds || []).filter(w => !belegt.has(w));
+  });
+  plan.phase = i; savePlan();
+}
+function phasePruefen(melden) {
+  if (!PHASEN) return false;
+  const heute = tagKey(new Date()); let st = phaseStand() || { i: 0, ab: heute, an: false };
+  let neu = false;
+  if (!st.an && st.ab <= heute) { phaseAnwenden(st.i); st.an = true; neu = true; }
+  if (st.an && st.i < PHASEN.phasen.length - 1 && phaseZaehlt(PHASEN.phasen[st.i], st.ab) >= PHASEN.phasen[st.i].n) {
+    const m = new Date(); m.setDate(m.getDate() + 1);
+    st = { i: st.i + 1, ab: tagKey(m), an: false };
+    if (melden) setTimeout(() => phaseGeschafft(st.i), 1800);
+  }
+  LS.set('phase', st);
+  if (neu && WOCHE.length) WOCHE = wocheBauen();
+  return neu;
+}
+phasePruefen(false);
+
 function dayById(id) { return plan.days.find(d => d.id === id) || plan.days[0]; }
 /* Am Nachholtag nachholbar, laut Profil */
 const PFLICHT = (profil.training.nachholen || []).slice();
@@ -1457,7 +1557,8 @@ function wochenStart() { const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate
 function offenePflicht() {
   const ab = wochenStart().getTime();
   const fertig = new Set(history.filter(h => new Date(h.date).getTime() >= ab).map(h => h.dayId));
-  return PFLICHT.filter(id => !fertig.has(id) && plan.days.some(d => d.id === id));
+  /* Nur Tage, die zurzeit einen Wochentag haben. Tag A in einer späteren Phase ist nicht verpasst. */
+  return PFLICHT.filter(id => !fertig.has(id) && plan.days.some(d => d.id === id && (d.wds || []).length));
 }
 /* Welcher Tag laut Stundenplan heute dran ist */
 function planDayId() {
@@ -1475,7 +1576,7 @@ let curDay = todayDayId();
 let curDayDate = new Date().toDateString();
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState !== 'visible' || curDayDate === new Date().toDateString()) return;
-  curDayDate = new Date().toDateString(); alteTrainingsSichern(); curDay = todayDayId();
+  curDayDate = new Date().toDateString(); alteTrainingsSichern(); phasePruefen(true); curDay = todayDayId();
   if (tab === 'training' && !editMode) renderTraining();
   if (tab === 'plan') renderPlan();
   streakMeldung();
@@ -1795,8 +1896,20 @@ function render() {
 
 /* ======================================================= Stundenplan, aus dem Profil */
 function suppsText() { const m = new Date().getMonth() + 1; return (profil.supplements || []).filter(x => !x.monate || x.monate.indexOf(m) >= 0).map(x => x.text).join(' und ') || 'nichts'; }
-const WOCHE = WO_KURZ.map((k, i) => { const w = (profil.woche || {})[k] || {}; const items = w.items && w.items.length ? w.items : [['07:00', 'Aufstehen', 'schlaf']];
-  return { k, name: WO_LANG[i], art: w.art || '', items: items.map(it => [it[0], String(it[1]).replace(/\{supps\}/g, suppsText()), it[2], it[3] || null]) }; });
+/* Einträge mit Bedingung (fünfter Wert) gelten nur, wenn an dem Wochentag dieses Training dran ist ("K") oder nicht ("!K").
+   {tag}, {titel} und {min} kommen aus dem Trainingstag der aktuellen Phase. */
+function wocheBauen() {
+  return WO_KURZ.map((k, i) => {
+    const w = (profil.woche || {})[k] || {}; const wd = (i + 1) % 7;
+    const pd = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0) || null; const pid = pd ? pd.id : null;
+    const gilt = it => { const c = it[4]; if (!c) return true; return c[0] === '!' ? pid !== c.slice(1) : pid === c; };
+    const fuell = t => String(t).replace(/\{supps\}/g, suppsText()).replace(/\{tag\}/g, pd ? pd.name : 'Training')
+      .replace(/\{titel\}/g, pd ? pd.title : '').replace(/\{min\}/g, pd ? String(dauerMin(pd)) : '15');
+    let items = (w.items || []).filter(gilt); if (!items.length) items = [['07:00', 'Aufstehen', 'schlaf']];
+    return { k, name: WO_LANG[i], art: fuell(w.art || ''), items: items.map(it => [it[0], fuell(it[1]), it[2], it[3] || null]) };
+  });
+}
+WOCHE = wocheBauen();
 /* k: training, essen, arbeit, frei, schlaf, pflege */
 /* Jeder Eintrag gilt, bis der nächste beginnt. Darum folgt auf kurze Dinge (Essen, Snack) wieder die Hauptsache. */
 const zeitVon = (d, f) => { const t = d.items.find(f); return t ? t[0] : null; };
@@ -1853,6 +1966,7 @@ function renderPlan() {
   const mins = d.items.map(it => { let m = toMin(it[0]); if (m != null && m < start) m += 1440; return m; });
   const nm = nowMin;
   if (isToday) {
+    h += heuteOffenKarte(d, mins, nm, cur);
     const c = cur >= 0 ? d.items[cur] : null;
     const bis = next ? mins[cur + 1] - nm : null;
     const von = cur >= 0 ? mins[cur] : null;
@@ -1881,7 +1995,7 @@ function renderPlan() {
     h += `<div class="card"><div class="lab">${esc(d.art)}</div><h3 style="margin-top:4px">${esc(d.name)}</h3>
       <div class="small muted">Aufstehen ${esc(d.items[0][0])} · Licht aus ${esc(lichtAus(d) || KA)}</div></div>`;
   }
-  h += streakKarte(false);
+  h += streakKarte(false) + (isToday ? phaseKarte() : '');
   /* Tagesablauf in Abschnitten */
   const abschnitt = m => m == null ? 'Tag' : (m < 9 * 60 ? 'Morgen' : m < 17 * 60 ? 'Tag' : 'Abend');
   const tagStart = mins[0], tagEnde = mins[mins.length - 1];
@@ -1956,7 +2070,7 @@ function renderTraining() {
   h += `<div class="card daycard"><div class="ring" style="--p:${pct}" role="img" aria-label="${done} von ${total} Sätzen erledigt"><span>${done}/${total}</span></div>
     <div><div class="lab">${heuteHinweis(day)}</div><h2>${esc(day.name)}: ${esc(day.title)}</h2>
     <div class="sub">${done} von ${total} Sätzen · etwa ${dauerMin(day)} Min · <button data-act="stats">Verlauf und Statistik</button></div>
-    ${STUFEN && day.id === STUFEN.tag ? miniStufeText() : ''}</div></div>`;
+    ${phaseZeile(day) || (STUFEN && day.id === STUFEN.tag ? miniStufeText() : '')}</div></div>`;
   if (!editMode && done) h += `<button class="btn wide abschluss ${done >= total ? 'primary' : ''}" data-act="finish">${done >= total ? 'Training abschliessen' : `Abschliessen · ${done} von ${total} Sätzen`}</button>`;
   const aktivIdx = done ? day.ex.findIndex(x => s.sets[x.id].some(st => !st.d)) : 0;
   day.ex.forEach((ex, xi) => {
@@ -2165,6 +2279,7 @@ function trainingSpeichern(day, s, opt) {
   if (!LS.set('history', history)) { history.pop(); return null; }
   delete sessions[day.id]; saveSessions();
   if (STUFEN && day.id === STUFEN.tag) miniAnpassen(true);
+  phasePruefen(true);
   return e;
 }
 /* Stufen aus dem Profil: alle proStufe kompletten Trainings des Tages eine Stufe mehr. Es wird nur gesteigert, nie gekürzt. */
@@ -2189,6 +2304,71 @@ function miniAnpassen(melden) {
   if (S.pause != null) k.ex.forEach((e, i) => { e.pause = i === k.ex.length - 1 ? 0 : S.pause; });
   if (S.titel) k.title = S.titel; k.stufe = st; savePlan();
   if (melden && st > 1) toast(`${k.name} Stufe ${st}: ab jetzt ${S.txt}, etwa ${S.min} Min`);
+}
+/* Phasen anzeigen */
+function phaseZeile(day) {
+  const st = phaseStand(); if (!st || !PHASEN.phasen[st.i].tage[day.id]) return '';
+  const n = PHASEN.phasen.length, P = PHASEN.phasen[st.i];
+  if (!st.an) return `<div class="sub">Phase ${st.i} geschafft. Ab morgen Phase ${st.i + 1}: ${esc(P.txt)}.</div>`;
+  if (st.i >= n - 1) return `<div class="sub">Phase ${n} von ${n}, dein Ziel. Ab jetzt wächst jede Übung mit Wiederholungen und Gewicht.</div>`;
+  const fehlt = Math.max(0, P.n - phaseZaehlt(P, st.ab));
+  return `<div class="sub">Phase ${st.i + 1} von ${n}. Noch ${fehlt} komplette ${fehlt === 1 ? 'Training' : 'Trainings'} bis Phase ${st.i + 2}.</div>`;
+}
+function phaseTageText(P) {
+  return Object.keys(P.tage).map(id => { const d = plan.days.find(x => x.id === id); const t = P.tage[id];
+    if (!d || !t.wds.length) return ''; const wt = t.wds.map(w => WT_LANG[w].slice(0, 2)).join(', ');
+    return `<div class="st-dr"><span>${esc(wt)}</span><span>${esc(d.name)}</span></div>`; }).join('');
+}
+function phaseKarte() {
+  const st = phaseStand(); if (!st) return '';
+  const n = PHASEN.phasen.length, P = PHASEN.phasen[st.i], letzte = st.i >= n - 1;
+  const fertig = st.an ? phaseZaehlt(P, st.ab) : 0;
+  const seg = PHASEN.phasen.map((x, j) => `<i class="${j < st.i || (j === st.i && letzte && st.an) ? 'ok' : j === st.i ? 'cur' : ''}"></i>`).join('');
+  const unten = !st.an ? `Startet morgen. Phase ${st.i} hast du geschafft.`
+    : letzte ? 'Ziel erreicht. Ab jetzt wächst jede Übung weiter: erst mehr Wiederholungen, dann mehr Gewicht oder die schwerere Variante.'
+    : `${fertig} von ${P.n} kompletten Pflicht Trainings. Danach: ${esc(PHASEN.phasen[st.i + 1].txt)}.`;
+  return `<div class="card phase"><div class="gew-kopf"><span class="lab">Dein Weg · Phase ${st.i + 1} von ${n}</span></div>
+    <div class="ph-seg" role="img" aria-label="Phase ${st.i + 1} von ${n}">${seg}</div>
+    <h3 style="margin:2px 0 4px">${esc(P.name)}</h3><p class="small" style="margin:0 0 6px">${esc(P.txt)}.</p>
+    ${!letzte && st.an ? `<div class="gew-bar"><i style="width:${Math.min(100, Math.round(fertig / P.n * 100))}%"></i></div>` : ''}
+    <p class="small muted" style="margin:0">${unten}</p>
+    ${st.i > 0 ? '<button class="btn wide" data-phase="zurueck" style="margin-top:12px">Zu schwer? Eine Phase zurück</button>' : ''}</div>`;
+}
+function phaseGeschafft(i) {
+  const P = PHASEN.phasen[i];
+  openSheet(`Phase ${i} geschafft`, `<p style="margin-top:0">${PHASEN.phasen[i - 1] ? `<b>${esc(PHASEN.phasen[i - 1].name)}</b> sitzt. ` : ''}Ab morgen wird es schwerer.</p>
+    <div class="lab" style="margin-top:14px">Phase ${i + 1}: ${esc(P.name)}</div><p class="small" style="margin:6px 0 10px">${esc(P.txt)}.</p>
+    ${phaseTageText(P)}
+    <p class="small muted" style="margin:14px 0 0">Ist es nach einer Woche wirklich zu viel, gehst du im Tagesplan unter "Dein Weg" eine Phase zurück. Nicht nach dem ersten harten Tag.</p>
+    <button class="btn primary wide" data-x="ok" style="margin-top:14px">Verstanden</button>`);
+  $('#sheetBody').onclick = ev => { if (ev.target.closest('[data-x]')) closeSheet(); };
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-phase]'); if (!b) return;
+  const st = phaseStand(); if (!st || st.i < 1) return;
+  const Z = PHASEN.phasen[st.i - 1];
+  openSheet('Eine Phase zurück?', `<p style="margin-top:0">Zurück zu Phase ${st.i}: <b>${esc(Z.name)}</b>. ${esc(Z.txt)}.</p>
+    <p class="small muted">Gilt ab sofort. Die Zählung für diese Phase beginnt neu, du brauchst wieder ${Z.n} komplette Trainings.</p>
+    <button class="btn primary wide" data-x="ja">Ja, eine Phase zurück</button><button class="btn wide" data-x="nein" style="margin-top:10px">Nein, ich bleibe dran</button>`);
+  $('#sheetBody').onclick = ev => {
+    const x = ev.target.closest('[data-x]'); if (!x) return; closeSheet(); if (x.dataset.x !== 'ja') return;
+    LS.set('phase', { i: st.i - 1, ab: tagKey(new Date()), an: false }); phasePruefen(false);
+    curDay = todayDayId(); toast(`Phase ${st.i}: ${Z.name}`); render();
+  };
+});
+/* Heute noch offen: das Pflicht Training von heute, dessen Zeit schon vorbei ist. Nachholen geht bis Licht aus. */
+function heuteOffenKarte(d, mins, nm, cur) {
+  /* Ist gerade Trainingszeit, zeigt die Jetzt Karte schon den Knopf */
+  if (cur >= 0 && d.items[cur][2] === 'training') return '';
+  const pid = planDayId(); const pt = profilTag(pid); const pd = plan.days.find(x => x.id === pid);
+  if (!pt || !pt.pflicht || !pd || streakInfo().heute) return '';
+  const ti = d.items.findIndex(it => it[2] === 'training'); if (ti < 0 || mins[ti] > nm) return '';
+  const li = d.items.findIndex(it => /^Licht aus/.test(it[1])); if (li >= 0 && mins[li] <= nm) return '';
+  const laeuft = !!sessions[pid];
+  return `<div class="card offen"><div class="lab">Heute noch offen</div>
+    <div class="big" style="margin:6px 0 4px">${esc(pd.name)}, etwa ${dauerMin(pd)} Min</div>
+    <p class="small muted" style="margin:0 0 12px">${laeuft ? 'Angefangen, aber noch nicht fertig.' : 'Am Morgen nicht geschafft? Kein Drama, aber heute noch.'} Nachholen zählt bis Licht aus${li >= 0 ? ' um ' + esc(d.items[li][0]) : ''}.</p>
+    <button class="btn primary wide" data-goto="training">${laeuft ? 'Weitermachen' : 'Jetzt nachholen'}</button></div>`;
 }
 /* Nicht abgeschlossene Trainings von früheren Tagen werden nicht vergessen: mit mindestens einem Satz automatisch gespeichert */
 function alteTrainingsSichern() {
@@ -2247,7 +2427,13 @@ function finishTraining() {
 const FREEZE_MAX = 2, FREEZE_ALLE = 2;
 function tagKey(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function keyDatum(k) { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d, 12); }
-function planIdFuer(datum) { const wd = datum.getDay(); const d = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0); return d ? d.id : null; }
+function planIdFuer(datum) {
+  const wd = datum.getDay(), k = tagKey(datum);
+  /* Vor einem Phasenwechsel galt der damalige Plan */
+  const alt = wdsHist.find(x => k < x.bis);
+  if (alt) { const id = Object.keys(alt.m).find(i => alt.m[i].indexOf(wd) >= 0); return id || null; }
+  const d = plan.days.find(x => (x.wds || []).indexOf(wd) >= 0); return d ? d.id : null;
+}
 function zaehltFuer(h) {
   /* Notbremse: Tage mit minSaetze halten die Kette schon mit wenigen Sätzen am Leben */
   const pt = profilTag(h.dayId);
@@ -4270,7 +4456,7 @@ function hcBoxHtml() {
 const HC_QUELLE = { 'com.sec.android.app.shealth': 'Samsung Health', 'com.google.android.apps.fitness': 'Google Fit', 'com.google.android.apps.healthdata': 'Health Connect', 'android': 'Handy selbst' };
 function hcDiagHtml() {
   if (!hcDiag) return '<p class="small muted" style="margin:10px 0 0">Die Diagnose, was Health Connect liefert, braucht die neueste APK.</p>';
-  const qn = l => l.length ? l.map(x => HC_QUELLE[x] || x).join(', ') : 'keiner App';
+  const qn = l => l.length ? Array.from(new Set(l.map(x => HC_QUELLE[x] || (/^com\.android\.healthconnect\./.test(x) ? 'Handy selbst, ohne Samsung Health' : x)))).join(', ') : 'keiner App';
   return `<div class="hc-diag"><div class="lab">Was Health Connect liefert, letzte ${hcDiag.tage} Tage</div>
     <div class="st-dr"><span>Schlafsitzungen</span><span class="num">${hcDiag.schlaf == null ? 'unbekannt' : hcDiag.schlaf}${hcDiag.schlafQ.length ? ' von ' + esc(qn(hcDiag.schlafQ)) : ''}</span></div>
     <div class="st-dr"><span>Schritte von</span><span>${esc(qn(hcDiag.schritteQ))}</span></div>
@@ -5139,6 +5325,34 @@ function profilPruefen(roh) {
     else if (!st.length) f.push('training.stufen.stufen braucht mindestens eine Stufe.');
     else p.training.stufen = { tag: tag.id, proStufe: ganz(s.proStufe, 2, 30) || 8, stufen: st, extra };
   }
+  if (tr.phasen && typeof tr.phasen === 'object') {
+    const s = tr.phasen;
+    const extra = (Array.isArray(s.extra) ? s.extra : []).slice(0, 10).map(x => { const e = uebung(x, 'Phasen Extra'); if (e && idOk(x.vor)) e.vor = x.vor; return e; }).filter(Boolean);
+    const ph = (Array.isArray(s.phasen) ? s.phasen : []).slice(0, 12).map((x, i) => {
+      const wo = 'Phase ' + (i + 1);
+      const P = { name: txt(x && x.name, 30) || wo, txt: txt(x && x.txt, 120), n: ganz(x && x.n, 1, 60) || 8, tage: {} };
+      if (x && x.n != null && ganz(x.n, 1, 60) == null) f.push(wo + ': "n" muss eine ganze Zahl von 1 bis 60 sein.');
+      const tg = x && x.tage && typeof x.tage === 'object' && !Array.isArray(x.tage) ? x.tage : {};
+      const belegt = {};
+      Object.entries(tg).slice(0, 10).forEach(([id, t]) => {
+        const tag = tage.find(d => d.id === id);
+        if (!tag) { f.push(`${wo}: Trainingstag "${txt(id, 20)}" gibt es nicht.`); return; }
+        if (!t || typeof t !== 'object' || Array.isArray(t)) { f.push(`${wo} ${tag.name}: muss ein Objekt sein.`); return; }
+        const o = { wds: Array.from(new Set((Array.isArray(t.wds) ? t.wds : []).filter(w => Number.isInteger(w) && w >= 0 && w <= 6))) };
+        o.wds.forEach(w => { if (belegt[w]) f.push(`${wo}: ${WT_LANG[w]} ist zwei Trainingstagen zugeteilt (${belegt[w]} und ${tag.name}).`); else belegt[w] = tag.name; });
+        const exIds = tag.ex.map(e => e.id).concat(extra.map(e => e.id));
+        if (t.sets != null) { o.sets = {}; Object.entries(typeof t.sets === 'object' ? t.sets : {}).forEach(([eid, n]) => { if (exIds.indexOf(eid) >= 0 && ganz(n, 0, 10) != null) o.sets[eid] = n; else f.push(`${wo} ${tag.name}: Übung "${txt(eid, 20)}" gibt es nicht oder die Satzzahl ist nicht 0 bis 10.`); }); }
+        if (t.minus != null) { const m = ganz(t.minus, 0, 5); if (m == null) f.push(`${wo} ${tag.name}: "minus" muss 0 bis 5 sein.`); else o.minus = m; }
+        if (t.pause != null) { const pz = ganz(t.pause, 0, 300); if (pz == null) f.push(`${wo} ${tag.name}: "pause" muss 0 bis 300 sein.`); else o.pause = pz; }
+        if (txt(t.titel, 60)) o.titel = txt(t.titel, 60);
+        P.tage[id] = o;
+      });
+      if (!Object.keys(P.tage).length) f.push(wo + ': "tage" braucht mindestens einen Trainingstag.');
+      return P;
+    });
+    if (!ph.length) f.push('training.phasen.phasen braucht mindestens eine Phase.');
+    else p.training.phasen = { phasen: ph, extra };
+  }
   /* Tagesplan: 7 Tage, jeder mit mindestens einem Eintrag */
   p.woche = {};
   const ow = o.woche && typeof o.woche === 'object' ? o.woche : {};
@@ -5147,7 +5361,11 @@ function profilPruefen(roh) {
     if (!w || !Array.isArray(w.items) || !w.items.length) { f.push(`woche.${kz} fehlt oder hat keine Einträge.`); return; }
     const items = w.items.slice(0, 40).map((it, i) => {
       if (!Array.isArray(it) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(it[0]) || !txt(it[1], 160) || KINDS.indexOf(it[2]) < 0) { f.push(`woche.${kz} Eintrag ${i + 1}: muss ["HH:MM", "Text", Art] sein, Art eine von ${KINDS.join(', ')}.`); return null; }
-      const r = [it[0], txt(it[1], 160), it[2]]; if (typeof it[3] === 'string' && p.gewohnheiten[it[3]]) r.push(it[3]); return r;
+      const r = [it[0], txt(it[1], 160), it[2]]; const g = typeof it[3] === 'string' && p.gewohnheiten[it[3]] ? it[3] : null;
+      let c = null;
+      if (it[4] != null) { if (typeof it[4] === 'string' && /^!?[A-Za-z0-9]{1,8}$/.test(it[4]) && tIds.indexOf(it[4].replace(/^!/, '')) >= 0) c = it[4];
+        else f.push(`woche.${kz} Eintrag ${i + 1}: der fünfte Wert muss die id eines Trainingstags sein, mit ! davor für "an Tagen ohne dieses Training".`); }
+      if (g || c) r.push(g); if (c) r.push(c); return r;
     }).filter(Boolean);
     p.woche[kz] = { art: txt(w.art, 20), items };
   });
@@ -5202,7 +5420,8 @@ SO GEHST DU VOR
 3. Meldet die App Fehler, schicke ich sie dir. Dann gibst du das ganze korrigierte Profil nochmals aus.
 
 REGELN FÜR EINEN GUTEN PLAN
-- Für Anfänger klein starten. Lieber 5 bis 15 Minuten, die wirklich passieren, als 45 Minuten, die nie passieren. Nutze "stufen", damit der Plan von selbst wächst.
+- Für Anfänger klein starten. Lieber 5 bis 15 Minuten, die wirklich passieren, als 45 Minuten, die nie passieren. Nutze "phasen", damit der Plan von selbst schwerer wird, bis mein Ziel erreicht ist.
+- Verpasstes Training am selben Tag nachholen: Plane direkt nach Arbeit oder Schule einen Eintrag "Training verpasst? Jetzt nachholen" ein, mit Bedingung (fünfter Wert), damit er zum Training des Tages passt.
 - Nur Übungen mit dem, was ich wirklich habe. Jede Übung mit kurzer, klarer Anleitung in "how" (ganze Sätze, jeder Satz endet mit Punkt) und einer leichteren Variante in "easy".
 - Kalorien realistisch: zum Abnehmen ein moderates Minus, kein Crash. Unter 18 Jahren nicht unter 1800 kcal, und "kcalMin" nicht zu tief, weil ich noch wachse. Protein etwa 1,6 g pro kg Körpergewicht.
 - Schlaf: Licht aus so planen, dass genug Schlaf bleibt (Jugendliche 8 bis 10 Stunden, Erwachsene 7 bis 9).
@@ -5262,7 +5481,8 @@ FELDER GENAU
 - bild: nur einer dieser Namen, sonst "bild" weglassen: ${PROFIL_BILDER.join(', ')}.
 - training.nachholen: Trainingstage, die am nachholTag (0 Sonntag bis 6 Samstag) nachgeholt werden können, wenn sie in der Woche verpasst wurden.
 - training.stufen (optional): tag ist die id des Tages, der wächst. Alle "proStufe" kompletten Trainings kommt die nächste Stufe. sets legt pro Übungs id die Sätze fest (0 heisst weglassen). Neue Übungen für spätere Stufen stehen in "extra", mit "vor": id der Übung, vor der sie eingefügt wird. titel ersetzt den Titel des Tages.
-- woche: alle sieben Tage Mo, Di, Mi, Do, Fr, Sa, So. art: kurzes Wort für den Tag (höchstens 20 Zeichen). items: Einträge ["HH:MM", "Text bis 160 Zeichen", Art, optional Gewohnheit]. Art ist eine von: ${KINDS.join(', ')}.`;
+- training.phasen (optional, ersetzt stufen): { "phasen": [...], "extra": [...] }. Jede Phase: name (bis 30 Zeichen), txt (was sich ändert, bis 120 Zeichen, ohne Punkt am Schluss), n (so viele komplette Pflicht Trainings, dann kommt ab dem nächsten Tag die nächste Phase), tage: pro Trainingstag id ein Objekt { "wds": [Wochentage], "sets": { Übungs id: Sätze, 0 heisst weglassen }, "minus": Sätze weniger als im Tag festgelegt, "pause": Sekunden, "titel": Text }. Nur wds ist Pflicht. Ein Tag, der in einer Phase fehlt, verliert die Wochentage, die die Phase anderen Tagen gibt. Pro Phase jeder Wochentag höchstens einmal. Die letzte Phase ist das Ziel. Neue Übungen stehen in "extra" mit "vor" wie bei stufen. Beispiel: { "name": "Start", "txt": "Mini mit je 1 Satz", "n": 6, "tage": { "K": { "wds": [1, 2, 3, 4, 5], "sets": { "k1": 1, "k2": 1 }, "pause": 30 }, "W": { "wds": [6], "minus": 1 } } }.
+- woche: alle sieben Tage Mo, Di, Mi, Do, Fr, Sa, So. art: kurzes Wort für den Tag (höchstens 20 Zeichen). items: Einträge ["HH:MM", "Text bis 160 Zeichen", Art, optional Gewohnheit oder null, optional Bedingung]. Art ist eine von: ${KINDS.join(', ')}. Die Bedingung ist die id eines Trainingstags: "K" heisst, der Eintrag gilt nur an Wochentagen, an denen K dran ist, "!K" an allen anderen. So passt der Tagesplan in jeder Phase. Im Text und in art setzt die App {tag} (Name des Trainings an dem Tag), {titel} und {min} (Dauer in Minuten) ein.`;
 }
 function profilBoxHtml() {
   return `<p class="small" style="margin:0 0 10px">${profil.beispiel ? '<b>Noch kein eigenes Profil.</b> <span class="muted">Die App zeigt ein Beispiel.</span>' : `<b>${esc(profil.name)}</b> <span class="muted">· ${profil.training.days.length} Trainingstage · ${fz(profil.ziele.k)} kcal</span>`}</p>
